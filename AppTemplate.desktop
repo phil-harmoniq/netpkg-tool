@@ -1,0 +1,7 @@
+[Desktop Entry]
+
+Type=Application
+Name=AppTemplate
+Exec=AppRun
+Icon=AppIcon
+Terminal=false

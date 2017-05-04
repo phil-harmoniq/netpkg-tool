@@ -1,0 +1,27 @@
+#! /usr/bin/env bash
+
+main_loop() {
+    HERE=$(dirname $(readlink -f "${0}"))
+    export LD_LIBRARY_PATH=$HERE/lib
+    export HERE=$HERE
+    check_for_dotnet
+}
+
+check_for_dotnet() {
+    LOC="$(which dotnet)"
+    if [ -z "$LOC" ]; then
+        echo ".NET runtime not detected, attempting new install..."
+        gnome-terminal -e $HERE/install/dotnet-installer.sh
+        start_app
+    else
+        echo ".NET runtime detected at $LOC, installer not required."
+        start_app
+    fi
+}
+
+start_app() {
+    dotnet $HERE/bin/DevZH.UI.SimpleSample.dll
+    exit 0
+}
+
+main_loop
