@@ -12,20 +12,20 @@ main_loop() {
         if ! [ -z $VER ]; then echo "Setting $HOME/.local/share/dotnet-runtime/dotnet as executable..."; fi
         chmod +x $HOME/.local/share/dotnet-runtime
 
-        PATH_ADD='export PATH="$PATH:$HOME/.local/share/dotnet-runtime"'
+        PATH_ADD='if [ -d "$HOME/.local/share/dotnet-runtime" ] ; then PATH="$HOME/bin:$PATH" fi'
 
-        if ! (grep -qF "$PATH_ADD" $HOME/.bashrc); then
+        if ! (grep -qF "$PATH_ADD" $HOME/.profile); then
             if ! [ -z $VER ]; then echo "Adding $HOME/.local/share/dotnet-runtime to user \$PATH..."; fi
-            echo "# Added by .NET Core installer" >> "$HOME/.bashrc"
-            echo $PATH_ADD >> "$HOME/.bashrc"
-            echo >> "$HOME/.bashrc"
+            echo "# Added by .NET Core installer" >> "$HOME/.profile"
+            echo $PATH_ADD >> "$HOME/.profile"
+            echo >> "$HOME/.profile"
         else
-            if ! [ -z $VER ]; then echo "$HOME/.local/share/dotnet-runtime already detected in \$PATH; skip adding to \$PATH."; fi
+            if ! [ -z $VER ]; then echo "$HOME/.local/share/dotnet-runtime already detected in \$PATH, skip adding to \$PATH."; fi
         fi
 
-        . ~/.bashrc
+        . ~/.profile
 
-        echo '.NET runtime installed successfully. You will need to restart your terminal or type ". ~/.bashrc" for the changes to take effect.'
+        echo '.NET runtime installed successfully. You will need to restart your terminal or type ". ~/.profile" for the changes to take effect.'
         exit 0
     else
         echo "Install failed: Error encountered while extracting dotnet-runtime."
@@ -34,20 +34,17 @@ main_loop() {
 }
 
 download_runtime() {
-    . /etc/os-release
-    ARCH="x64"
-
-    case "$ID" in
+    case "$OS_ID" in
         "ubuntu")
-            ubuntu_fetch $VERSION_ID
+            ubuntu_fetch $OS_VERSION
             return 0
             ;;
         "fedora")
-            fedora_fetch $VERSION_ID
+            fedora_fetch $OS_VERSION
             return 0
             ;;
         *)
-            echo "Install failed: $ID.$VERSION_ID is incompatible with .NET runtime."
+            echo "Install failed: $OS_ID.$OS_VERSION is incompatible with .NET runtime."
             exit 1
             ;;
     esac
@@ -57,21 +54,21 @@ ubuntu_fetch() {
     echo $1
     case "$1" in
         "16.04")
-            echo "Downloading .NET runtime for $ID.$VERSION_ID-x64..."
+            echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
             curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843432 2> /dev/null
             if [ $? -eq 0 ]; then return 0; fi
             ;;
         "16.10")
-            echo "Downloading .NET runtime for $ID.$VERSION_ID-x64..."
+            echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
             curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843436 2> /dev/null
             if [ $? -eq 0 ]; then return 0; fi
             ;;
         "17.04")
-            echo "Install failed: Ubuntu $VERSION_ID is incompatible with .NET runtime."
+            echo "Install failed: Ubuntu $OS_VERSION is incompatible with .NET runtime."
             exit 1
             ;;
         *)
-            echo "Downloading .NET runtime for $ID.$VERSION_ID-x64..."
+            echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
             curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843422 2> /dev/null
             if [ $? -eq 0 ]; then return 0; fi
             ;;
@@ -85,17 +82,17 @@ fedora_fetch() {
     echo $1
     case "$1" in
         "23")
-            echo "Downloading .NET runtime for $ID.$VERSION_ID-x64..."
+            echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
             curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843427 2> /dev/null
             if [ $? -eq 0 ]; then return 0; fi
             ;;
         "24")
-            echo "Downloading .NET runtime for $ID.$VERSION_ID-x64..."
+            echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
             curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843431 2> /dev/null
             if [ $? -eq 0 ]; then return 0; fi
             ;;
         *)
-            echo "Install failed: Fedora $VERSION_ID is incompatible with .NET runtime."
+            echo "Install failed: Fedora $OS_VERSION is incompatible with .NET runtime."
             exit 1
             ;;
     esac

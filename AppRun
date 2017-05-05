@@ -3,23 +3,19 @@
 # -------------------------------- Config --------------------------------
 
 DLL_NAME="DevZH.UI.SimpleSample"
+PKG_VERSION="v0.0.1"
 
 # ------------------------------- Functions ------------------------------
 
 main_loop() {
-    HERE=$(dirname $(readlink -f "${0}"))
-    if ! [ -z $VER ]; then echo "AppImage auto-mounted at $HERE"; fi
-    export LD_LIBRARY_PATH=$HERE/lib
-    export HERE=$HERE
-    export VER=$VER
+    if ! [ -z $VERB ]; then echo "AppImage auto-mounted at $HERE"; fi
     check_for_dotnet
 }
 
 check_for_dotnet() {
-    LOC="$(which dotnet)"
     if [ -z "$LOC" ]; then
         echo ".NET runtime not detected, attempting new install..."
-        $HERE/install/dotnet-installer.sh && start_app
+        $HERE/usr/bin/dotnet-installer.sh && start_app
     else
         if ! [ -z $VER ]; then
             echo ".NET runtime detected at $LOC, installer not required.";
@@ -29,15 +25,39 @@ check_for_dotnet() {
 }
 
 start_app() {
-    dotnet $HERE/bin/$DLL_NAME.dll
+    dotnet $HERE/usr/share/app/$DLL_NAME.dll
     exit 0
 }
 
-# --------------------------------- Init ---------------------------------
+# ------------------------------- Variables ------------------------------
 
-if [ "$1" == "--appimg-v" ] || [ "$1" == "--appimg-verbose" ]; then
+export HERE=$(dirname $(readlink -f "${0}"))
+
+source /etc/os-release
+export OS_NAME=$NAME
+export OS_ID=$ID
+export OS_VERISON=$VERSION_ID
+export OS_CODENAME=$VERSION_CODENAME
+export OS_PNAME=$PRETTY_NAME
+
+export LD_LIBRARY_PATH=$HERE/usr/lib
+export PKG_VERSION=$PKG_VERSION
+export LOC="$(which dotnet)"
+export DLL_NAME=$DLL_NAME
+
+# --------------------------------- Args ---------------------------------
+
+if [ "$1" == "--netpkg-v" ] || [ "$1" == "--netpkg-verbose" ]; then
     VER="true";
-fi
     export VER=$VER
+elif [ "$1" == "--netpkg-h" ] || [ "$1" == "--netpkg-help" ]; then
+    $HERE/usr/bin/help-menu.sh
+    exit 0
+elif [ "$1" == "--netpkg-d" ] || [ "$1" == "--netpkg-dir" ]; then
+    echo ".NET installed at: $LOC"
+    exit 0
+fi
+
+# --------------------------------- Init ---------------------------------
 
 main_loop
