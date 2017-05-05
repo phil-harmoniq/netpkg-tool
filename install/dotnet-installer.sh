@@ -1,33 +1,31 @@
 #! /usr/bin/env bash
 
 main_loop() {
-    echo ".NET runtime not detected, attempting new install..."
     download_runtime
     
-    echo "Unzipping tar into $HOME/.local/share/dotnet-runtime..."
+    echo "Extracting tar.gz into $HOME/.local/share/dotnet-runtime..."
     mkdir -p $HOME/.local/share/dotnet-runtime && tar zxf /tmp/dotnet-runtime.tar.gz -C $HOME/.local/share/dotnet-runtime 2> /dev/null
 
     if [ $? -eq 0 ]; then
         rm /tmp/dotnet-runtime.tar.gz;
 
-        echo "Setting $HOME/.local/share/dotnet-runtime/dotnet as executable..."
+        if ! [ -z $VER ]; then echo "Setting $HOME/.local/share/dotnet-runtime/dotnet as executable..."; fi
         chmod +x $HOME/.local/share/dotnet-runtime
 
         PATH_ADD='export PATH="$PATH:$HOME/.local/share/dotnet-runtime"'
 
         if ! (grep -qF "$PATH_ADD" $HOME/.bashrc); then
-            echo "Adding $HOME/.local/share/dotnet-runtime to user \$PATH..."
-            echo >> "$HOME/.bashrc"
+            if ! [ -z $VER ]; then echo "Adding $HOME/.local/share/dotnet-runtime to user \$PATH..."; fi
             echo "# Added by .NET Core installer" >> "$HOME/.bashrc"
             echo $PATH_ADD >> "$HOME/.bashrc"
+            echo >> "$HOME/.bashrc"
         else
-            echo "$HOME/.local/share/dotnet-runtime already detected in \$PATH; skip adding to \$PATH."
+            if ! [ -z $VER ]; then echo "$HOME/.local/share/dotnet-runtime already detected in \$PATH; skip adding to \$PATH."; fi
         fi
 
         . ~/.bashrc
 
         echo '.NET runtime installed successfully. You will need to restart your terminal or type ". ~/.bashrc" for the changes to take effect.'
-        gnome-terminal -e $HERE/install/run.sh
         exit 0
     else
         echo "Install failed: Error encountered while extracting dotnet-runtime."

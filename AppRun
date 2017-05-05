@@ -1,9 +1,17 @@
 #! /usr/bin/env bash
 
+# -------------------------------- Config --------------------------------
+
+DLL_NAME="DevZH.UI.SimpleSample"
+
+# ------------------------------- Functions ------------------------------
+
 main_loop() {
     HERE=$(dirname $(readlink -f "${0}"))
+    if ! [ -z $VER ]; then echo "AppImage auto-mounted at $HERE"; fi
     export LD_LIBRARY_PATH=$HERE/lib
     export HERE=$HERE
+    export VER=$VER
     check_for_dotnet
 }
 
@@ -11,17 +19,25 @@ check_for_dotnet() {
     LOC="$(which dotnet)"
     if [ -z "$LOC" ]; then
         echo ".NET runtime not detected, attempting new install..."
-        gnome-terminal -e $HERE/install/dotnet-installer.sh
-        start_app
+        $HERE/install/dotnet-installer.sh && start_app
     else
-        echo ".NET runtime detected at $LOC, installer not required."
+        if ! [ -z $VER ]; then
+            echo ".NET runtime detected at $LOC, installer not required.";
+        fi
         start_app
     fi
 }
 
 start_app() {
-    dotnet $HERE/bin/DevZH.UI.SimpleSample.dll
+    dotnet $HERE/bin/$DLL_NAME.dll
     exit 0
 }
+
+# --------------------------------- Init ---------------------------------
+
+if [ "$1" == "--appimg-v" ] || [ "$1" == "--appimg-verbose" ]; then
+    VER="true";
+fi
+    export VER=$VER
 
 main_loop

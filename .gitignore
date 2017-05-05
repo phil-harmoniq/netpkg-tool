@@ -12,6 +12,7 @@
 # Exclude files inside of bin/ and lib/
 bin/*
 lib/*
+.DirIcon
 
 # Keep the folders themselves
 !bin/.gitkeep
