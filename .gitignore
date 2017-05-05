@@ -10,13 +10,13 @@
 *.booproj
 
 # Exclude files inside of /usr/share/app and /usr/lib/
-/NET_Pkg.AppDir/usr/share/app/*
-/NET_Pkg.AppDir/usr/lib/*
-/NET_Pkg.AppDir/usr/share/tests
+/NET_Pkg.Template/usr/share/app/*
+/NET_Pkg.Template/usr/lib/*
+/NET_Pkg.Template/usr/share/tests
 
 # Keep the folders themselves
-!/NET_Pkg.AppDir/usr/share/app/.gitkeep
-!/NET_Pkg.AppDir/usr/lib/.gitkeep
+!/NET_Pkg.Template/usr/share/app/.gitkeep
+!/NET_Pkg.Template/usr/lib/.gitkeep
 
 # Leftover .DirIcon from appimagetool
 .DirIcon
