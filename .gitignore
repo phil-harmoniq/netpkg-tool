@@ -12,6 +12,7 @@
 # Exclude files inside of /usr/share/app and /usr/lib/
 /NET_Pkg.AppDir/usr/share/app/*
 /NET_Pkg.AppDir/usr/lib/*
+/NET_Pkg.AppDir/usr/share/tests
 
 # Keep the folders themselves
 !/NET_Pkg.AppDir/usr/share/app/.gitkeep

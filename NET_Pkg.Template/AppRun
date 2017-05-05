@@ -25,13 +25,14 @@ check_for_dotnet() {
 }
 
 start_app() {
-    dotnet $HERE/usr/share/app/$DLL_NAME.dll
+    dotnet $HERE/usr/share/tests/arg-test.dll $CLI_ARGS
     exit 0
 }
 
 # ------------------------------- Variables ------------------------------
 
 export HERE=$(dirname $(readlink -f "${0}"))
+export CLI_ARGS="$@"
 
 source /etc/os-release
 export OS_NAME=$NAME
