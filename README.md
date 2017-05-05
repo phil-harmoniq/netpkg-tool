@@ -1,4 +1,4 @@
-# NET_Template.AppDir
+# NET_Pkg
 
 This project is an attempt to make packaging .NET applications for Linux much simpler.
 
