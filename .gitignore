@@ -9,11 +9,13 @@
 *.pidb
 *.booproj
 
-# Exclude files inside of bin/ and lib/
-bin/*
-lib/*
-.DirIcon
+# Exclude files inside of /usr/share/app and /usr/lib/
+/usr/share/app/*
+/usr/lib/*
 
 # Keep the folders themselves
-!bin/.gitkeep
-!lib/.gitkeep
+!/usr/share/app/.gitkeep
+!/usr/lib/.gitkeep
+
+# Leftover .DirIcon from appimagetool
+.DirIcon
