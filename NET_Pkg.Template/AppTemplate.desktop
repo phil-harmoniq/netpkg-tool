@@ -1,7 +1,7 @@
 [Desktop Entry]
 
 Type=Application
-Name=AppTemplate
+Name=NET_Pkg
 Exec=AppRun
 Icon=AppIcon
 Terminal=false

@@ -51,6 +51,13 @@ check_path() {
 
 export HERE=$(dirname $(readlink -f "${0}"))
 export CLI_ARGS="$@"
+export XDG_DATA_DIRS="$HERE/usr/share:$XDG_DATA_DIRS"
+export PATH="$HERE/usr/bin:$PATH"
+if [[ -z "${LD_LIBRARY_PATH// }" ]]; then 
+    export LD_LIBRARY_PATH="$HERE/usr/lib"
+else
+    export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
+fi
 
 source /etc/os-release
 export OS_NAME=$NAME
@@ -59,7 +66,6 @@ export OS_VERSION=$VERSION_ID
 export OS_CODENAME=$VERSION_CODENAME
 export OS_PNAME=$PRETTY_NAME
 
-export LD_LIBRARY_PATH=$HERE/usr/lib
 export PKG_VERSION=$PKG_VERSION
 export DLL_NAME=$DLL_NAME
 
