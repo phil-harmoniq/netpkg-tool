@@ -55,8 +55,8 @@ export CLI_ARGS="$@"
 source /etc/os-release
 export OS_NAME=$NAME
 export OS_ID=$ID
-export OS_VERISON=$VERBSION_ID
-export OS_CODENAME=$VERBSION_CODENAME
+export OS_VERSION=$VERSION_ID
+export OS_CODENAME=$VERSION_CODENAME
 export OS_PNAME=$PRETTY_NAME
 
 export LD_LIBRARY_PATH=$HERE/usr/lib

@@ -31,10 +31,21 @@ main_loop() {
             echo $PATH_ADD >> "$HOME/.profile"
             echo >> "$HOME/.profile"
         else
-            if ! [ -z $VERB ]; then echo "$HOME/.local/share/dotnet/bin already detected in $HOME/.profile, skip adding to \$PATH."; fi
+            if ! [ -z $VERB ]; then echo "$HOME/.local/share/dotnet/bin already detected in ~/.profile, skip adding to \$PATH."; fi
+        fi
+
+        BASH_ADD='[[ ":$PATH:" != *":$HOME/.local/share/dotnet/bin:"* ]] && PATH="${PATH}:$HOME/.local/share/dotnet/bin"'
+         
+        if ! (grep -qF "$BASH_ADD" $HOME/.bashrc); then
+            if ! [ -z $VERB ]; then echo "Adding $HOME/.local/share/dotnet/bin to user ~/.bashrc..."; fi
+            echo "# Added by .NET Core installer" >> "$HOME/.bashrc"
+            echo $BASH_ADD >> "$HOME/.bashrc"
+            echo >> "$HOME/.bashrc"
+        else
+            if ! [ -z $VERB ]; then echo "$HOME/.local/share/dotnet/bin already detected in ~/.bashrc, skip adding to ~/.bashrc."; fi
         fi
         
-        echo '.NET runtime installed successfully. You may need to log-out and back in or type ". ~/.profile"" for the changes to take effect.'
+        echo '.NET runtime installed successfully. You may need to log-out and back in or type ". ~/.profile" for the changes to take effect.'
         exit 0
     else
         echo "Install failed: Error encountered while extracting dotnet-runtime.tar.gz"
@@ -43,20 +54,13 @@ main_loop() {
 }
 
 download_runtime() {
-    source /etc/os-release
-    export OS_NAME=$NAME
-    export OS_ID=$ID
-    export OS_VERSION=$VERBSION_ID
-    export OS_CODENAME=$VERBSION_CODENAME
-    export OS_PNAME=$PRETTY_NAME
-
     case "$OS_ID" in
         "ubuntu")
-            ubuntu_fetch $OS_VERSION
+            ubuntu_fetch
             return 0
             ;;
         "fedora")
-            fedora_fetch $OS_VERSION
+            fedora_fetch
             return 0
             ;;
         *)
@@ -67,10 +71,10 @@ download_runtime() {
 }
 
 ubuntu_fetch() {
-    case "$1" in
+    case "$OS_VERSION" in
         "16.04")
             echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-            curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843432
+            curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843432 2> /dev/null
             if [ $? -eq 0 ]; then return 0; fi
             ;;
         "16.10")
@@ -84,7 +88,7 @@ ubuntu_fetch() {
             ;;
         *)
             echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-            curl -SL -ov /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843422 2> /dev/null
+            curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843422 2> /dev/null
             if [ $? -eq 0 ]; then return 0; fi
             ;;
     esac
@@ -94,7 +98,7 @@ ubuntu_fetch() {
 }
 
 fedora_fetch() {
-    case "$1" in
+    case "$OS_VERSION" in
         "23")
             echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
             curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=847099 2> /dev/null
