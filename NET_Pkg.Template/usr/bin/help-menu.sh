@@ -3,7 +3,7 @@
 echo
 echo "-------------------- .NET_Pkg $PKG_VERSION --------------------"
 echo
-echo "  App: $DLL_NAME"
+echo "  App: $DLL_NAME.dll"
 echo "   OS: $OS_PNAME"
 echo
 echo "  Optional Arguments:"

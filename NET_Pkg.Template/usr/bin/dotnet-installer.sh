@@ -23,7 +23,7 @@ main_loop() {
             if ! [ -z $VER ]; then echo "$HOME/.local/share/dotnet-runtime already detected in \$PATH, skip adding to \$PATH."; fi
         fi
 
-        echo '.NET runtime installed successfully. You will need to restart your terminal or type ". ~/.bashrc" for the changes to take effect.'
+        echo '.NET runtime installed successfully. You will need to restart your terminal or log-out and back in for the changes to take effect.'
         exit 0
     else
         echo "Install failed: Error encountered while extracting dotnet-runtime."
