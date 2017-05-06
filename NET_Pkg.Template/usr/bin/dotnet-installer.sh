@@ -3,30 +3,41 @@
 main_loop() {
     download_runtime
     
-    echo "Extracting tar.gz into $HOME/.local/share/dotnet-runtime..."
-    mkdir -p $HOME/.local/share/dotnet-runtime && tar zxf /tmp/dotnet-runtime.tar.gz -C $HOME/.local/share/dotnet-runtime 2> /dev/null
+    echo "Extracting tar.gz into $HOME/.local/share/dotnet/runtime/1.1.1..."
+    mkdir -p $HOME/.local/share/dotnet/runtime/1.1.1 2> /dev/null
+
+    if [ $? -eq 0 ]; then
+        tar zxf /tmp/dotnet-runtime.tar.gz -C $HOME/.local/share/dotnet/runtime/1.1.1 2> /dev/null
+    else
+        echo "Install failed: Error making directory $HOME/.local/share/dotnet/runtime/1.1.1"
+        exit 1
+    fi
 
     if [ $? -eq 0 ]; then
         rm /tmp/dotnet-runtime.tar.gz;
 
-        if ! [ -z $VER ]; then echo "Setting $HOME/.local/share/dotnet-runtime/dotnet as executable..."; fi
-        chmod +x $HOME/.local/share/dotnet-runtime
+        mkdir -p $HOME/.local/share/dotnet/bin
+        ln -s $HOME/.local/share/dotnet/runtime/1.1.1/dotnet $HOME/.local/share/dotnet/bin/dotnet
 
-        PATH_ADD='export PATH="$PATH:$HOME/.local/share/dotnet-runtime"'
+        if ! [ -z $VERB ]; then echo "Setting $HOME/.local/share/dotnet/bin/dotnet as executable..."; fi
+        chmod +x $HOME/.local/share/dotnet/runtime/1.1.1/dotnet
+        chmod +x $HOME/.local/share/dotnet/bin/dotnet
+
+        PATH_ADD='export PATH="$PATH:$HOME/.local/share/dotnet/bin"'
 
         if ! (grep -qF "$PATH_ADD" $HOME/.profile); then
-            if ! [ -z $VER ]; then echo "Adding $HOME/.local/share/dotnet-runtime to user \$PATH..."; fi
+            if ! [ -z $VERB ]; then echo "Adding $HOME/.local/share/dotnet/bin to user \$PATH..."; fi
             echo "# Added by .NET Core installer" >> "$HOME/.profile"
             echo $PATH_ADD >> "$HOME/.profile"
             echo >> "$HOME/.profile"
         else
-            if ! [ -z $VER ]; then echo "$HOME/.local/share/dotnet-runtime already detected in \$PATH, skip adding to \$PATH."; fi
+            if ! [ -z $VERB ]; then echo "$HOME/.local/share/dotnet/bin already detected in $HOME/.profile, skip adding to \$PATH."; fi
         fi
-
-        echo '.NET runtime installed successfully. You will need to restart your terminal or log-out and back in for the changes to take effect.'
+        
+        echo '.NET runtime installed successfully. You may need to log-out and back in or type ". ~/.profile"" for the changes to take effect.'
         exit 0
     else
-        echo "Install failed: Error encountered while extracting dotnet-runtime."
+        echo "Install failed: Error encountered while extracting dotnet-runtime.tar.gz"
         exit 1
     fi
 }
@@ -35,8 +46,8 @@ download_runtime() {
     source /etc/os-release
     export OS_NAME=$NAME
     export OS_ID=$ID
-    export OS_VERSION=$VERSION_ID
-    export OS_CODENAME=$VERSION_CODENAME
+    export OS_VERSION=$VERBSION_ID
+    export OS_CODENAME=$VERBSION_CODENAME
     export OS_PNAME=$PRETTY_NAME
 
     case "$OS_ID" in
@@ -59,12 +70,12 @@ ubuntu_fetch() {
     case "$1" in
         "16.04")
             echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-            curl -SL -o /tmp/dotnet-runtime.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/release/1.1.0/Binaries/Latest/dotnet-ubuntu.16.04-x64.latest.tar.gz 2> /dev/null
+            curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843432
             if [ $? -eq 0 ]; then return 0; fi
             ;;
         "16.10")
             echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-            curl -SL -o /tmp/dotnet-runtime.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/release/1.1.0/Binaries/Latest/dotnet-ubuntu.16.10-x64.latest.tar.gz 2> /dev/null
+            curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843436 2> /dev/null
             if [ $? -eq 0 ]; then return 0; fi
             ;;
         "17.04")
@@ -73,7 +84,7 @@ ubuntu_fetch() {
             ;;
         *)
             echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-            curl -SL -o /tmp/dotnet-runtime.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/release/1.1.0/Binaries/Latest/dotnet-ubuntu-x64.latest.tar.gz 2> /dev/null
+            curl -SL -ov /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843422 2> /dev/null
             if [ $? -eq 0 ]; then return 0; fi
             ;;
     esac
@@ -86,12 +97,12 @@ fedora_fetch() {
     case "$1" in
         "23")
             echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-            curl -SL -o /tmp/dotnet-runtime.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/release/1.1.0/Binaries/Latest/dotnet-fedora.23-x64.latest.tar.gz 2> /dev/null
+            curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=847099 2> /dev/null
             if [ $? -eq 0 ]; then return 0; fi
             ;;
         "24")
             echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-            curl -SL -o /tmp/dotnet-runtime.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/release/1.1.0/Binaries/Latest/dotnet-fedora.24-x64.latest.tar.gz 2> /dev/null
+            curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=847099 2> /dev/null
             if [ $? -eq 0 ]; then return 0; fi
             ;;
         *)
