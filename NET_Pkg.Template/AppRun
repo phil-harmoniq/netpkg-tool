@@ -2,7 +2,7 @@
 
 # -------------------------------- Config --------------------------------
 
-DLL_NAME="DevZH.UI.SimpleSample"
+DLL_NAME="NET.UI.Sample"
 PKG_VERSION="v0.0.1"
 
 # ------------------------------- Functions ------------------------------
@@ -15,7 +15,11 @@ main_loop() {
 check_for_dotnet() {
     if [ -z "$LOC" ]; then
         echo ".NET runtime not detected, attempting new install..."
-        $HERE/usr/bin/dotnet-installer.sh && start_app
+        $HERE/usr/bin/dotnet-installer.sh 2> /dev/null
+        if [ $? -eq 0 ]; then
+            source ~/.bashrc
+            start_app
+        fi
     else
         if ! [ -z $VER ]; then
             echo ".NET runtime detected at $LOC, installer not required.";
@@ -25,7 +29,8 @@ check_for_dotnet() {
 }
 
 start_app() {
-    dotnet $HERE/usr/share/tests/arg-test.dll $CLI_ARGS
+    # dotnet $HERE/usr/share/tests/arg-test.dll $CLI_ARGS
+    dotnet $HERE/usr/share/app/$DLL_NAME.dll $CLI_ARGS
     exit 0
 }
 

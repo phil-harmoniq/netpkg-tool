@@ -12,20 +12,18 @@ main_loop() {
         if ! [ -z $VER ]; then echo "Setting $HOME/.local/share/dotnet-runtime/dotnet as executable..."; fi
         chmod +x $HOME/.local/share/dotnet-runtime
 
-        PATH_ADD='if [ -d "$HOME/.local/share/dotnet-runtime" ] ; then PATH="$HOME/bin:$PATH" fi'
+        PATH_ADD='export PATH="$PATH:$HOME/.local/share/dotnet-runtime"'
 
-        if ! (grep -qF "$PATH_ADD" $HOME/.profile); then
+        if ! (grep -qF "$PATH_ADD" $HOME/.bashrc); then
             if ! [ -z $VER ]; then echo "Adding $HOME/.local/share/dotnet-runtime to user \$PATH..."; fi
-            echo "# Added by .NET Core installer" >> "$HOME/.profile"
-            echo $PATH_ADD >> "$HOME/.profile"
-            echo >> "$HOME/.profile"
+            echo "# Added by .NET Core installer" >> "$HOME/.bashrc"
+            echo $PATH_ADD >> "$HOME/.bashrc"
+            echo >> "$HOME/.bashrc"
         else
             if ! [ -z $VER ]; then echo "$HOME/.local/share/dotnet-runtime already detected in \$PATH, skip adding to \$PATH."; fi
         fi
 
-        . ~/.profile
-
-        echo '.NET runtime installed successfully. You will need to restart your terminal or type ". ~/.profile" for the changes to take effect.'
+        echo '.NET runtime installed successfully. You will need to restart your terminal or type ". ~/.bashrc" for the changes to take effect.'
         exit 0
     else
         echo "Install failed: Error encountered while extracting dotnet-runtime."
@@ -34,6 +32,13 @@ main_loop() {
 }
 
 download_runtime() {
+    source /etc/os-release
+    export OS_NAME=$NAME
+    export OS_ID=$ID
+    export OS_VERSION=$VERSION_ID
+    export OS_CODENAME=$VERSION_CODENAME
+    export OS_PNAME=$PRETTY_NAME
+
     case "$OS_ID" in
         "ubuntu")
             ubuntu_fetch $OS_VERSION
@@ -51,7 +56,6 @@ download_runtime() {
 }
 
 ubuntu_fetch() {
-    echo $1
     case "$1" in
         "16.04")
             echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
@@ -79,7 +83,6 @@ ubuntu_fetch() {
 }
 
 fedora_fetch() {
-    echo $1
     case "$1" in
         "23")
             echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
