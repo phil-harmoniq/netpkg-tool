@@ -1,4 +1,6 @@
-# NET_Pkg
+# NET_Pkg [![License][License]](LICENSE.md)
+
+[License]: https://img.shields.io/badge/License-MIT-blue.svg
 
 This project is an attempt to make packaging .NET applications for Linux much simpler.
 
