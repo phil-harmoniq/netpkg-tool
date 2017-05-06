@@ -34,7 +34,7 @@ main_loop() {
             if ! [ -z $VERB ]; then echo "$HOME/.local/share/dotnet/bin already detected in ~/.profile, skip adding to \$PATH."; fi
         fi
 
-        BASH_ADD='[[ ":$PATH:" != *":$HOME/.local/share/dotnet/bin:"* ]] && PATH="${PATH}:$HOME/.local/share/dotnet/bin"'
+        BASH_ADD='[[ ":$PATH:" != *":$HOME/.local/share/dotnet/bin:"* ]] && export PATH="${PATH}:$HOME/.local/share/dotnet/bin"'
          
         if ! (grep -qF "$BASH_ADD" $HOME/.bashrc); then
             if ! [ -z $VERB ]; then echo "Adding $HOME/.local/share/dotnet/bin to user ~/.bashrc..."; fi
