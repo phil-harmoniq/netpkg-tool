@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+# Parses the *.csproj file to get the netcoreapp version
 
 from __future__ import print_function
 import os

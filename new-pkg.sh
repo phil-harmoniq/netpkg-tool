@@ -8,59 +8,103 @@ export PKG_VERSION="0.0.1"
 
 main_loop() {
     if [ -z "$PROJ" ] || [ -z "$TRGT" ]; then
-        echo "You must specify a directory containing a *.csproj file AND a target location."
+        echo -n "You must specify a directory containing a *.csproj file AND a target location."
+        say_fail
         exit 1
-    #else [ ! -f "$PROJ/*.csproj" ]; then
-    #    echo "*.csproj not detected in directory."
-    #    exit 1
     fi
 
     check_for_dotnet
 
     if [ $? -eq 0 ]; then compile_net_project; fi
     if [ $? -eq 0 ]; then transfer_files; fi
-    if [ $? -eq 0 ]; then create_pkg; fi
-    delete_temp_files
+    if [ $? -eq 0 ]; then say_pass; create_pkg; else say_fail; exit 1; fi
+    if [ $? -eq 0 ]; then
+        echo -n "Compressed application with AppImageToolkit..."
+        say_pass
+        delete_temp_files
+    else
+        echo -n "Compressed application with AppImageToolkit..."
+        say_fail
+        exit 1
+    fi
+    if [ $? -eq 0 ]; then say_pass; else say_fail; exit 1; fi
+    echo -n "Packaging complete: "
+    say_pass
+    echo "${green:-}New NET_Pkg created at $TRGT/$CSPROJ$EXTN${normal:-}"
+    echo
 }
 
 check_for_dotnet() {
+    check_path
     export LOC="$(which dotnet)"
 
+    echo -n "Checking for existence of the .NET sdk...";
+
     if [ -z "$LOC" ]; then
-        echo ".NET sdk not detected, attempting new install..."
+        say_fail
         $PKG_DIR/NET_Pkg.Template/usr/bin/dotnet-installer.sh -sdk
-        if [ $? -eq 0 ]; then
-            check_path
-            return 0
-        fi
+
+        while true; do
+            read -p -n "Would you like to download & install the sdk? (y/n): " yn
+            case $yn in
+                [Yy]* ) start_installer; break;;
+                [Nn]* ) say_fail; exit 1;;
+                * ) echo "Please answer yes or no.";;
+            esac
+        done
+        return 0
     else
-        echo ".NET sdk detected at $LOC, installer not required.";
+        say_pass
         return 0
     fi
 
-    echo ".NET sdk install failed"
+    echo -n ".NET sdk install failed"
+    say_fail
     exit 1
+}
+
+check_path() {
+    echo $PATH | grep -q  "$HOME/.local/share/dotnet/bin" 2> /dev/null
+    ERR_CODE=$?
+
+    if [ -f "$HOME/.local/share/dotnet/bin/dotnet-sdk" ] && [ $ERR_CODE -ne 0 ]; then
+        echo -n ".NET detected but not in \$PATH. Adding for current session."
+        export PATH=$PATH:$HOME/.local/share/dotnet/bin
+        say_pass
+    fi
+}
+
+start_installer() {
+    $HERE/usr/bin/dotnet-installer.sh -sdk
+    if [ $? -eq 0 ]; then
+        start_app
+    fi
 }
 
 compile_net_project() {
     cd $PROJ
 
     find_csproj
-    dotnet restore
+    echo -n "Restoring .NET project dependencies..."
+    dotnet restore >/dev/null
 
     if [ $? -eq 0 ]; then
-        CORE_VERS=$(python $PKG_DIR/tools/parse-csproj.py 2>&1 >/dev/null)
-        echo $CORE_VERS
-        dotnet publish -f $CORE_VERS -c Release
+        say_pass
+        echo -n "Compiling .NET project..."
+        CORE_VERS=$($PKG_DIR/tools/parse-csproj.py 2>&1 >/dev/null)
+        dotnet publish -f $CORE_VERS -c Release >/dev/null
     else
+        say_fail
         echo "Failed to restore .NET Core application dependencies."
         exit 1
     fi
 
     if [ $? -eq 0 ]; then 
+        say_pass
         cd $PKG_DIR
         return 0
     else
+        say_fail
         echo "Failed to complile .NET Core application."
         exit 1
     fi
@@ -74,6 +118,8 @@ find_csproj() {
 }
 
 transfer_files() {
+    echo -n "Transferring files..."
+
     mkdir -p /tmp/NET_Pkg.Temp
     cp -r $PKG_DIR/NET_Pkg.Template/. /tmp/NET_Pkg.Temp
     mkdir -p /tmp/NET_Pkg.Temp/usr/share/app
@@ -96,16 +142,11 @@ transfer_files() {
 }
 
 create_pkg() {
-    if [ -z "$1" ]; then
-        APP_NAME="App"
-    else
-        APP_NAME=$1
-    fi
-
-    appimagetool /tmp/NET_Pkg.Temp $TRGT/$APP_NAME".NET"
+    appimagetool /tmp/NET_Pkg.Temp $TRGT/$CSPROJ$EXTN >/dev/null
 }
 
 delete_temp_files() {
+    echo -n "Deleting temporary files..."
     rm -r /tmp/NET_Pkg.Temp
 }
 
@@ -117,6 +158,36 @@ check_path() {
         echo ".NET detected but not in \$PATH. Adding for current session."
         export PATH=$PATH:$HOME/.local/share/dotnet/bin
     fi
+}
+
+get_colors() {
+    # Setup some colors to use. These need to work in fairly limited shells, like the Ubuntu Docker container where there are only 8 colors.
+    # See if stdout is a terminal
+    if [ -t 1 ]; then
+        # see if it supports colors
+        ncolors=$(tput colors)
+        if [ -n "$ncolors" ] && [ $ncolors -ge 8 ]; then
+            export bold="$(tput bold       || echo)"
+            export normal="$(tput sgr0     || echo)"
+            export black="$(tput setaf 0   || echo)"
+            export red="$(tput setaf 1     || echo)"
+            export green="$(tput setaf 2   || echo)"
+            export yellow="$(tput setaf 3  || echo)"
+            export blue="$(tput setaf 4    || echo)"
+            export magenta="$(tput setaf 5 || echo)"
+            export cyan="$(tput setaf 6    || echo)"
+            export white="$(tput setaf 7   || echo)"
+        fi
+    fi
+}
+
+
+say_pass() {
+    echo "${bold:-} [ ${green:-}PASS${white:-} ]${normal:-}"
+}
+
+say_fail() {
+    echo "${bold:-} [ ${red:-}FAIL${white:-} ]${normal:-}"
 }
 
 # ------------------------------- Variables ------------------------------
@@ -132,6 +203,8 @@ export PKG_VERSION=$PKG_VERSION
 export PKG_DIR=$(dirname $(readlink -f "${0}"))
 export PROJ=$1
 export TRGT=$2
+export EXTN=".NET"
+get_colors
 
 # --------------------------------- Init ---------------------------------
 

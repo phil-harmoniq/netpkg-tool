@@ -10,22 +10,20 @@ check_for_dotnet() {
     check_path
     export LOC="$(which dotnet)"
 
+    echo -n "Checking for existence the of .NET...";
+
     if [ -z "$LOC" ]; then
-        echo
-        echo "-------------------- .NET_Pkg $PKG_VERSION --------------------"
-        echo "  Warning: .NET not detected on this system."
+        say_fail
         while true; do
-            read -p "  Would you like to download & install the runtime? (yes/no): " yn
+            read -p -n "Would you like to download & install the runtime? (y/n): " yn
             case $yn in
                 [Yy]* ) start_installer; break;;
-                [Nn]* ) exit 1;;
+                [Nn]* ) say_fail; exit 1;;
                 * ) echo "Please answer yes or no.";;
             esac
         done
     else
-        if ! [ -z $VERB ]; then
-            echo ".NET runtime detected at $LOC, installer not required.";
-        fi
+        say_pass
         start_app
     fi
 }
@@ -42,16 +40,46 @@ check_path() {
     ERR_CODE=$?
 
     if [ -f "$HOME/.local/share/dotnet/bin/dotnet" ] && [ $ERR_CODE -ne 0 ]; then
-        echo ".NET detected but not in \$PATH. Adding for current session."
+        echo -n ".NET detected but not in \$PATH. Adding for current session."
         export PATH=$PATH:$HOME/.local/share/dotnet/bin
+        say_pass
     fi
 }
 
 start_installer() {
-    $HERE/usr/bin/dotnet-installer.sh 2> /dev/null
+    $HERE/usr/bin/dotnet-installer.sh
     if [ $? -eq 0 ]; then
         start_app
     fi
+}
+
+get_colors() {
+    # See if stdout is a terminal
+    if [ -t 1 ]; then
+        # see if it supports colors
+        ncolors=$(tput colors)
+        if [ -n "$ncolors" ] && [ $ncolors -ge 8 ]; then
+            export bold="$(tput bold       || echo)"
+            export normal="$(tput sgr0     || echo)"
+            export black="$(tput setaf 0   || echo)"
+            export red="$(tput setaf 1     || echo)"
+            export green="$(tput setaf 2   || echo)"
+            export yellow="$(tput setaf 3  || echo)"
+            export blue="$(tput setaf 4    || echo)"
+            export magenta="$(tput setaf 5 || echo)"
+            export cyan="$(tput setaf 6    || echo)"
+            export white="$(tput setaf 7   || echo)"
+        fi
+    fi
+}
+
+
+say_pass() {
+    echo "${bold:-} [ ${green:-}PASS${white:-} ]${normal:-}"
+}
+
+say_fail() {
+    echo "${bold:-} [ ${red:-}FAIL${white:-} ]${normal:-}"
 }
 
 # ------------------------------- Variables ------------------------------
@@ -75,6 +103,7 @@ export OS_PNAME=$PRETTY_NAME
 
 export PKG_VERSION=$PKG_VERSION
 export DLL_NAME=$DLL_NAME
+get_colors
 
 # --------------------------------- Args ---------------------------------
 
