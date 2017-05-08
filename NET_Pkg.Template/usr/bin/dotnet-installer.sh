@@ -73,7 +73,7 @@ download_dotnet() {
             fedora_fetch
             return 0
             ;;
-        "mint")
+        "linuxmint")
             mint_fetch
             return 0
             ;;
