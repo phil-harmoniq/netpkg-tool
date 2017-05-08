@@ -17,11 +17,17 @@ check_for_dotnet() {
     export LOC="$(which dotnet)"
 
     if [ -z "$LOC" ]; then
-        echo ".NET runtime not detected, attempting new install..."
-        $HERE/usr/bin/dotnet-installer.sh 2> /dev/null
-        if [ $? -eq 0 ]; then
-            start_app
-        fi
+        echo
+        echo "-------------------- .NET_Pkg $PKG_VERSION --------------------"
+        echo "  Warning: .NET not detected on this system."
+        while true; do
+            read -p "  Would you like to download & install the runtime? (yes/no): " yn
+            case $yn in
+                [Yy]* ) start_installer; break;;
+                [Nn]* ) exit 1;;
+                * ) echo "Please answer yes or no.";;
+            esac
+        done
     else
         if ! [ -z $VERB ]; then
             echo ".NET runtime detected at $LOC, installer not required.";
