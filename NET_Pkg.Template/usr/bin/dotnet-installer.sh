@@ -73,6 +73,10 @@ download_dotnet() {
             fedora_fetch
             return 0
             ;;
+        "mint")
+            mint_fetch
+            return 0
+            ;;
         *)
             echo "Install failed: $OS_ID.$OS_VERSION is incompatible with .NET runtime."
             exit 1
@@ -107,6 +111,36 @@ ubuntu_fetch() {
         "17.04")
             echo "Install failed: Ubuntu $OS_VERSION is incompatible with .NET runtime."
             exit 1
+            ;;
+        *)
+            if [ $SDK == "true" ]; then
+                echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
+                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847106 2> /dev/null
+                if [ $? -eq 0 ]; then return 0; fi
+            else
+                echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
+                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843422 2> /dev/null
+                if [ $? -eq 0 ]; then return 0; fi
+            fi
+            ;;
+    esac
+
+    echo "Install failed: Download was not successful."
+    exit 1
+}
+
+mint_fetch() {
+    case "$OS_VERSION" in
+        "18")
+            if [ $SDK == "true" ]; then
+                echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
+                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847089 2> /dev/null
+                if [ $? -eq 0 ]; then return 0; fi
+            else
+                echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
+                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843432 2> /dev/null
+                if [ $? -eq 0 ]; then return 0; fi
+            fi
             ;;
         *)
             if [ $SDK == "true" ]; then
