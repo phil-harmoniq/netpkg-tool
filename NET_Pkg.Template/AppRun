@@ -53,6 +53,13 @@ check_path() {
     fi
 }
 
+start_installer() {
+    $HERE/usr/bin/dotnet-installer.sh 2> /dev/null
+    if [ $? -eq 0 ]; then
+        start_app
+    fi
+}
+
 # ------------------------------- Variables ------------------------------
 
 export HERE=$(dirname $(readlink -f "${0}"))
