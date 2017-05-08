@@ -24,6 +24,7 @@ check_for_dotnet() {
         echo ".NET sdk not detected, attempting new install..."
         $PKG_DIR/NET_Pkg.Template/usr/bin/dotnet-installer.sh -sdk
         if [ $? -eq 0 ]; then
+            check_path
             return 0
         fi
     else
@@ -73,6 +74,16 @@ create_pkg() {
 
 delete_temp_files() {
     rm -r $PKG_DIR/NET_Pkg.Template/usr/share/app
+}
+
+check_path() {
+    echo $PATH | grep -q  "$HOME/.local/share/dotnet/bin" 2> /dev/null
+    ERR_CODE=$?
+
+    if [ -f "$HOME/.local/share/dotnet/bin/dotnet" ] && [ $ERR_CODE -ne 0 ]; then
+        echo ".NET detected but not in \$PATH. Adding for current session."
+        export PATH=$PATH:$HOME/.local/share/dotnet/bin
+    fi
 }
 
 source /etc/os-release
