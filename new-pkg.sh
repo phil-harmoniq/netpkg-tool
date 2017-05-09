@@ -19,16 +19,16 @@ main_loop() {
     if [ $? -eq 0 ]; then transfer_files; else exit 1; fi
     if [ $? -eq 0 ]; then say_pass; create_pkg; else say_fail; exit 1; fi
     if [ $? -eq 0 ]; then
-        echo -n "AppImageToolkit compression:"
+        echo -n "AppImageKit compression:"
         say_pass
         delete_temp_files
     else
-        echo -n "AppImageToolkit compression:"
+        echo -n "AppImageKit compression:"
         say_fail
         exit 1
     fi
     if [ $? -eq 0 ]; then say_pass; else say_fail; exit 1; fi
-    echo -n "Packaging complete: "
+    echo -n "Packaging complete:"
     say_pass
     echo "${green:-}New NET_Pkg created at $TRGT/$CSPROJ$EXTN${normal:-}"
     echo
