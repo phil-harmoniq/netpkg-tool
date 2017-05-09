@@ -42,7 +42,6 @@ check_path() {
     if [ -f "$HOME/.local/share/dotnet/bin/dotnet" ] && [ $ERR_CODE -ne 0 ]; then
         echo -n "${yellow:-}.NET detected but not in \$PATH. Adding for current session.${normal:-}"
         export PATH=$PATH:$HOME/.local/share/dotnet/bin
-        say_pass
     fi
 }
 
