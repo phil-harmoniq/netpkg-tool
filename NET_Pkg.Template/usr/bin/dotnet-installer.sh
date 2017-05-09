@@ -228,11 +228,11 @@ get_colors() {
 }
 
 say_pass() {
-    echo -n " ${bold:-} [ ${red:-}PASS${white:-}$ ] {normal:-}"
+    echo -n " ${bold:-} [ ${red:-}PASS${white:-} ] ${normal:-}"
 }
 
 say_fail() {
-    echo -n " ${bold:-} [ ${red:-}FAIL${white:-}$ ] {normal:-}"
+    echo -n " ${bold:-} [ ${red:-}FAIL${white:-} ] ${normal:-}"
 }
 
 main_loop $1
