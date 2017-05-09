@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 
-if [ -z "$LOC" ]; then LOC="${red:-}not installed${normal:-}"; fi
+if [ -z "$LOC" ]; then NET="${red:-}not installed${normal:-}"
+else NET="$(dirname $LOC)"; fi
 
 echo
 echo -n "--------------------- ${cyan:-}"
@@ -9,7 +10,7 @@ echo "${normal:-} ---------------------"
 echo
 echo "           App: $DLL_NAME.dll"
 echo "            OS: $OS_PNAME"
-echo " .NET location: $(dirname $LOC)"
+echo " .NET location: $(dirname $NET)"
 echo
 echo "        Optional Arguments:"
 echo " --npk-verbose or --npk-v : Verbose output"

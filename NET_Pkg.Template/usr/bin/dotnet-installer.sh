@@ -104,24 +104,24 @@ ubuntu_fetch() {
     case "$OS_VERSION" in
         "16.04")
             if [ $SDK == "true" ]; then
-                echo -n "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847089 2> /dev/null
-                if [ $? -eq 0 ]; then say_pass; return 0; fi
+                echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
+                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847089
+                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
             else
-                echo -n "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843432 2> /dev/null
-                if [ $? -eq 0 ]; then say_pass; return 0; fi
+                echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
+                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843432
+                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
             fi
             ;;
         "16.10")
             if [ $SDK == "true" ]; then
-                echo -n "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847090 2> /dev/null
-                if [ $? -eq 0 ]; then say_pass; return 0; fi
+                echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
+                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847090
+                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
             else
-                echo -n "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843436 2> /dev/null
-                if [ $? -eq 0 ]; then say_pass; return 0; fi
+                echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
+                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843436
+                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
             fi
             ;;
         "17.04")
@@ -131,16 +131,18 @@ ubuntu_fetch() {
             ;;
         *)
             if [ $SDK == "true" ]; then
-                echo -n "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847106 2> /dev/null
-                if [ $? -eq 0 ]; then say_pass; return 0; fi
+                echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
+                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847106
+                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
             else
-                echo -n "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843422 2> /dev/null
-                if [ $? -eq 0 ]; then say_pass; return 0; fi
+                echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
+                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843422
+                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
             fi
             ;;
     esac
+    
+    echo -n "Attempt to download:"
     say_fail
     echo "Install failed: Download was not successful."
     exit 1
@@ -150,28 +152,29 @@ mint_fetch() {
     case "$OS_VERSION" in
         "18")
             if [ $SDK == "true" ]; then
-                echo -n "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847089 2> /dev/null
-                if [ $? -eq 0 ]; then say_pass; return 0; fi
+                echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
+                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847089
+                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
             else
-                echo -n "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843432 2> /dev/null
-                if [ $? -eq 0 ]; then say_pass; return 0; fi
+                echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
+                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843432
+                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
             fi
             ;;
         *)
             if [ $SDK == "true" ]; then
-                echo -n "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847106 2> /dev/null
-                if [ $? -eq 0 ]; then say_pass; return 0; fi
+                echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
+                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847106
+                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
             else
-                echo -n "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843422 2> /dev/null
-                if [ $? -eq 0 ]; then say_pass; return 0; fi
+                echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
+                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843422
+                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
             fi
             ;;
     esac
 
+    echo -n "Attempt to download:"
     say_fail
     echo "Install failed: Download was not successful."
     exit 1
@@ -181,33 +184,35 @@ fedora_fetch() {
     case "$OS_VERSION" in
         "23")
             if [ $SDK == "true" ]; then
-                echo -n "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847099 2> /dev/null
-                if [ $? -eq 0 ]; then say_pass; return 0; fi
+                echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
+                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847099
+                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
             else
-                echo -n "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843427 2> /dev/null
-                if [ $? -eq 0 ]; then say_pass; return 0; fi
+                echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
+                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=84342
+                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
             fi
             ;;
         "24")
             if [ $SDK == "true" ]; then
-                echo -n "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847100 2> /dev/null
-                if [ $? -eq 0 ]; then say_pass; return 0; fi
+                echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
+                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847100
+                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
             else
-                echo -n "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843431 2> /dev/null
-                if [ $? -eq 0 ]; then say_pass; return 0; fi
+                echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
+                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843431
+                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
             fi
             ;;
         *)
+            echo -n "Attempt to download:"
             say_fail
             echo "Install failed: Fedora $OS_VERSION is incompatible with .NET runtime."
             exit 1
             ;;
     esac
 
+    echo -n "Attempt to download:"
     say_fail
     echo "Install failed: Download was not successful."
     exit 1

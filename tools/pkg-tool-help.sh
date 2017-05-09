@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 
-if [ -z "$LOC" ]; then LOC="${red:-}not installed${normal:-}"; fi
+if [ -z "$LOC" ]; then NET="${red:-}not installed${normal:-}"
+else NET="$(dirname $LOC)"; fi
 
 echo
 echo -n "------------------ ${cyan:-}"
@@ -8,7 +9,7 @@ echo -n "${bold:-}NET_Pkg.Tool $PKG_VERSION"
 echo "${normal:-} -------------------"
 echo
 echo "            OS: $OS_PNAME"
-echo " .NET location: $(dirname $LOC)"
+echo " .NET location: $NET"
 echo
 echo "   Usage:"
 echo "  ./NET_Pkg.Tool [.NET Project] [Destination] [flags]"
