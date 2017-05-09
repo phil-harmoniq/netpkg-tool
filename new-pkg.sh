@@ -2,13 +2,14 @@
 
 # -------------------------------- Config --------------------------------
 
-export PKG_VERSION="0.1.0"
+export PKG_VERSION="0.1.1"
 
 # ------------------------------- Functions ------------------------------
 
 main_loop() {
     echo
-    echo "-------------------- .NET_Pkg $PKG_VERSION --------------------"
+    say_name
+
     if [ -z "$PROJ" ] || [ -z "$TRGT" ]; then
         echo -n "You must specify a directory containing a *.csproj file AND a target location."
         say_fail
@@ -38,12 +39,11 @@ main_loop() {
 
 check_for_dotnet() {
     check_path
-    export LOC="$(which dotnet)"
 
     echo -n "Checking if .NET sdk is installed...";
 
     if [ -z "$LOC" ]; then
-        say_fail
+        say_warning
         $PKG_DIR/NET_Pkg.Template/usr/bin/dotnet-installer.sh -sdk
         check_path
         return 0
@@ -79,27 +79,30 @@ compile_net_project() {
     cd $PROJ
 
     find_csproj
-    echo -n "Restoring .NET project dependencies..."
-    dotnet restore >/dev/null
+    if [ -z $VERB ]; then echo -n "Restoring .NET project dependencies..."; fi
+    if ! [ -z $VERB ]; then dotnet restore; else dotnet restore >/dev/null; fi
 
     if [ $? -eq 0 ]; then
-        say_pass
-        echo -n "Compiling .NET project..."
+        if [ -z $VERB ]; then say_pass; fi
+        if [ -z $VERB ]; then echo -n "Compiling .NET project..."; fi
         export CORE_VERS=$($PKG_DIR/tools/parse-csproj.py 2>&1 >/dev/null)
-        dotnet publish -f $CORE_VERS -c Release >/dev/null
+        if ! [ -z $VERB ]; then dotnet publish -f $CORE_VERS -c Release
+        else dotnet publish -f $CORE_VERS -c Release >/dev/null; fi
     else
-        say_fail
-        echo "Failed to restore .NET Core application dependencies."
+        if [ -z $VERB ]; then say_fail; fi
+        echo "${red:-}Failed to restore .NET Core application dependencies.${normal:-}"
+        echo
         exit 1
     fi
 
     if [ $? -eq 0 ]; then 
-        say_pass
+        if [ -z $VERB ]; then say_pass; fi
         cd $PKG_DIR
         return 0
     else
-        say_fail
-        echo "Failed to complile .NET Core application."
+        if [ -z $VERB ]; then say_fail; fi
+        echo "${red:-}Failed to complile .NET Core application.${normal:-}"
+        echo
         exit 1
     fi
 }
@@ -140,7 +143,8 @@ transfer_files() {
 }
 
 create_pkg() {
-    appimagetool -n /tmp/NET_Pkg.Temp $TRGT/$CSPROJ$EXTN >/dev/null
+    if ! [ -z $VERB ]; then appimagetool -n /tmp/NET_Pkg.Temp $TRGT/$CSPROJ$EXTN
+    else appimagetool -n /tmp/NET_Pkg.Temp $TRGT/$CSPROJ$EXTN >/dev/null; fi
 }
 
 delete_temp_files() {
@@ -153,13 +157,12 @@ check_path() {
     ERR_CODE=$?
 
     if [ -f "$HOME/.local/share/dotnet/bin/dotnet" ] && [ $ERR_CODE -ne 0 ]; then
-        echo ".NET detected but not in \$PATH. Adding for current session."
+        echo "${yellow:-}.NET detected but not in \$PATH. Adding for current session.${normal:-}"
         export PATH=$PATH:$HOME/.local/share/dotnet/bin
     fi
 }
 
 get_colors() {
-    # Setup some colors to use. These need to work in fairly limited shells, like the Ubuntu Docker container where there are only 8 colors.
     # See if stdout is a terminal
     if [ -t 1 ]; then
         # see if it supports colors
@@ -179,9 +182,18 @@ get_colors() {
     fi
 }
 
+say_name() {
+    echo -n "------------------ ${cyan:-}"
+    echo -n "${bold:-}NET_Pkg.Tool $PKG_VERSION"
+    echo "${normal:-} -------------------"
+}
 
 say_pass() {
     echo "${bold:-} [ ${green:-}PASS${white:-} ]${normal:-}"
+}
+
+say_warning() {
+    echo "${bold:-} [ ${yellow:-}FAIL${white:-} ]${normal:-}"
 }
 
 say_fail() {
@@ -197,12 +209,28 @@ export OS_VERSION=$VERSION_ID
 export OS_CODENAME=$VERSION_CODENAME
 export OS_PNAME=$PRETTY_NAME
 export PKG_VERSION=$PKG_VERSION
+export LOC="$(which dotnet)"
 
 export PKG_DIR=$(dirname $(readlink -f "${0}"))
 export PROJ=$1
 export TRGT=$2
 export EXTN=".NET"
 get_colors
+
+# --------------------------------- Args ---------------------------------
+
+if [ "$3" == "-v" ] || [ "$1" == "-verbose" ]; then
+    VERB="true";
+    export VERB=$VERB
+fi
+
+if [ "$1" == "-d" ] || [ "$1" == "-dir" ]; then
+    echo ".NET installed at: $LOC"
+    exit 0
+elif [ "$1" == "-h" ] || [ "$1" == "-help" ]; then
+    $PKG_DIR/tools/pkg-tool-help.sh
+    exit 0
+fi
 
 # --------------------------------- Init ---------------------------------
 

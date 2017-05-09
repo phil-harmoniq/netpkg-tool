@@ -9,20 +9,21 @@ main_loop() {
 check_for_dotnet() {
     check_path
 
-    echo -n "Checking if .NET runtime is installed...";
+    if ! [ -z $VERB ]; then echo -n "Checking if .NET runtime is installed..."; fi
 
     if [ -z "$LOC" ]; then
-        say_fail
+        if ! [ -z $VERB ]; then say_warning; fi
         while true; do
+            read -p -n "${yellow:-}.NET not installed.${normal:-}"
             read -p -n "Would you like to download & install the runtime? (y/n): " yn
             case $yn in
                 [Yy]* ) start_installer; break;;
-                [Nn]* ) say_fail; exit 1;;
+                [Nn]* ) exit 1;;
                 * ) echo "Please answer yes or no.";;
             esac
         done
     else
-        say_pass
+        if ! [ -z $VERB ]; then say_pass; fi
         start_app
     fi
 }
@@ -39,7 +40,7 @@ check_path() {
     ERR_CODE=$?
 
     if [ -f "$HOME/.local/share/dotnet/bin/dotnet" ] && [ $ERR_CODE -ne 0 ]; then
-        echo -n ".NET detected but not in \$PATH. Adding for current session."
+        echo -n "${yellow:-}.NET detected but not in \$PATH. Adding for current session.${normal:-}"
         export PATH=$PATH:$HOME/.local/share/dotnet/bin
         say_pass
     fi
