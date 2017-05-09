@@ -10,7 +10,7 @@ echo "${normal:-} ---------------------"
 echo
 echo "           App: $DLL_NAME.dll"
 echo "            OS: $OS_PNAME"
-echo " .NET location: $(dirname $NET)"
+echo " .NET location: $NET"
 echo
 echo "        Optional Arguments:"
 echo " --npk-verbose or --npk-v : Verbose output"
