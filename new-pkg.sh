@@ -15,8 +15,8 @@ main_loop() {
 
     check_for_dotnet
 
-    if [ $? -eq 0 ]; then compile_net_project; fi
-    if [ $? -eq 0 ]; then transfer_files; fi
+    if [ $? -eq 0 ]; then compile_net_project; else exit 1; fi
+    if [ $? -eq 0 ]; then transfer_files; else exit 1; fi
     if [ $? -eq 0 ]; then say_pass; create_pkg; else say_fail; exit 1; fi
     if [ $? -eq 0 ]; then
         echo -n "Compressed application with AppImageToolkit..."
@@ -43,15 +43,7 @@ check_for_dotnet() {
     if [ -z "$LOC" ]; then
         say_fail
         $PKG_DIR/NET_Pkg.Template/usr/bin/dotnet-installer.sh -sdk
-
-        while true; do
-            read -p -n "Would you like to download & install the sdk? (y/n): " yn
-            case $yn in
-                [Yy]* ) start_installer; break;;
-                [Nn]* ) say_fail; exit 1;;
-                * ) echo "Please answer yes or no.";;
-            esac
-        done
+        check_path
         return 0
     else
         say_pass
