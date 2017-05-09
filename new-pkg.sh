@@ -19,11 +19,11 @@ main_loop() {
     if [ $? -eq 0 ]; then transfer_files; else exit 1; fi
     if [ $? -eq 0 ]; then say_pass; create_pkg; else say_fail; exit 1; fi
     if [ $? -eq 0 ]; then
-        echo -n "Compressed application with AppImageToolkit..."
+        echo -n "AppImageToolkit compression..."
         say_pass
         delete_temp_files
     else
-        echo -n "Compressed application with AppImageToolkit..."
+        echo -n "AppImageToolkit compression..."
         say_fail
         exit 1
     fi
@@ -83,7 +83,7 @@ compile_net_project() {
     if [ $? -eq 0 ]; then
         say_pass
         echo -n "Compiling .NET project..."
-        CORE_VERS=$($PKG_DIR/tools/parse-csproj.py 2>&1 >/dev/null)
+        export CORE_VERS=$($PKG_DIR/tools/parse-csproj.py 2>&1 >/dev/null)
         dotnet publish -f $CORE_VERS -c Release >/dev/null
     else
         say_fail
@@ -115,7 +115,11 @@ transfer_files() {
     mkdir -p /tmp/NET_Pkg.Temp
     cp -r $PKG_DIR/NET_Pkg.Template/. /tmp/NET_Pkg.Temp
     mkdir -p /tmp/NET_Pkg.Temp/usr/share/app
-    cp -r $PROJ/bin/Release/netcoreapp1.1/publish/. /tmp/NET_Pkg.Temp/usr/share/app
+    cp -r $PROJ/bin/Release/$CORE_VERS/publish/. /tmp/NET_Pkg.Temp/usr/share/app
+
+    if [ -d "$PROJ/pkg.lib" ]; then
+        cp -r $PROJ/pkg.lib/. /tmp/NET_Pkg.Temp/usr/lib
+    fi
 
     touch /tmp/NET_Pkg.Temp/AppRun
     echo "#! /usr/bin/env bash" >> /tmp/NET_Pkg.Temp/AppRun

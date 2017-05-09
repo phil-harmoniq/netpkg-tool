@@ -88,6 +88,8 @@ export HERE=$(dirname $(readlink -f "${0}"))
 export CLI_ARGS="$@"
 export XDG_DATA_DIRS="$HERE/usr/share:$XDG_DATA_DIRS"
 export PATH="$HERE/usr/bin:$PATH"
+export PKG_LIB="$HERE/usr/lib"
+
 if [[ -z "${LD_LIBRARY_PATH// }" ]]; then 
     export LD_LIBRARY_PATH="$HERE/usr/lib"
 else
