@@ -8,6 +8,7 @@ main_loop() {
 
 check_for_dotnet() {
     check_path
+    export LOC="$(which dotnet > /dev/null)"
 
     if ! [ -z $VERB ]; then echo -n "Checking if .NET runtime is installed..."; fi
 

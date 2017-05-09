@@ -10,6 +10,9 @@ echo
 echo "            OS: $OS_PNAME"
 echo " .NET location: $(dirname $LOC)"
 echo
+echo "   Usage:"
+echo "  ./NET_Pkg.Tool [.NET Project] [Destination] [flags]"
+echo
 echo "   Optional Arguments:"
 echo "      -verbose or -v : Verbose output"
 echo "         -help or -h : Help menu (this page)"

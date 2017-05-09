@@ -29,7 +29,15 @@ main_loop() {
         rm $DWNLOAD_LOC;
 
         mkdir -p $HOME/.local/share/dotnet/bin
-        ln -s $INSTALL_LOC/dotnet $HOME/.local/share/dotnet/bin/dotnet
+        if [ $SDK == "true" ]; then
+            ln -s $INSTALL_LOC/dotnet $HOME/.local/share/dotnet/bin/dotnet-sdk
+            ln -s $HOME/.local/share/dotnet/bin/dotnet-sdk $HOME/.local/share/dotnet/bin/dotnet
+            chmod +x $HOME/.local/share/dotnet/bin/dotnet-sdk
+        else
+            ln -s $INSTALL_LOC/dotnet $HOME/.local/share/dotnet/bin/dotnet-runtime
+            ln -s $HOME/.local/share/dotnet/bin/dotnet-runtime $HOME/.local/share/dotnet/bin/dotnet
+            chmod +x $HOME/.local/share/dotnet/bin/dotnet-runtime
+        fi
 
         if ! [ -z $VERB ]; then echo "Setting $HOME/.local/share/dotnet/bin/dotnet as executable..."; fi
         chmod +x $INSTALL_LOC/dotnet
@@ -59,7 +67,7 @@ main_loop() {
         
         echo -n '.NET runtime installed:'
         say_pass
-        echo 'You may need to log-out and back in or type ". ~/.profile" for the changes to take effect.'
+        echo 'You may need to log-out and back in or type ". ~/.bashrc" for the changes to take effect.'
         exit 0
     else
         echo -n '.NET runtime installed:'

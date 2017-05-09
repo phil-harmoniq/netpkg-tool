@@ -39,6 +39,7 @@ main_loop() {
 
 check_for_dotnet() {
     check_path
+    export LOC="$(which dotnet > /dev/null)"
 
     echo -n "Checking if .NET sdk is installed...";
 
@@ -209,7 +210,7 @@ export OS_VERSION=$VERSION_ID
 export OS_CODENAME=$VERSION_CODENAME
 export OS_PNAME=$PRETTY_NAME
 export PKG_VERSION=$PKG_VERSION
-export LOC="$(which dotnet)"
+export LOC="$(which dotnet > /dev/null)"
 
 export PKG_DIR=$(dirname $(readlink -f "${0}"))
 export PROJ=$1
@@ -222,6 +223,9 @@ get_colors
 if [ "$3" == "-v" ] || [ "$1" == "-verbose" ]; then
     VERB="true";
     export VERB=$VERB
+elif [ -z "$1" ]; then
+    $PKG_DIR/tools/pkg-tool-help.sh
+    exit 0
 fi
 
 if [ "$1" == "-d" ] || [ "$1" == "-dir" ]; then
