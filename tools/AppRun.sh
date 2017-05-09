@@ -10,7 +10,7 @@ check_for_dotnet() {
     check_path
     export LOC="$(which dotnet)"
 
-    echo -n "Checking for existence the of .NET...";
+    echo -n "Checking if .NET runtime is installed...";
 
     if [ -z "$LOC" ]; then
         say_fail
@@ -85,6 +85,7 @@ say_fail() {
 # ------------------------------- Variables ------------------------------
 
 export HERE=$(dirname $(readlink -f "${0}"))
+export APPDIR=$(dirname $APPIMAGE)
 export CLI_ARGS="$@"
 export XDG_DATA_DIRS="$HERE/usr/share:$XDG_DATA_DIRS"
 export PATH="$HERE/usr/bin:$PATH"

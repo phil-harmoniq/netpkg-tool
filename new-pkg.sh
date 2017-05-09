@@ -19,11 +19,11 @@ main_loop() {
     if [ $? -eq 0 ]; then transfer_files; else exit 1; fi
     if [ $? -eq 0 ]; then say_pass; create_pkg; else say_fail; exit 1; fi
     if [ $? -eq 0 ]; then
-        echo -n "AppImageToolkit compression..."
+        echo -n "AppImageToolkit compression:"
         say_pass
         delete_temp_files
     else
-        echo -n "AppImageToolkit compression..."
+        echo -n "AppImageToolkit compression:"
         say_fail
         exit 1
     fi
@@ -38,7 +38,7 @@ check_for_dotnet() {
     check_path
     export LOC="$(which dotnet)"
 
-    echo -n "Checking for existence of the .NET sdk...";
+    echo -n "Checking if .NET sdk is installed...";
 
     if [ -z "$LOC" ]; then
         say_fail
@@ -138,7 +138,7 @@ transfer_files() {
 }
 
 create_pkg() {
-    appimagetool /tmp/NET_Pkg.Temp $TRGT/$CSPROJ$EXTN >/dev/null
+    appimagetool -n /tmp/NET_Pkg.Temp $TRGT/$CSPROJ$EXTN >/dev/null
 }
 
 delete_temp_files() {
