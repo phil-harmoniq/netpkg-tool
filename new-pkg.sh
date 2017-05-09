@@ -7,6 +7,8 @@ export PKG_VERSION="0.0.1"
 # ------------------------------- Functions ------------------------------
 
 main_loop() {
+    echo
+    echo "-------------------- .NET_Pkg $PKG_VERSION --------------------"
     if [ -z "$PROJ" ] || [ -z "$TRGT" ]; then
         echo -n "You must specify a directory containing a *.csproj file AND a target location."
         say_fail

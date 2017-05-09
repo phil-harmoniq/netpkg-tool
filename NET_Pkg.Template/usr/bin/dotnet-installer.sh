@@ -2,7 +2,6 @@
 
 main_loop() {
     if [ $1 == "-sdk" ]; then export SDK="true"; fi
-
     
     download_dotnet
     

@@ -8,7 +8,6 @@ main_loop() {
 
 check_for_dotnet() {
     check_path
-    export LOC="$(which dotnet)"
 
     echo -n "Checking if .NET runtime is installed...";
 
@@ -106,17 +105,18 @@ export OS_PNAME=$PRETTY_NAME
 
 export PKG_VERSION=$PKG_VERSION
 export DLL_NAME=$DLL_NAME
+export LOC="$(which dotnet)"
 get_colors
 
 # --------------------------------- Args ---------------------------------
 
-if [ "$1" == "--netpkg-v" ] || [ "$1" == "--netpkg-verbose" ]; then
+if [ "$1" == "--npk-v" ] || [ "$1" == "--npk-verbose" ]; then
     VERB="true";
     export VERB=$VERB
-elif [ "$1" == "--netpkg-h" ] || [ "$1" == "--netpkg-help" ]; then
+elif [ "$1" == "--npk-h" ] || [ "$1" == "--npk-help" ]; then
     $HERE/usr/bin/help-menu.sh
     exit 0
-elif [ "$1" == "--netpkg-d" ] || [ "$1" == "--netpkg-dir" ]; then
+elif [ "$1" == "--npk-d" ] || [ "$1" == "--npk-dir" ]; then
     echo ".NET installed at: $LOC"
     exit 0
 fi
