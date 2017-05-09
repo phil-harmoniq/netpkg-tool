@@ -106,7 +106,7 @@ export OS_PNAME=$PRETTY_NAME
 
 export PKG_VERSION=$PKG_VERSION
 export DLL_NAME=$DLL_NAME
-export LOC="$(which dotnet)"
+export LOC="$(which dotnet 2> /dev/null)"
 get_colors
 
 # --------------------------------- Args ---------------------------------
