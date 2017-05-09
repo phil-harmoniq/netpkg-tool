@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-if [ -z "$LOC" ]; then LOC="${cyan:-}not installed${normal:-}"; fi
+if [ -z "$LOC" ]; then LOC="${red:-}not installed${normal:-}"; fi
 
 echo
 echo -n "--------------------- ${cyan:-}"

@@ -7,15 +7,14 @@ main_loop() {
 }
 
 check_for_dotnet() {
-    check_path
-    export LOC="$(which dotnet > /dev/null)"
-
     if ! [ -z $VERB ]; then echo -n "Checking if .NET runtime is installed..."; fi
+    check_path
+    export LOC="$(which dotnet 2> /dev/null)"
 
     if [ -z "$LOC" ]; then
         if ! [ -z $VERB ]; then say_warning; fi
         while true; do
-            read -p -n "${yellow:-}.NET not installed.${normal:-}"
+            echo -p -n "${yellow:-}.NET not installed.${normal:-}"
             read -p -n "Would you like to download & install the runtime? (y/n): " yn
             case $yn in
                 [Yy]* ) start_installer; break;;

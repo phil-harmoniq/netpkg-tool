@@ -39,7 +39,7 @@ main_loop() {
 
 check_for_dotnet() {
     check_path
-    export LOC="$(which dotnet > /dev/null)"
+    export LOC="$(which dotnet 2> /dev/null)"
 
     echo -n "Checking if .NET sdk is installed...";
 
@@ -210,7 +210,7 @@ export OS_VERSION=$VERSION_ID
 export OS_CODENAME=$VERSION_CODENAME
 export OS_PNAME=$PRETTY_NAME
 export PKG_VERSION=$PKG_VERSION
-export LOC="$(which dotnet > /dev/null)"
+export LOC="$(which dotnet 2> /dev/null)"
 
 export PKG_DIR=$(dirname $(readlink -f "${0}"))
 export PROJ=$1
