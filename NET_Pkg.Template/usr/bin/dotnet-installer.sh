@@ -43,37 +43,30 @@ main_loop() {
         chmod +x $INSTALL_LOC/dotnet
         chmod +x $HOME/.local/share/dotnet/bin/dotnet
 
-        PATH_ADD='export PATH="$PATH:$HOME/.local/share/dotnet/bin"'
-
-        if ! (grep -qF "$PATH_ADD" $HOME/.profile); then
-            if ! [ -z $VERB ]; then echo "Adding $HOME/.local/share/dotnet/bin to user \$PATH..."; fi
-            echo "# Added by .NET Core installer" >> "$HOME/.profile"
-            echo $PATH_ADD >> "$HOME/.profile"
-            echo >> "$HOME/.profile"
-        else
-            if ! [ -z $VERB ]; then echo "$HOME/.local/share/dotnet/bin already detected in ~/.profile, skip adding to \$PATH."; fi
-        fi
-
-        BASH_ADD='[[ ":$PATH:" != *":$HOME/.local/share/dotnet/bin:"* ]] && export PATH="${PATH}:$HOME/.local/share/dotnet/bin"'
-         
-        if ! (grep -qF "$BASH_ADD" $HOME/.bashrc); then
-            if ! [ -z $VERB ]; then echo "Adding $HOME/.local/share/dotnet/bin to user ~/.bashrc..."; fi
-            echo "# Added by .NET Core installer" >> "$HOME/.bashrc"
-            echo $BASH_ADD >> "$HOME/.bashrc"
-            echo >> "$HOME/.bashrc"
-        else
-            if ! [ -z $VERB ]; then echo "$HOME/.local/share/dotnet/bin already detected in ~/.bashrc, skip adding to ~/.bashrc."; fi
-        fi
+        add_to_path
         
         echo -n '.NET runtime installed:'
         say_pass
-        echo 'You may need to log-out and back in or type ". ~/.bashrc" for the changes to take effect.'
+        echo 'You may need to log-out and back in or type ". ~/.profile" for the changes to take effect.'
         exit 0
     else
         echo -n '.NET runtime installed:'
         say_fail
         echo "Error encountered while extracting dotnet-runtime.tar.gz"
         exit 1
+    fi
+}
+
+add_to_path() {
+    PATH_ADD='export PATH="$HOME/.local/share/dotnet/bin:$PATH"'
+
+    if ! (grep -qF "$PATH_ADD" $HOME/.profile); then
+        if ! [ -z $VERB ]; then echo "Adding $HOME/.local/share/dotnet/bin to user \$PATH..."; fi
+        echo "# Added by .NET Core installer" >> "$HOME/.profile"
+        echo $PATH_ADD >> "$HOME/.profile"
+        echo >> "$HOME/.profile"
+    else
+        if ! [ -z $VERB ]; then echo "$HOME/.local/share/dotnet/bin already detected in ~/.profile, skip adding to \$PATH."; fi
     fi
 }
 
