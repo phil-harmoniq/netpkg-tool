@@ -2,7 +2,7 @@
 
 # -------------------------------- Config --------------------------------
 
-export PKG_VERSION="0.1.3"
+export PKG_VERSION="0.1.4"
 
 # ------------------------------- Functions ------------------------------
 
@@ -38,48 +38,41 @@ main_loop() {
 }
 
 check_for_dotnet() {
-    echo -n "Checking if .NET sdk is installed...";
-    check_path
     check_for_sdk
 
-    if ! [[ $? -eq 0 ]]; then
-        say_warning
+    if [[ $? != 0 ]]; then
+        if [[ -z $VERB ]]; then echo "${yellow:-}.NET sdk not installed.${normal:-}"; fi
+
         while true; do
-            read -p "Would you like to download & install the sdk? (y/n): " yn
+            read -p "Would you like to download & install the .NET sdk? (y/n): " yn
             case $yn in
-                [Yy]* ) start_installer -sdk; break;;
-                [Nn]* ) echo "${red:-}User aborted the application${normal:-}"; echo; exit 1;;
+                [Yy]* ) start_installer; return 0;;
+                [Nn]* ) echo "${red:-}User aborted the application.${normal:-}"; echo; exit 1;;
                 * ) echo "Please answer yes or no.";;
             esac
         done
     else
-        say_pass
         return 0
     fi
 }
 
 check_for_sdk() {
+    if ! [[ -z $VERB ]]; then echo -n "Checking if .NET sdk is installed..."; fi
+
     mkdir /tmp/.net-sdk-test && cd /tmp/.net-sdk-test
     dotnet new sln &> /dev/null
+
     if [[ $? -eq 0 ]]; then
+        if ! [[ -z $VERB ]]; then say_pass; fi
         cd $PKG_DIR
         rm -r /tmp/.net-sdk-test
         return 0;
     else
+        if ! [[ -z $VERB ]]; then say_warning; fi
+        cd $PKG_DIR
         rm -r /tmp/.net-sdk-test
         return 1;
     fi;
-}
-
-check_path() {
-    echo $PATH | grep -q  "$HOME/.local/share/dotnet/bin" 2> /dev/null
-    ERR_CODE=$?
-
-    if [[ -f "$HOME/.local/share/dotnet/bin/dotnet-sdk" ]] && [[ $ERR_CODE -ne 0 ]]; then
-        echo -n ".NET detected but not in \$PATH. Adding for current session."
-        export PATH=$PATH:$HOME/.local/share/dotnet/bin
-        say_pass
-    fi
 }
 
 start_installer() {
@@ -227,6 +220,9 @@ export PROJ=$1
 export TRGT=$2
 export EXTN=".NET"
 get_colors
+
+chmod -R +x $PKG_DIR/tools
+chmod -R +x $PKG_DIR/NET_Pkg.Template/usr/bin
 
 # --------------------------------- Args ---------------------------------
 

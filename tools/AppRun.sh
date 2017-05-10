@@ -2,52 +2,66 @@
 # ------------------------------- Functions ------------------------------
 
 main_loop() {
-    if ! [[ -z $VERB ]]; then echo "AppImage auto-mounted at $HERE"; fi
+    if ! [[ -z $VERB ]]; then 
+        say_hello
+        echo "AppImage auto-mounted at $HERE"
+    fi
+
     check_for_dotnet
-}
 
-check_for_dotnet() {
-    if ! [[ -z $VERB ]]; then echo -n "Checking if .NET runtime is installed..."; fi
-    check_path
-    export LOC="$(which dotnet 2> /dev/null)"
-
-    if [[ -z "$LOC" ]]; then
-        if ! [[ -z $VERB ]]; then say_warning; fi
-        while true; do
-            read -p "Would you like to download & install the runtime? (y/n): " yn
-            case $yn in
-                [Yy]* ) start_installer; break;;
-                [Nn]* ) echo "${red:-}User aborted the application${normal:-}"; echo; exit 1;;
-                * ) echo "Please answer yes or no.";;
-            esac
-        done
-    else
-        if ! [[ -z $VERB ]]; then say_pass; fi
+    if [[ $? -eq 0 ]]; then
         start_app
     fi
 }
 
-start_app() {
+check_for_dotnet() {
     check_path
+
+    if [[ $? -ne 0 ]]; then
+        if [[ -z $VERB ]]; then echo "${yellow:-}.NET not installed.${normal:-}"; fi
+
+        while true; do
+            read -p "Would you like to download & install the .NET runtime? (y/n): " yn
+            case $yn in
+                [Yy]* ) start_installer; return 0;;
+                [Nn]* ) echo "${red:-}User aborted the application.${normal:-}"; echo; exit 1;;
+                * ) echo "Please answer yes or no.";;
+            esac
+        done
+    else
+        return 0
+    fi
+}
+
+start_app() {
     # dotnet $HERE/usr/share/tests/arg-test.dll $CLI_ARGS
     dotnet $HERE/usr/share/app/$DLL_NAME.dll $CLI_ARGS
     exit 0
 }
 
 check_path() {
+    if ! [[ -z $VERB ]]; then echo -n "Checking if .NET runtime is installed..."; fi
     echo $PATH | grep -q  "$HOME/.local/share/dotnet/bin" 2> /dev/null
     ERR_CODE=$?
 
     if [[ -f "$HOME/.local/share/dotnet/bin/dotnet" ]] && [[ $ERR_CODE -ne 0 ]]; then
+        if ! [[ -z $VERB ]]; then say_caution; fi
         echo "${yellow:-}.NET detected but not in \$PATH. Adding for current session.${normal:-}"
         export PATH=$HOME/.local/share/dotnet/bin:$PATH
+        return 0
+    elif [[ $ERR_CODE -eq 0 ]]; then
+        if ! [[ -z $VERB ]]; then say_pass; fi
+        return 0
+    else
+        if ! [[ -z $VERB ]]; then say_warning; fi
+        return 1
     fi
 }
 
 start_installer() {
     $HERE/usr/bin/dotnet-installer.sh
     if [[ $? -eq 0 ]]; then
-        start_app
+        check_path
     fi
 }
 
@@ -76,8 +90,23 @@ say_pass() {
     echo "${bold:-} [ ${green:-}PASS${white:-} ]${normal:-}"
 }
 
+say_caution() {
+    echo "${bold:-} [ ${yellow:-}PASS${white:-} ]${normal:-}"
+}
+
+say_warning() {
+    echo "${bold:-} [ ${yellow:-}FAIL${white:-} ]${normal:-}"
+}
+
 say_fail() {
     echo "${bold:-} [ ${red:-}FAIL${white:-} ]${normal:-}"
+}
+
+say_hello() {
+    echo
+    echo -n "--------------------- ${cyan:-}"
+    echo -n "${bold:-}NET_Pkg $PKG_VERSION"
+    echo "${normal:-} ---------------------"
 }
 
 # ------------------------------- Variables ------------------------------

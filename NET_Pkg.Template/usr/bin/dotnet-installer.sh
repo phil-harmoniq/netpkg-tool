@@ -13,7 +13,7 @@ main_loop() {
         DWNLOAD_LOC="/tmp/dotnet-runtime.tar.gz"
     fi
 
-    echo -n "Extracting tar.gz into $INSTALL_LOC"
+    if ! [[ -z $VERB ]]; then echo "Extracting tar.gz into $INSTALL_LOC"; fi
     mkdir -p $INSTALL_LOC 2> /dev/null
 
     if [[ $? -eq 0 ]]; then
@@ -25,7 +25,6 @@ main_loop() {
     fi
 
     if [[ $? -eq 0 ]]; then
-        say_pass
         rm $DWNLOAD_LOC;
 
         mkdir -p $HOME/.local/share/dotnet/bin
@@ -53,7 +52,7 @@ main_loop() {
         else echo -n '.NET runtime install:'; fi
         say_pass
         echo 'You may need to log-out and back in or type ". ~/.bashrc" for the changes to take effect.'
-        exit 0
+        return 0
     else
         if [[ $SDK == "true" ]]; then echo -n '.NET sdk install:'
         else echo -n '.NET runtime install:'; fi
@@ -65,17 +64,14 @@ main_loop() {
 }
 
 add_to_path() {
-    echo -n "Adding .NET to \$PATH in ~/.bashrc"
     PATH_ADD='export PATH="$HOME/.local/share/dotnet/bin:$PATH"'
 
     if ! (grep -qF "$PATH_ADD" $HOME/.bashrc); then
-        if ! [[ -z $VERB ]]; then echo "Adding $HOME/.local/share/dotnet/bin to user \$PATH..."; fi
+        if ! [[ -z $VERB ]]; then echo "Adding .NET to \$PATH in ~/.bashrc"; fi
         echo "# Added by .NET Core installer" >> "$HOME/.bashrc"
         echo $PATH_ADD >> "$HOME/.bashrc"
         echo >> "$HOME/.bashrc"
-        say_pass
     else
-        say_warning
         echo "${yellow:-}$HOME/.local/share/dotnet/bin already detected in ~/.bashrc, skip adding to \$PATH.${normal:-}"
     fi
 }
