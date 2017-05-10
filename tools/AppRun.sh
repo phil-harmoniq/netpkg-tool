@@ -2,28 +2,27 @@
 # ------------------------------- Functions ------------------------------
 
 main_loop() {
-    if ! [ -z $VERB ]; then echo "AppImage auto-mounted at $HERE"; fi
+    if ! [[ -z $VERB ]]; then echo "AppImage auto-mounted at $HERE"; fi
     check_for_dotnet
 }
 
 check_for_dotnet() {
-    if ! [ -z $VERB ]; then echo -n "Checking if .NET runtime is installed..."; fi
+    if ! [[ -z $VERB ]]; then echo -n "Checking if .NET runtime is installed..."; fi
     check_path
     export LOC="$(which dotnet 2> /dev/null)"
 
-    if [ -z "$LOC" ]; then
-        if ! [ -z $VERB ]; then say_warning; fi
+    if [[ -z "$LOC" ]]; then
+        if ! [[ -z $VERB ]]; then say_warning; fi
         while true; do
-            echo -p -n "${yellow:-}.NET not installed.${normal:-}"
-            read -p -n "Would you like to download & install the runtime? (y/n): " yn
+            read -p "Would you like to download & install the runtime? (y/n): " yn
             case $yn in
                 [Yy]* ) start_installer; break;;
-                [Nn]* ) exit 1;;
+                [Nn]* ) echo "${red:-}User aborted the application${normal:-}"; echo; exit 1;;
                 * ) echo "Please answer yes or no.";;
             esac
         done
     else
-        if ! [ -z $VERB ]; then say_pass; fi
+        if ! [[ -z $VERB ]]; then say_pass; fi
         start_app
     fi
 }
@@ -39,7 +38,7 @@ check_path() {
     echo $PATH | grep -q  "$HOME/.local/share/dotnet/bin" 2> /dev/null
     ERR_CODE=$?
 
-    if [ -f "$HOME/.local/share/dotnet/bin/dotnet" ] && [ $ERR_CODE -ne 0 ]; then
+    if [[ -f "$HOME/.local/share/dotnet/bin/dotnet" ]] && [[ $ERR_CODE -ne 0 ]]; then
         echo "${yellow:-}.NET detected but not in \$PATH. Adding for current session.${normal:-}"
         export PATH=$HOME/.local/share/dotnet/bin:$PATH
     fi
@@ -47,17 +46,17 @@ check_path() {
 
 start_installer() {
     $HERE/usr/bin/dotnet-installer.sh
-    if [ $? -eq 0 ]; then
+    if [[ $? -eq 0 ]]; then
         start_app
     fi
 }
 
 get_colors() {
     # See if stdout is a terminal
-    if [ -t 1 ]; then
+    if [[ -t 1 ]]; then
         # see if it supports colors
         ncolors=$(tput colors)
-        if [ -n "$ncolors" ] && [ $ncolors -ge 8 ]; then
+        if [[ -n "$ncolors" ]] && [[ $ncolors -ge 8 ]]; then
             export bold="$(tput bold       || echo)"
             export normal="$(tput sgr0     || echo)"
             export black="$(tput setaf 0   || echo)"
@@ -110,13 +109,13 @@ get_colors
 
 # --------------------------------- Args ---------------------------------
 
-if [ "$1" == "--npk-v" ] || [ "$1" == "--npk-verbose" ]; then
+if [[ "$1" == "--npk-v" ]] || [[ "$1" == "--npk-verbose" ]]; then
     VERB="true";
     export VERB=$VERB
-elif [ "$1" == "--npk-h" ] || [ "$1" == "--npk-help" ]; then
+elif [[ "$1" == "--npk-h" ]] || [[ "$1" == "--npk-help" ]]; then
     $HERE/usr/bin/help-menu.sh
     exit 0
-elif [ "$1" == "--npk-d" ] || [ "$1" == "--npk-dir" ]; then
+elif [[ "$1" == "--npk-d" ]] || [[ "$1" == "--npk-dir" ]]; then
     echo ".NET installed at: $LOC"
     exit 0
 fi

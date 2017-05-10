@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-if [ -z "$LOC" ]; then NET="${red:-}not installed${normal:-}"
+if [[ -z "$LOC" ]]; then NET="${red:-}not installed${normal:-}"
 else NET="$(dirname $LOC)"; fi
 
 echo

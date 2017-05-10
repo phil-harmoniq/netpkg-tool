@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
 
 main_loop() {
-    if [ $1 == "-sdk" ]; then export SDK="true"; fi
+    if [[ $1 == "-sdk" ]]; then export SDK="true"; fi
     
     download_dotnet
     
-    if [ $SDK == "true" ]; then
+    if [[ $SDK == "true" ]]; then
         INSTALL_LOC="$HOME/.local/share/dotnet/sdk/1.1.1"
         DWNLOAD_LOC="/tmp/dotnet-sdk.tar.gz"
     else
@@ -16,57 +16,67 @@ main_loop() {
     echo -n "Extracting tar.gz into $INSTALL_LOC"
     mkdir -p $INSTALL_LOC 2> /dev/null
 
-    if [ $? -eq 0 ]; then
+    if [[ $? -eq 0 ]]; then
         tar zxf $DWNLOAD_LOC -C $INSTALL_LOC 2> /dev/null
     else
         say_fail
-        echo "Install failed: Error making directory $INSTALL_LOC"
+        echo "${red:-}Error making directory $INSTALL_LOC${normal:-}"
         exit 1
     fi
 
-    if [ $? -eq 0 ]; then
+    if [[ $? -eq 0 ]]; then
         say_pass
         rm $DWNLOAD_LOC;
 
         mkdir -p $HOME/.local/share/dotnet/bin
-        if [ $SDK == "true" ]; then
+        if [[ -f $HOME/.local/share/dotnet/bin/dotnet ]]; then rm $HOME/.local/share/dotnet/bin/dotnet; fi
+
+        if [[ $SDK == "true" ]]; then
+            if [[ -f $HOME/.local/share/dotnet/bin/dotnet-sdk ]]; then rm $HOME/.local/share/dotnet/bin/dotnet-sdk; fi
             ln -s $INSTALL_LOC/dotnet $HOME/.local/share/dotnet/bin/dotnet-sdk
             ln -s $HOME/.local/share/dotnet/bin/dotnet-sdk $HOME/.local/share/dotnet/bin/dotnet
             chmod +x $HOME/.local/share/dotnet/bin/dotnet-sdk
         else
+            if [[ -f $HOME/.local/share/dotnet/bin/dotnet-runtime ]]; then rm $HOME/.local/share/dotnet/bin/dotnet-runtime; fi
             ln -s $INSTALL_LOC/dotnet $HOME/.local/share/dotnet/bin/dotnet-runtime
             ln -s $HOME/.local/share/dotnet/bin/dotnet-runtime $HOME/.local/share/dotnet/bin/dotnet
             chmod +x $HOME/.local/share/dotnet/bin/dotnet-runtime
         fi
 
-        if ! [ -z $VERB ]; then echo "Setting $HOME/.local/share/dotnet/bin/dotnet as executable..."; fi
+        if ! [[ -z $VERB ]]; then echo "Setting $HOME/.local/share/dotnet/bin/dotnet as executable..."; fi
         chmod +x $INSTALL_LOC/dotnet
         chmod +x $HOME/.local/share/dotnet/bin/dotnet
 
         add_to_path
         
-        echo -n '.NET runtime installed:'
+        if [[ $SDK == "true" ]]; then echo -n '.NET sdk install:'
+        else echo -n '.NET runtime install:'; fi
         say_pass
-        echo 'You may need to log-out and back in or type ". ~/.profile" for the changes to take effect.'
+        echo 'You may need to log-out and back in or type ". ~/.bashrc" for the changes to take effect.'
         exit 0
     else
-        echo -n '.NET runtime installed:'
+        if [[ $SDK == "true" ]]; then echo -n '.NET sdk install:'
+        else echo -n '.NET runtime install:'; fi
         say_fail
-        echo "Error encountered while extracting dotnet-runtime.tar.gz"
+        if [[ $SDK == "true" ]]; then echo -n "${red:-}Error encountered while extracting dotnet-sdk.tar.gz${normal:-}"
+        else echo "${red:-}Error encountered while extracting dotnet-runtime.tar.gz${normal:-}"; fi
         exit 1
     fi
 }
 
 add_to_path() {
+    echo -n "Adding .NET to \$PATH in ~/.bashrc"
     PATH_ADD='export PATH="$HOME/.local/share/dotnet/bin:$PATH"'
 
-    if ! (grep -qF "$PATH_ADD" $HOME/.profile); then
-        if ! [ -z $VERB ]; then echo "Adding $HOME/.local/share/dotnet/bin to user \$PATH..."; fi
-        echo "# Added by .NET Core installer" >> "$HOME/.profile"
-        echo $PATH_ADD >> "$HOME/.profile"
-        echo >> "$HOME/.profile"
+    if ! (grep -qF "$PATH_ADD" $HOME/.bashrc); then
+        if ! [[ -z $VERB ]]; then echo "Adding $HOME/.local/share/dotnet/bin to user \$PATH..."; fi
+        echo "# Added by .NET Core installer" >> "$HOME/.bashrc"
+        echo $PATH_ADD >> "$HOME/.bashrc"
+        echo >> "$HOME/.bashrc"
+        say_pass
     else
-        if ! [ -z $VERB ]; then echo "$HOME/.local/share/dotnet/bin already detected in ~/.profile, skip adding to \$PATH."; fi
+        say_warning
+        echo "${yellow:-}$HOME/.local/share/dotnet/bin already detected in ~/.bashrc, skip adding to \$PATH.${normal:-}"
     fi
 }
 
@@ -87,7 +97,7 @@ download_dotnet() {
         *)
             echo -n "Attempt to download:"
             say_fail
-            echo "Install failed: $OS_ID.$OS_VERSION is incompatible with .NET runtime."
+            echo "${red:-}$OS_ID.$OS_VERSION is incompatible with .NET runtime.${normal:-}"
             exit 1
             ;;
     esac
@@ -96,128 +106,130 @@ download_dotnet() {
 ubuntu_fetch() {
     case "$OS_VERSION" in
         "16.04")
-            if [ $SDK == "true" ]; then
+            if [[ $SDK == "true" ]]; then
                 echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
                 curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847089
-                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
+                STATUS=$?
+                download_check STATUS
             else
                 echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
                 curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843432
-                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
+                STATUS=$?
+                download_check STATUS
             fi
             ;;
         "16.10")
-            if [ $SDK == "true" ]; then
+            if [[ $SDK == "true" ]]; then
                 echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
                 curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847090
-                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
+                STATUS=$?
+                download_check STATUS
             else
                 echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
                 curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843436
-                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
+                STATUS=$?
+                download_check STATUS
             fi
             ;;
         "17.04")
             say_fail
-            echo "Install failed: Ubuntu $OS_VERSION is incompatible with .NET runtime."
+            echo "${red:-}Ubuntu $OS_VERSION is incompatible with .NET runtime.${normal:-}"
             exit 1
             ;;
         *)
-            if [ $SDK == "true" ]; then
+            if [[ $SDK == "true" ]]; then
                 echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
                 curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847106
-                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
+                STATUS=$?
+                download_check STATUS
             else
                 echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
                 curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843422
-                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
+                STATUS=$?
+                download_check STATUS
             fi
             ;;
     esac
-    
-    echo -n "Attempt to download:"
-    say_fail
-    echo "Install failed: Download was not successful."
-    exit 1
+    return 0
 }
 
 mint_fetch() {
     case "$OS_VERSION" in
         "18")
-            if [ $SDK == "true" ]; then
+            if [[ $SDK == "true" ]]; then
                 echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
                 curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847089
-                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
+                STATUS=$?
+                download_check STATUS
             else
                 echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
                 curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843432
-                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
+                STATUS=$?
+                download_check STATUS
             fi
             ;;
         *)
-            if [ $SDK == "true" ]; then
+            if [[ $SDK == "true" ]]; then
                 echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
                 curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847106
-                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
+                STATUS=$?
+                download_check STATUS
             else
                 echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
                 curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843422
-                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
+                STATUS=$?
+                download_check STATUS
             fi
             ;;
     esac
-
-    echo -n "Attempt to download:"
-    say_fail
-    echo "Install failed: Download was not successful."
-    exit 1
+    return 0
 }
 
 fedora_fetch() {
     case "$OS_VERSION" in
         "23")
-            if [ $SDK == "true" ]; then
+            if [[ $SDK == "true" ]]; then
                 echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
                 curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847099
-                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
+                STATUS=$?
+                download_check STATUS
             else
                 echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
                 curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=84342
-                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
+                STATUS=$?
+                download_check STATUS
             fi
             ;;
         "24")
-            if [ $SDK == "true" ]; then
+            if [[ $SDK == "true" ]]; then
                 echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
                 curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847100
-                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
+                STATUS=$?
+                download_check STATUS
             else
                 echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
                 curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843431
-                if [ $? -eq 0 ]; echo -n "Attempt to download:"; then say_pass; return 0; fi
+                STATUS=$?
+                download_check STATUS
             fi
             ;;
         *)
             echo -n "Attempt to download:"
             say_fail
-            echo "Install failed: Fedora $OS_VERSION is incompatible with .NET runtime."
+            echo "${red:-}Fedora $OS_VERSION is incompatible with .NET runtime.${normal:-}"
             exit 1
             ;;
     esac
-
-    echo -n "Attempt to download:"
-    say_fail
-    echo "Install failed: Download was not successful."
-    exit 1
+    return 0
 }
 
 get_colors() {
     # Setup some colors to use. These need to work in fairly limited shells, like the Ubuntu Docker container where there are only 8 colors.
     # See if stdout is a terminal
-    if [ -t 1 ]; then
+    if [[ -t 1 ]]; then
         # see if it supports colors
         ncolors=$(tput colors)
-        if [ -n "$ncolors" ] && [ $ncolors -ge 8 ]; then
+        if [[ -n "$ncolors" ]] && [[ $ncolors -ge 8 ]]; then
             export bold="$(tput bold       || echo)"
             export normal="$(tput sgr0     || echo)"
             export black="$(tput setaf 0   || echo)"
@@ -238,6 +250,26 @@ say_pass() {
 
 say_fail() {
     echo "${bold:-} [ ${red:-}FAIL${white:-} ] ${normal:-}"
+}
+
+download_check() {
+    if [[ $1 -eq 0 ]]; then
+        echo -n "Attempt to download:"
+        say_pass
+        return 0
+    else
+        echo -n "Attempt to downlod:"
+        say_fail
+        echo "${red:-}Install failed: Download was not successful.${normal:-}"
+        exit 1
+    fi
+}
+
+failed_download() {
+    echo -n "Attempt to download:"
+    say_fail
+    echo "Install failed: Download was not successful."
+    exit 1
 }
 
 main_loop $1

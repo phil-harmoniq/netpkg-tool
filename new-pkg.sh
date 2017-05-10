@@ -2,7 +2,7 @@
 
 # -------------------------------- Config --------------------------------
 
-export PKG_VERSION="0.1.2"
+export PKG_VERSION="0.1.3"
 
 # ------------------------------- Functions ------------------------------
 
@@ -10,7 +10,7 @@ main_loop() {
     echo
     say_name
 
-    if [ -z "$PROJ" ] || [ -z "$TRGT" ]; then
+    if [[ -z "$PROJ" ]] || [[ -z "$TRGT" ]]; then
         echo -n "You must specify a directory containing a *.csproj file AND a target location."
         say_fail
         exit 1
@@ -18,10 +18,10 @@ main_loop() {
 
     check_for_dotnet
 
-    if [ $? -eq 0 ]; then compile_net_project; else exit 1; fi
-    if [ $? -eq 0 ]; then transfer_files; else exit 1; fi
-    if [ $? -eq 0 ]; then say_pass; create_pkg; else say_fail; exit 1; fi
-    if [ $? -eq 0 ]; then
+    if [[ $? -eq 0 ]]; then compile_net_project; else exit 1; fi
+    if [[ $? -eq 0 ]]; then transfer_files; else exit 1; fi
+    if [[ $? -eq 0 ]]; then say_pass; create_pkg; else say_fail; exit 1; fi
+    if [[ $? -eq 0 ]]; then
         echo -n "AppImageKit compression:"
         say_pass
         delete_temp_files
@@ -30,7 +30,7 @@ main_loop() {
         say_fail
         exit 1
     fi
-    if [ $? -eq 0 ]; then say_pass; else say_fail; exit 1; fi
+    if [[ $? -eq 0 ]]; then say_pass; else say_fail; exit 1; fi
     echo -n "Packaging complete:"
     say_pass
     echo "${green:-}New NET_Pkg created at $TRGT/$CSPROJ$EXTN${normal:-}"
@@ -38,31 +38,44 @@ main_loop() {
 }
 
 check_for_dotnet() {
-    check_path
-    export LOC="$(which dotnet 2> /dev/null)"
-
     echo -n "Checking if .NET sdk is installed...";
+    check_path
+    check_for_sdk
 
-    if [ -z "$LOC" ]; then
+    if ! [[ $? -eq 0 ]]; then
         say_warning
-        $PKG_DIR/NET_Pkg.Template/usr/bin/dotnet-installer.sh -sdk
-        check_path
-        return 0
+        while true; do
+            read -p "Would you like to download & install the sdk? (y/n): " yn
+            case $yn in
+                [Yy]* ) start_installer -sdk; break;;
+                [Nn]* ) echo "${red:-}User aborted the application${normal:-}"; echo; exit 1;;
+                * ) echo "Please answer yes or no.";;
+            esac
+        done
     else
         say_pass
         return 0
     fi
+}
 
-    echo -n ".NET sdk install failed"
-    say_fail
-    exit 1
+check_for_sdk() {
+    mkdir /tmp/.net-sdk-test && cd /tmp/.net-sdk-test
+    dotnet new sln &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        cd $PKG_DIR
+        rm -r /tmp/.net-sdk-test
+        return 0;
+    else
+        rm -r /tmp/.net-sdk-test
+        return 1;
+    fi;
 }
 
 check_path() {
     echo $PATH | grep -q  "$HOME/.local/share/dotnet/bin" 2> /dev/null
     ERR_CODE=$?
 
-    if [ -f "$HOME/.local/share/dotnet/bin/dotnet-sdk" ] && [ $ERR_CODE -ne 0 ]; then
+    if [[ -f "$HOME/.local/share/dotnet/bin/dotnet-sdk" ]] && [[ $ERR_CODE -ne 0 ]]; then
         echo -n ".NET detected but not in \$PATH. Adding for current session."
         export PATH=$PATH:$HOME/.local/share/dotnet/bin
         say_pass
@@ -70,38 +83,35 @@ check_path() {
 }
 
 start_installer() {
-    $HERE/usr/bin/dotnet-installer.sh -sdk
-    if [ $? -eq 0 ]; then
-        start_app
-    fi
+    $PKG_DIR/NET_Pkg.Template/usr/bin/dotnet-installer.sh -sdk
 }
 
 compile_net_project() {
     cd $PROJ
 
     find_csproj
-    if [ -z $VERB ]; then echo -n "Restoring .NET project dependencies..."; fi
-    if ! [ -z $VERB ]; then dotnet restore; else dotnet restore >/dev/null; fi
+    if [[ -z $VERB ]]; then echo -n "Restoring .NET project dependencies..."; fi
+    if ! [[ -z $VERB ]]; then dotnet restore; else dotnet restore >/dev/null; fi
 
-    if [ $? -eq 0 ]; then
-        if [ -z $VERB ]; then say_pass; fi
-        if [ -z $VERB ]; then echo -n "Compiling .NET project..."; fi
+    if [[ $? -eq 0 ]]; then
+        if [[ -z $VERB ]]; then say_pass; fi
+        if [[ -z $VERB ]]; then echo -n "Compiling .NET project..."; fi
         export CORE_VERS=$($PKG_DIR/tools/parse-csproj.py 2>&1 >/dev/null)
-        if ! [ -z $VERB ]; then dotnet publish -f $CORE_VERS -c Release
+        if ! [[ -z $VERB ]]; then dotnet publish -f $CORE_VERS -c Release
         else dotnet publish -f $CORE_VERS -c Release >/dev/null; fi
     else
-        if [ -z $VERB ]; then say_fail; fi
+        if [[ -z $VERB ]]; then say_fail; fi
         echo "${red:-}Failed to restore .NET Core application dependencies.${normal:-}"
         echo
         exit 1
     fi
 
-    if [ $? -eq 0 ]; then 
-        if [ -z $VERB ]; then say_pass; fi
+    if [[ $? -eq 0 ]]; then 
+        if [[ -z $VERB ]]; then say_pass; fi
         cd $PKG_DIR
         return 0
     else
-        if [ -z $VERB ]; then say_fail; fi
+        if [[ -z $VERB ]]; then say_fail; fi
         echo "${red:-}Failed to complile .NET Core application.${normal:-}"
         echo
         exit 1
@@ -123,7 +133,7 @@ transfer_files() {
     mkdir -p /tmp/NET_Pkg.Temp/usr/share/app
     cp -r $PROJ/bin/Release/$CORE_VERS/publish/. /tmp/NET_Pkg.Temp/usr/share/app
 
-    if [ -d "$PROJ/pkg.lib" ]; then
+    if [[ -d "$PROJ/pkg.lib" ]]; then
         cp -r $PROJ/pkg.lib/. /tmp/NET_Pkg.Temp/usr/lib
     fi
 
@@ -144,8 +154,8 @@ transfer_files() {
 }
 
 create_pkg() {
-    if ! [ -z $VERB ]; then appimagetool -n /tmp/NET_Pkg.Temp $TRGT/$CSPROJ$EXTN
-    else appimagetool -n /tmp/NET_Pkg.Temp $TRGT/$CSPROJ$EXTN >/dev/null; fi
+    if ! [[ -z $VERB ]]; then appimagetool -n /tmp/NET_Pkg.Temp $TRGT/$CSPROJ$EXTN
+    else appimagetool -n /tmp/NET_Pkg.Temp $TRGT/$CSPROJ$EXTN &> /dev/null; fi
 }
 
 delete_temp_files() {
@@ -157,7 +167,7 @@ check_path() {
     echo $PATH | grep -q  "$HOME/.local/share/dotnet/bin" 2> /dev/null
     ERR_CODE=$?
 
-    if [ -f "$HOME/.local/share/dotnet/bin/dotnet" ] && [ $ERR_CODE -ne 0 ]; then
+    if [[ -f "$HOME/.local/share/dotnet/bin/dotnet" ]] && [[ $ERR_CODE -ne 0 ]]; then
         echo "${yellow:-}.NET detected but not in \$PATH. Adding for current session.${normal:-}"
         export PATH=$HOME/.local/share/dotnet/bin:$PATH
     fi
@@ -165,10 +175,10 @@ check_path() {
 
 get_colors() {
     # See if stdout is a terminal
-    if [ -t 1 ]; then
+    if [[ -t 1 ]]; then
         # see if it supports colors
         ncolors=$(tput colors)
-        if [ -n "$ncolors" ] && [ $ncolors -ge 8 ]; then
+        if [[ -n "$ncolors" ]] && [[ $ncolors -ge 8 ]]; then
             export bold="$(tput bold       || echo)"
             export normal="$(tput sgr0     || echo)"
             export black="$(tput setaf 0   || echo)"
@@ -220,18 +230,18 @@ get_colors
 
 # --------------------------------- Args ---------------------------------
 
-if [ "$3" == "-v" ] || [ "$1" == "-verbose" ]; then
+if [[ "$3" == "-v" ]] || [[ "$1" == "-verbose" ]]; then
     VERB="true";
     export VERB=$VERB
-elif [ -z "$1" ]; then
+elif [[ -z "$1" ]]; then
     $PKG_DIR/tools/pkg-tool-help.sh
     exit 0
 fi
 
-if [ "$1" == "-d" ] || [ "$1" == "-dir" ]; then
+if [[ "$1" == "-d" ]] || [[ "$1" == "-dir" ]]; then
     echo ".NET installed at: $LOC"
     exit 0
-elif [ "$1" == "-h" ] || [ "$1" == "-help" ]; then
+elif [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
     $PKG_DIR/tools/pkg-tool-help.sh
     exit 0
 fi
