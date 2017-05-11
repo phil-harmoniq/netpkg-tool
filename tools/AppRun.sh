@@ -23,7 +23,15 @@ check_for_dotnet() {
         while true; do
             read -p "Would you like to download & install the .NET runtime? (y/n): " yn
             case $yn in
-                [Yy]* ) start_installer; return 0;;
+                [Yy]* )
+                    start_installer
+                    if [[ $? -eq 0 ]]; then
+                        check_path
+                        return 0
+                    else
+                        exit 1
+                    fi
+                    ;;
                 [Nn]* ) echo "${red:-}User aborted the application.${normal:-}"; echo; exit 1;;
                 * ) echo "Please answer yes or no.";;
             esac
@@ -61,7 +69,9 @@ check_path() {
 start_installer() {
     $HERE/usr/bin/dotnet-installer.sh
     if [[ $? -eq 0 ]]; then
-        check_path
+        return 0
+    else
+        exit 1
     fi
 }
 

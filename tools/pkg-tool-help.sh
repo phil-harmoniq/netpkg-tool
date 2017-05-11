@@ -16,9 +16,9 @@ echo "   ${bold:-}${cyan:-}Usage:${normal:-}"
 echo "  ./NET_Pkg.Tool [.NET Project] [Destination] [flags]"
 echo
 echo "   ${bold:-}${cyan:-}Optional Arguments:${normal:-}"
-echo "      -verbose or -v : Verbose output"
-echo "         -help or -h : Help menu (this page)"
-echo "          -dir or -d : View location of .NET runtime"
+echo "     --verbose or -v : Verbose output"
+echo "        --help or -h : Help menu (this page)"
+echo "         --dir or -d : View location of .NET runtime"
 echo
 echo "   More information & source code available on github:"
 echo "   https://github.com/phil-harmoniq/NET_Pkg"

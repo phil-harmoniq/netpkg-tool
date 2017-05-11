@@ -41,8 +41,6 @@ check_for_dotnet() {
     check_for_sdk
 
     if [[ $? != 0 ]]; then
-        if [[ -z $VERB ]]; then echo "${yellow:-}.NET sdk not installed.${normal:-}"; fi
-
         while true; do
             read -p "Would you like to download & install the .NET sdk? (y/n): " yn
             case $yn in
@@ -57,18 +55,18 @@ check_for_dotnet() {
 }
 
 check_for_sdk() {
-    if ! [[ -z $VERB ]]; then echo -n "Checking if .NET sdk is installed..."; fi
+    echo -n "Checking if .NET sdk is installed..."
 
     mkdir /tmp/.net-sdk-test && cd /tmp/.net-sdk-test
     dotnet new sln &> /dev/null
 
     if [[ $? -eq 0 ]]; then
-        if ! [[ -z $VERB ]]; then say_pass; fi
+        say_pass
         cd $PKG_DIR
         rm -r /tmp/.net-sdk-test
         return 0;
     else
-        if ! [[ -z $VERB ]]; then say_warning; fi
+        say_warning
         cd $PKG_DIR
         rm -r /tmp/.net-sdk-test
         return 1;
@@ -77,6 +75,11 @@ check_for_sdk() {
 
 start_installer() {
     $PKG_DIR/NET_Pkg.Template/usr/bin/dotnet-installer.sh -sdk
+    if [[ $? -eq 0 ]]; then
+        return 0
+    else
+        exit 1
+    fi
 }
 
 compile_net_project() {
@@ -152,8 +155,10 @@ create_pkg() {
 }
 
 delete_temp_files() {
-    echo -n "Deleting temporary files..."
-    rm -r /tmp/NET_Pkg.Temp
+    if [[ -z $NO_DEL ]]; then
+        echo -n "Deleting temporary files..."
+        rm -r /tmp/NET_Pkg.Temp
+    fi
 }
 
 check_path() {
@@ -226,18 +231,17 @@ chmod -R +x $PKG_DIR/NET_Pkg.Template/usr/bin
 
 # --------------------------------- Args ---------------------------------
 
-if [[ "$3" == "-v" ]] || [[ "$1" == "-verbose" ]]; then
-    VERB="true";
-    export VERB=$VERB
+if [[ "$3" == "-v" ]] || [[ "$1" == "--verbose" ]]; then
+    export VERB="true"
 elif [[ -z "$1" ]]; then
     $PKG_DIR/tools/pkg-tool-help.sh
     exit 0
 fi
 
-if [[ "$1" == "-d" ]] || [[ "$1" == "-dir" ]]; then
+if [[ "$1" == "-d" ]] || [[ "$1" == "--dir" ]]; then
     echo ".NET installed at: $LOC"
     exit 0
-elif [[ "$1" == "-h" ]] || [[ "$1" == "-help" ]]; then
+elif [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     $PKG_DIR/tools/pkg-tool-help.sh
     exit 0
 fi

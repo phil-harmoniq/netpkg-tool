@@ -90,6 +90,10 @@ download_dotnet() {
             mint_fetch
             return 0
             ;;
+        "opensuse")
+            suse_fetch
+            return 0
+            ;;
         *)
             echo -n "Attempt to download:"
             say_fail
@@ -99,123 +103,60 @@ download_dotnet() {
     esac
 }
 
+debian_fetch() {
+    LOWEST="8.7"
+    VALID=$($INSTALLER_LOC/valid-version.py $OS_VERSION $LOWEST 2>&1)
+
+    if [[ $VALID == "true" ]]; then
+        get_type
+    else
+        say_incompatible
+    fi
+    return 0
+}
+
 ubuntu_fetch() {
-    case "$OS_VERSION" in
-        "16.04")
-            if [[ $SDK == "true" ]]; then
-                echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847089
-                STATUS=$?
-                download_check STATUS
-            else
-                echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843432
-                STATUS=$?
-                download_check STATUS
-            fi
-            ;;
-        "16.10")
-            if [[ $SDK == "true" ]]; then
-                echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847090
-                STATUS=$?
-                download_check STATUS
-            else
-                echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843436
-                STATUS=$?
-                download_check STATUS
-            fi
-            ;;
-        "17.04")
-            say_fail
-            echo "${red:-}Ubuntu $OS_VERSION is incompatible with .NET runtime.${normal:-}"
-            exit 1
-            ;;
-        *)
-            if [[ $SDK == "true" ]]; then
-                echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847106
-                STATUS=$?
-                download_check STATUS
-            else
-                echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843422
-                STATUS=$?
-                download_check STATUS
-            fi
-            ;;
-    esac
+    LOWEST="14.04"
+    VALID=$($INSTALLER_LOC/valid-version.py $OS_VERSION $LOWEST 2>&1)
+
+    if [[ $VALID == "true" ]]; then
+        get_type
+    else
+        say_incompatible
+    fi
     return 0
 }
 
 mint_fetch() {
-    case "$OS_VERSION" in
-        "18")
-            if [[ $SDK == "true" ]]; then
-                echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847089
-                STATUS=$?
-                download_check STATUS
-            else
-                echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843432
-                STATUS=$?
-                download_check STATUS
-            fi
-            ;;
-        *)
-            if [[ $SDK == "true" ]]; then
-                echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847106
-                STATUS=$?
-                download_check STATUS
-            else
-                echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843422
-                STATUS=$?
-                download_check STATUS
-            fi
-            ;;
-    esac
+    LOWEST="17.0"
+    VALID=$($INSTALLER_LOC/valid-version.py $OS_VERSION $LOWEST 2>&1)
+
+    if [[ $VALID == "true" ]]; then
+        get_type
+    else
+        say_incompatible
+    fi
     return 0
 }
 
 fedora_fetch() {
-    case "$OS_VERSION" in
-        "23")
-            if [[ $SDK == "true" ]]; then
-                echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847099
-                STATUS=$?
-                download_check STATUS
-            else
-                echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=84342
-                STATUS=$?
-                download_check STATUS
-            fi
-            ;;
-        "24")
-            if [[ $SDK == "true" ]]; then
-                echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-sdk.tar.gz https://go.microsoft.com/fwlink/?linkid=847100
-                STATUS=$?
-                download_check STATUS
-            else
-                echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-                curl -SL -o /tmp/dotnet-runtime.tar.gz https://go.microsoft.com/fwlink/?linkid=843431
-                STATUS=$?
-                download_check STATUS
-            fi
-            ;;
-        *)
-            echo -n "Attempt to download:"
-            say_fail
-            echo "${red:-}Fedora $OS_VERSION is incompatible with .NET runtime.${normal:-}"
-            exit 1
-            ;;
-    esac
+    if (($OS_VERSION < 25)); then
+        say_incompatible
+    else
+        get_type
+    fi
+    return 0
+}
+
+suse_fetch() {
+    LOWEST="42.2"
+    VALID=$($INSTALLER_LOC/valid-version.py $OS_VERSION $LOWEST 2>&1)
+
+    if [[ $VALID == "true" ]]; then
+        get_type
+    else
+        say_incompatible
+    fi
     return 0
 }
 
@@ -240,6 +181,28 @@ get_colors() {
     fi
 }
 
+get_type() {
+    if [[ $SDK == "true" ]]; then
+        get_sdk
+    else
+        get_runtime
+    fi
+}
+
+get_sdk() {
+    echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
+    curl -SL -o /tmp/dotnet-sdk.tar.gz https://download.microsoft.com/download/0/6/5/0656B047-5F2F-4281-A851-F30776F8616D/dotnet-dev-linux-x64.2.0.0-preview1-005977.tar.gz
+    STATUS=$?
+    download_check STATUS
+}
+
+get_runtime() {
+    echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
+    curl -SL -o /tmp/dotnet-runtime.tar.gz https://download.microsoft.com/download/0/9/0/09060200-E749-4025-A51A-83391C611C86/dotnet-linux-x64.2.0.0-preview1-002111-00.tar.gz
+    STATUS=$?
+    download_check STATUS
+}
+
 say_pass() {
     echo "${bold:-} [ ${green:-}PASS${white:-} ] ${normal:-}"
 }
@@ -261,11 +224,13 @@ download_check() {
     fi
 }
 
-failed_download() {
+say_incompatible() {
     echo -n "Attempt to download:"
     say_fail
-    echo "Install failed: Download was not successful."
+    echo "${red:-}$OS_ID.$OS_VERSION is incompatible with .NET runtime.${normal:-}"
     exit 1
 }
+
+export INSTALLER_LOC=$(dirname $(readlink -f "${0}"))
 
 main_loop $1
