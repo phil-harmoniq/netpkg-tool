@@ -10,6 +10,11 @@ main_loop() {
     check_for_dotnet
 
     if [[ $? -eq 0 ]]; then
+        if ! [[ -z $VERB ]]; then
+            echo "-------------------- Program Output: --------------------"
+            echo
+        fi
+
         start_app
     fi
 }
@@ -42,8 +47,8 @@ check_for_dotnet() {
 }
 
 start_app() {
-    # dotnet $HERE/usr/share/tests/arg-test.dll $CLI_ARGS
-    dotnet $HERE/usr/share/app/$DLL_NAME.dll $CLI_ARGS
+    # dotnet $HERE/usr/share/tests/arg-test.dll $ARGS
+    dotnet $HERE/usr/share/app/$DLL_NAME.dll ${ARGS[@]}
     exit 0
 }
 
@@ -119,11 +124,18 @@ say_hello() {
     echo "${normal:-} ---------------------"
 }
 
+arg_filter() {
+    params=("${ARGS[@]}")
+    unset params[$1]
+    set -- "${params[@]}"
+    ARGS=("${params[@]}")
+}
+
 # ------------------------------- Variables ------------------------------
 
 export HERE=$(dirname $(readlink -f "${0}"))
 export APPDIR=$(dirname $APPIMAGE)
-export CLI_ARGS="$@"
+export ARGS=($@)
 export XDG_DATA_DIRS="$HERE/usr/share:$XDG_DATA_DIRS"
 export PATH="$HERE/usr/bin:$PATH"
 export PKG_LIB="$HERE/usr/lib"
@@ -148,16 +160,18 @@ get_colors
 
 # --------------------------------- Args ---------------------------------
 
-if [[ "$1" == "--npk-v" ]] || [[ "$1" == "--npk-verbose" ]]; then
-    VERB="true";
-    export VERB=$VERB
-elif [[ "$1" == "--npk-h" ]] || [[ "$1" == "--npk-help" ]]; then
-    $HERE/usr/bin/help-menu.sh
-    exit 0
-elif [[ "$1" == "--npk-d" ]] || [[ "$1" == "--npk-dir" ]]; then
-    echo ".NET installed at: $LOC"
-    exit 0
-fi
+for I in "${!ARGS[@]}"; do
+    if [[ "${ARGS[$I]}" == "--npk-v" ]] || [[ "${ARGS[$I]}" == "--npk-verbose" ]]; then
+        export VERB="true"
+        arg_filter $I
+    elif [[ "${ARGS[$I]}" == "--npk-h" ]] || [[ "${ARGS[$I]}" == "--npk-help" ]]; then
+        $HERE/usr/bin/help-menu.sh
+        exit 0
+    elif [[ "${ARGS[$I]}" == "--npk-d" ]] || [[ "${ARGS[$I]}" == "--npk-dir" ]]; then
+        echo ".NET installed at: $LOC"
+        exit 0
+    fi
+done
 
 # --------------------------------- Init ---------------------------------
 
