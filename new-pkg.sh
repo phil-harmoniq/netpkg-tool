@@ -23,13 +23,15 @@ main_loop() {
     if [[ $? -eq 0 ]]; then
         echo -n "AppImageKit compression:"
         say_pass
-        delete_temp_files
+
+        if [[ -z $NO_DEL ]]; then
+            delete_temp_files
+        fi
     else
         echo -n "AppImageKit compression:"
         say_fail
         exit 1
     fi
-    if [[ $? -eq 0 ]]; then say_pass; else say_fail; exit 1; fi
     echo -n "Packaging complete:"
     say_pass
     echo "${green:-}New NET_Pkg created at $TRGT/$CSPROJ$EXTN${normal:-}"
@@ -122,6 +124,8 @@ find_csproj() {
 transfer_files() {
     echo -n "Transferring files..."
 
+    if [[ -d /tmp/NET_Pkg.Template ]]; then rm -r /tmp/NET_Pkg.Temp; fi
+
     mkdir -p /tmp/NET_Pkg.Temp
     cp -r $PKG_DIR/NET_Pkg.Template/. /tmp/NET_Pkg.Temp
     mkdir -p /tmp/NET_Pkg.Temp/usr/share/app
@@ -153,9 +157,12 @@ create_pkg() {
 }
 
 delete_temp_files() {
-    if [[ -z $NO_DEL ]]; then
-        echo -n "Deleting temporary files..."
-        rm -r /tmp/NET_Pkg.Temp
+    echo -n "Deleting temporary files..."
+    rm -r /tmp/NET_Pkg.Temp
+    if [[ $? -eq 0 ]]; then
+        say_pass
+    else
+        exit 1
     fi
 }
 
@@ -258,6 +265,8 @@ if [[ "$3" == "-v" ]] || [[ "$1" == "--verbose" ]]; then
 elif [[ -z "$1" ]]; then
     $PKG_DIR/tools/pkg-tool-help.sh
     exit 0
+elif [[ "$3" == "--nodel" ]]; then
+    export NO_DEL="true"
 fi
 
 if [[ "$1" == "-d" ]] || [[ "$1" == "--dir" ]]; then

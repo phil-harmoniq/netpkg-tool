@@ -3,5 +3,5 @@
 Type=Application
 Name=NET_Pkg
 Exec=AppRun
-Icon=AppIcon
+Icon=dotnet-core
 Terminal=false
