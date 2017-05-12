@@ -19,6 +19,7 @@ echo "   ${bold:-}${cyan:-}Optional Arguments:${normal:-}"
 echo "     --verbose or -v : Verbose output"
 echo "        --help or -h : Help menu (this page)"
 echo "         --dir or -d : View location of .NET runtime"
+echo "        --install-sdk: Install the .NET sdk locally"
 echo
 echo "   More information & source code available on github:"
 echo "   https://github.com/phil-harmoniq/NET_Pkg"

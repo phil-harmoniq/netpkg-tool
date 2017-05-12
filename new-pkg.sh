@@ -2,13 +2,12 @@
 
 # -------------------------------- Config --------------------------------
 
-export PKG_VERSION="0.2.0"
+export PKG_VERSION="0.2.1"
 
 # ------------------------------- Functions ------------------------------
 
 main_loop() {
-    echo
-    say_name
+    say_hello
 
     if [[ -z "$PROJ" ]] || [[ -z "$TRGT" ]]; then
         echo -n "You must specify a directory containing a *.csproj file AND a target location."
@@ -39,7 +38,6 @@ main_loop() {
 
 check_for_dotnet() {
     check_for_sdk
-
     if [[ $? != 0 ]]; then
         while true; do
             read -p "Would you like to download & install the .NET sdk? (y/n): " yn
@@ -171,6 +169,29 @@ check_path() {
     fi
 }
 
+force_install() {
+    echo -n "Checking if .NET sdk is installed..."
+    check_for_sdk &> /dev/null
+    if [[ $? -eq 0 ]]; then 
+        if [[ -f "$HOME/.local/share/dotnet/bin/dotnet" ]] && [[ -f "$HOME/.local/share/dotnet/bin/dotnet-sdk" ]]
+            then say_fail; echo ".NET sdk already installed by NET_Pkg installer."
+        else
+            say_warning
+            while true; do
+                read -p ".NET sdk detected. Would you still like to install the sdk locally? (y/n): " yn
+                case $yn in
+                    [Yy]* ) start_installer; return 0;;
+                    [Nn]* ) echo "${red:-}User aborted the application.${normal:-}"; echo; exit 1;;
+                    * ) echo "Please answer yes or no.";;
+                esac
+            done
+        fi
+    else
+        say_warning
+        start_installer
+    fi
+}
+
 get_colors() {
     # See if stdout is a terminal
     if [[ -t 1 ]]; then
@@ -191,10 +212,11 @@ get_colors() {
     fi
 }
 
-say_name() {
-    echo -n "------------------ ${cyan:-}"
-    echo -n "${bold:-}NET_Pkg.Tool $PKG_VERSION"
-    echo "${normal:-} -------------------"
+say_hello() {
+    echo
+    echo -n "--------------------- ${cyan:-}"
+    echo -n "${bold:-}NET_Pkg $PKG_VERSION"
+    echo "${normal:-} ---------------------"
 }
 
 say_pass() {
@@ -239,10 +261,16 @@ elif [[ -z "$1" ]]; then
 fi
 
 if [[ "$1" == "-d" ]] || [[ "$1" == "--dir" ]]; then
-    echo ".NET installed at: $LOC"
+    if [[ -z "$LOC" ]]; then NET="${red:-}not installed${normal:-}"
+    else NET="$(dirname $LOC)"; fi
+    echo ".NET location: $NET"
     exit 0
 elif [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
     $PKG_DIR/tools/pkg-tool-help.sh
+    exit 0
+elif [[ "$1" == "--install-sdk" ]]; then
+    say_hello
+    force_install
     exit 0
 fi
 
