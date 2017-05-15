@@ -126,7 +126,7 @@ debian_fetch() {
 ubuntu_fetch() {
     LOWEST="14.04"
     VALID=$($INSTALLER_LOC/valid-version.py $OS_VERSION $LOWEST 2>&1)
-
+    
     if [[ $VALID == "true" ]]; then
         get_type
     else
