@@ -263,8 +263,6 @@ else
     export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
 fi
 
-echo $LD_LIBRARY_PATH
-
 export PKG_DIR=$(dirname $(readlink -f "${0}"))
 export PROJ=${ARGS[0]}
 export TRGT=${ARGS[1]}
