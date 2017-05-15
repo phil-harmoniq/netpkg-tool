@@ -255,6 +255,15 @@ export OS_CODENAME=$VERSION_CODENAME
 export OS_PNAME=$PRETTY_NAME
 export LOC="$(which dotnet 2> /dev/null)"
 export ARGS=($@)
+export HERE=$(dirname $(readlink -f "${0}"))
+
+if [[ -z "${LD_LIBRARY_PATH// }" ]]; then 
+    export LD_LIBRARY_PATH="$HERE/usr/lib"
+else
+    export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
+fi
+
+echo $LD_LIBRARY_PATH
 
 export PKG_DIR=$(dirname $(readlink -f "${0}"))
 export PROJ=${ARGS[0]}
