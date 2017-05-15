@@ -78,16 +78,24 @@ add_to_path() {
 
 download_dotnet() {
     case "$OS_ID" in
+        "debian")
+            debian_fetch
+            return 0
+            ;;
         "ubuntu")
             ubuntu_fetch
+            return 0
+            ;;
+        "linuxmint")
+            mint_fetch
             return 0
             ;;
         "fedora")
             fedora_fetch
             return 0
             ;;
-        "linuxmint")
-            mint_fetch
+        "centos")
+            centos_fetch
             return 0
             ;;
         "opensuse")
@@ -141,6 +149,15 @@ mint_fetch() {
 
 fedora_fetch() {
     if (($OS_VERSION < 25)); then
+        say_incompatible
+    else
+        get_type
+    fi
+    return 0
+}
+
+centos_fetch() {
+    if (($OS_VERSION < 7)); then
         say_incompatible
     else
         get_type
