@@ -21,7 +21,7 @@ main_loop() {
 
 check_for_dotnet() {
     # check_path
-    dotnet --version &> /dev/null
+    which dotnet &> /dev/null
 
     if [[ $? -ne 0 ]]; then
         if [[ -z $VERB ]]; then echo "${yellow:-}.NET not installed.${normal:-}"; fi
