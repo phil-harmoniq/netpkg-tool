@@ -119,7 +119,7 @@ create_package() {
     fi
     echo -n "AppImageTool compression:"
 
-    if [[ complete == "true" ]]; then
+    if [[ $complete == "true" ]]; then
         say_pass
     else
         say_fail
