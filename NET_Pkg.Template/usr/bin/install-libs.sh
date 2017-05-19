@@ -9,12 +9,12 @@ main_loop() {
 
 get_libunwind() {
     echo "Downloading libunwind..."
-    wget https://download.microsoft.com/download/0/6/5/0656B047-5F2F-4281-A851-F30776F8616D/dotnet-dev-linux-x64.2.0.0-preview1-005977.tar.gz -O /tmp/libunwind.tar.gz -q --show-progress
+    wget http://download.savannah.nongnu.org/releases/libunwind/libunwind-1.2.tar.gz -O /tmp/libunwind.tar.gz -q --show-progress
     mkdir -p /tmp/.unwind-unpack
     tar zxf /tmp/libunwind.tar.gz -C /tmp/.unwind-unpack &> /dev/null
 
     echo "Compiling libunwind from source. This may take a while."
-    compile_libunwind &> /dev/null
+    compile_libunwind &> /dev/null 
     rm -rf /tmp/.unwind-unpack
 }
 
