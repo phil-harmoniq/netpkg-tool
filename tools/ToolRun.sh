@@ -88,7 +88,6 @@ install_prompt() {
     while true; do
         case $yn in
             [Yy]* )
-                if [[ $libs_needed == "true" ]]; then 
                 start_installer
                 if [[ $? -eq 0 ]]; then
                     check_path
@@ -103,7 +102,7 @@ install_prompt() {
 }
 
 start_installer() {
-    if [[ libs_needed == "true" ]]; then
+    if [[ $libs_needed == "true" ]]; then
         $PKG_DIR/NET_Pkg.Template/usr/bin/install-libs.sh
     fi
 
