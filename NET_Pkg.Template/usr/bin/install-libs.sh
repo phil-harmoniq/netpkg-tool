@@ -1,14 +1,10 @@
 #! /usr/bin/env sh
 
 main_loop() {
-    set -e
-
     if [[ $need_unwind == "true" ]]; then get_libunwind; fi
     if [[ $need_icu == "true" ]]; then get_libicu; fi
     # if [[ $need_gettext == "true" ]]; then get_gettext; fi
     # if [[ $need_curl == "true" ]]; then get_curl; fi
-
-    unset -e
 }
 
 get_libunwind() {
