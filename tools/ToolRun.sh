@@ -88,6 +88,7 @@ install_prompt() {
     while true; do
         case $yn in
             [Yy]* )
+                if [[ $libs_needed == "true" ]]; then 
                 start_installer
                 if [[ $? -eq 0 ]]; then
                     check_path
