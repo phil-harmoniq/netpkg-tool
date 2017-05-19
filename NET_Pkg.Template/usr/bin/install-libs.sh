@@ -14,13 +14,13 @@ get_libunwind() {
     tar zxf /tmp/libunwind.tar.gz -C /tmp/.unwind-unpack &> /dev/null
 
     echo "Compiling libunwind from source. This may take a while."
-    compile_libunwind &> /dev/null 
+    compile_libunwind
     rm -rf /tmp/.unwind-unpack
 }
 
 compile_libunwind() {
-    cd /tmp/.unwind-unpack
-    ./configure.sh --prefix=$HOME/.local/share/dotnet/deps
+    cd /tmp/.unwind-unpack/libunwind-1.2
+    ./configure --prefix=$HOME/.local/share/dotnet/deps
     make
     make install
 }
