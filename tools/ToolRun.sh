@@ -73,9 +73,9 @@ install_prompt() {
     if [[ $libs_needed == "true" ]]; then
         say_warning
         echo "The following libraries are missing and will also need to be installed:"
-        if [[ need_unwind == "true" ]]; then echo " - libunwind"; fi
-        if [[ need_icu == "true" ]]; then echo " - libunicu"; fi
-        if [[ need_gettext == "true" ]]; then echo " - gettext"; fi
+        if [[ $need_unwind == "true" ]]; then echo " - libunwind"; fi
+        if [[ $need_icu == "true" ]]; then echo " - libunicu"; fi
+        if [[ $need_gettext == "true" ]]; then echo " - gettext"; fi
         echo "${yellow:-}It is recommended that you acquire these from your package manager, but can be locally installed.${normal:-}"
         read -p "Would you like to download & install the .NET sdk and needed libraries? (y/n): " yn
         export yn=$yn
