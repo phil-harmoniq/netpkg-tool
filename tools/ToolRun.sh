@@ -69,7 +69,8 @@ check_for_sdk() {
 install_prompt() {
     echo -n "Checking if necessary libraries are present"
     source $PKG_DIR/NET_Pkg.Template/usr/bin/lib-check.sh
-    if [[ libs_needed == "true" ]]; then
+
+    if [[ $libs_needed == "true" ]]; then
         say_warning
         echo "The following libraries are missing and will also need to be installed:"
         if [[ need_unwind == "true" ]]; then echo " - libunwind"; fi

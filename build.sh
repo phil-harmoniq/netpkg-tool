@@ -112,11 +112,19 @@ create_desktop_files() {
 create_package() {
     if [[ -z $VERB ]]; then
         appimagetool -n /tmp/.NET_Pkg.Tool $TRGT/NET_Pkg.Tool &> /dev/null
+        if [[ $? -eq 0 ]]; then export complete="true"; fi
     else
         appimagetool -n /tmp/.NET_Pkg.Tool $TRGT/NET_Pkg.Tool
+        if [[ $? -eq 0 ]]; then export complete="true"; fi
     fi
     echo -n "AppImageTool compression:"
-    say_pass
+
+    if [[ complete == "true" ]]; then
+        say_pass
+    else
+        say_fail
+        exit 1
+    fi
 }
 
 say_hello() {
