@@ -1,4 +1,4 @@
-#! /usr/bin/env sh
+#! /usr/bin/env bash
 
 main_loop() {
     if [[ $need_unwind == "true" ]]; then get_libunwind; fi
