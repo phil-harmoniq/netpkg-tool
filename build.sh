@@ -1,5 +1,4 @@
 #! /usr/bin/env bash
-set -e
 
 main_loop() {
     say_hello
@@ -19,10 +18,8 @@ main_loop() {
 
 test_for_appimagetool() {
     echo -n "Checking for AppImageToolkit..."
-    set +e
     appimagetool -h &> /dev/null
     if [[ $? != 0 ]]; then
-        set -e
         say_warning
         while true; do
             read -p "Would you like to download AppImageToolkit?: " yn
@@ -36,7 +33,6 @@ test_for_appimagetool() {
             esac
         done
     else
-        set -e
         say_pass
         return 0
     fi
