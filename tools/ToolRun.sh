@@ -91,6 +91,7 @@ install_prompt() {
                 start_installer
                 if [[ $? -eq 0 ]]; then
                     check_path
+                    return 0
                 else
                     exit 1
                 fi
@@ -205,29 +206,6 @@ check_path() {
     if [[ -f "$HOME/.local/share/dotnet/bin/dotnet" ]] && [[ $ERR_CODE -ne 0 ]]; then
         echo "${yellow:-}.NET detected but not in \$PATH. Adding for current session.${normal:-}"
         export PATH=$HOME/.local/share/dotnet/bin:$PATH
-    fi
-}
-
-force_install() {
-    echo -n "Checking if .NET sdk is installed..."
-    check_for_sdk &> /dev/null
-    if [[ $? -eq 0 ]]; then 
-        if [[ -f "$HOME/.local/share/dotnet/bin/dotnet" ]] && [[ -f "$HOME/.local/share/dotnet/bin/dotnet-sdk" ]]
-            then say_fail; echo ".NET sdk already installed by NET_Pkg installer."
-        else
-            say_warning
-            while true; do
-                read -p ".NET sdk detected. Would you still like to install the sdk locally? (y/n): " yn
-                case $yn in
-                    [Yy]* ) start_installer; return 0;;
-                    [Nn]* ) echo "${red:-}User aborted the application.${normal:-}"; echo; exit 1;;
-                    * ) echo "Please answer yes or no.";;
-                esac
-            done
-        fi
-    else
-        say_warning
-        start_installer
     fi
 }
 
