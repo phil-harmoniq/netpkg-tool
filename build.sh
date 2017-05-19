@@ -1,5 +1,4 @@
 #! /usr/bin/env bash
-set -e
 
 main_loop() {
     say_hello
@@ -19,10 +18,8 @@ main_loop() {
 
 test_for_appimagetool() {
     echo -n "Checking for AppImageToolkit..."
-    set +e
     appimagetool -h &> /dev/null
     if [[ $? != 0 ]]; then
-        set -e
         say_warning
         while true; do
             read -p "Would you like to download AppImageToolkit?: " yn
@@ -36,7 +33,6 @@ test_for_appimagetool() {
             esac
         done
     else
-        set -e
         say_pass
         return 0
     fi
@@ -116,11 +112,19 @@ create_desktop_files() {
 create_package() {
     if [[ -z $VERB ]]; then
         appimagetool -n /tmp/.NET_Pkg.Tool $TRGT/NET_Pkg.Tool &> /dev/null
+        if [[ $? -eq 0 ]]; then export complete="true"; fi
     else
         appimagetool -n /tmp/.NET_Pkg.Tool $TRGT/NET_Pkg.Tool
+        if [[ $? -eq 0 ]]; then export complete="true"; fi
     fi
     echo -n "AppImageTool compression:"
-    say_pass
+
+    if [[ $complete == "true" ]]; then
+        say_pass
+    else
+        say_fail
+        exit 1
+    fi
 }
 
 say_hello() {

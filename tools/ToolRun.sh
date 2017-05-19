@@ -38,17 +38,7 @@ main_loop() {
 check_for_dotnet() {
     check_for_sdk
     if [[ $? != 0 ]]; then
-        while true; do
-            read -p "Would you like to download & install the .NET sdk? (y/n): " yn
-            case $yn in
-                [Yy]* ) start_installer
-                    check_path
-                    return 0
-                    ;;
-                [Nn]* ) echo "${red:-}User aborted the application.${normal:-}"; echo; exit 1;;
-                * ) echo "Please answer yes or no.";;
-            esac
-        done
+        install_prompt
     else
         return 0
     fi
@@ -75,7 +65,48 @@ check_for_sdk() {
     fi;
 }
 
+
+install_prompt() {
+    echo -n "Checking if necessary libraries are present"
+    source $PKG_DIR/NET_Pkg.Template/usr/bin/lib-check.sh
+
+    if [[ $libs_needed == "true" ]]; then
+        say_warning
+        echo "The following libraries are missing and will also need to be installed:"
+        if [[ $need_unwind == "true" ]]; then echo " - libunwind"; fi
+        if [[ $need_icu == "true" ]]; then echo " - libunicu"; fi
+        if [[ $need_gettext == "true" ]]; then echo " - gettext"; fi
+        echo "${yellow:-}It is recommended that you acquire these from your package manager, but can be locally installed.${normal:-}"
+        read -p "Would you like to download & install the .NET sdk and needed libraries? (y/n): " yn
+        export yn=$yn
+    else
+        say_pass
+        read -p "Would you like to download & install the .NET sdk? (y/n): " yn
+        export yn=$yn
+    fi
+
+    while true; do
+        case $yn in
+            [Yy]* )
+                start_installer
+                if [[ $? -eq 0 ]]; then
+                    check_path
+                    return 0
+                else
+                    exit 1
+                fi
+                ;;
+            [Nn]* ) echo "${red:-}User aborted the application.${normal:-}"; echo; exit 1;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+}
+
 start_installer() {
+    if [[ $libs_needed == "true" ]]; then
+        $PKG_DIR/NET_Pkg.Template/usr/bin/install-libs.sh
+    fi
+
     $PKG_DIR/NET_Pkg.Template/usr/bin/dotnet-installer.sh -sdk
     if [[ $? -eq 0 ]]; then
         return 0
@@ -178,29 +209,6 @@ check_path() {
     fi
 }
 
-force_install() {
-    echo -n "Checking if .NET sdk is installed..."
-    check_for_sdk &> /dev/null
-    if [[ $? -eq 0 ]]; then 
-        if [[ -f "$HOME/.local/share/dotnet/bin/dotnet" ]] && [[ -f "$HOME/.local/share/dotnet/bin/dotnet-sdk" ]]
-            then say_fail; echo ".NET sdk already installed by NET_Pkg installer."
-        else
-            say_warning
-            while true; do
-                read -p ".NET sdk detected. Would you still like to install the sdk locally? (y/n): " yn
-                case $yn in
-                    [Yy]* ) start_installer; return 0;;
-                    [Nn]* ) echo "${red:-}User aborted the application.${normal:-}"; echo; exit 1;;
-                    * ) echo "Please answer yes or no.";;
-                esac
-            done
-        fi
-    else
-        say_warning
-        start_installer
-    fi
-}
-
 get_colors() {
     # See if stdout is a terminal
     if [[ -t 1 ]]; then
@@ -262,8 +270,6 @@ if [[ -z "${LD_LIBRARY_PATH// }" ]]; then
 else
     export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
 fi
-
-echo $LD_LIBRARY_PATH
 
 export PKG_DIR=$(dirname $(readlink -f "${0}"))
 export PROJ=${ARGS[0]}

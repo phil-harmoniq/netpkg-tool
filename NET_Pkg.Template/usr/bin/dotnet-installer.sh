@@ -112,13 +112,10 @@ download_dotnet() {
 }
 
 debian_fetch() {
-    LOWEST="8.7"
-    VALID=$($INSTALLER_LOC/valid-version.py $OS_VERSION $LOWEST 2>&1)
-
-    if [[ $VALID == "true" ]]; then
-        get_type
-    else
+    if (($OS_VERSION < 8)); then
         say_incompatible
+    else
+        get_type
     fi
     return 0
 }
@@ -200,22 +197,22 @@ get_colors() {
 
 get_type() {
     if [[ $SDK == "true" ]]; then
-        get_sdk
+        wget_sdk
     else
-        get_runtime
+        wget_runtime
     fi
 }
 
-get_sdk() {
+wget_sdk() {
     echo "Downloading .NET sdk for $OS_ID.$OS_VERSION-x64..."
-    curl -SL -o /tmp/dotnet-sdk.tar.gz https://download.microsoft.com/download/0/6/5/0656B047-5F2F-4281-A851-F30776F8616D/dotnet-dev-linux-x64.2.0.0-preview1-005977.tar.gz
+    wget https://download.microsoft.com/download/0/6/5/0656B047-5F2F-4281-A851-F30776F8616D/dotnet-dev-linux-x64.2.0.0-preview1-005977.tar.gz -O /tmp/dotnet-sdk.tar.gz -q --show-progress
     STATUS=$?
     download_check STATUS
 }
 
-get_runtime() {
+wget_runtime() {
     echo "Downloading .NET runtime for $OS_ID.$OS_VERSION-x64..."
-    curl -SL -o /tmp/dotnet-runtime.tar.gz https://download.microsoft.com/download/0/9/0/09060200-E749-4025-A51A-83391C611C86/dotnet-linux-x64.2.0.0-preview1-002111-00.tar.gz
+    wget https://download.microsoft.com/download/0/9/0/09060200-E749-4025-A51A-83391C611C86/dotnet-linux-x64.2.0.0-preview1-002111-00.tar.gz -O /tmp/dotnet-runtime.tar.gz -q --show-progress
     STATUS=$?
     download_check STATUS
 }
