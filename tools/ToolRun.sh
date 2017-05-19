@@ -89,6 +89,7 @@ install_prompt() {
         case $yn in
             [Yy]* )
                 start_installer
+                export just_installed="true"
                 if [[ $? -eq 0 ]]; then
                     check_path
                     return 0
@@ -120,7 +121,12 @@ compile_net_project() {
 
     find_csproj
     if [[ -z $VERB ]]; then echo -n "Restoring .NET project dependencies..."; fi
-    if ! [[ -z $VERB ]]; then dotnet restore; else dotnet restore >/dev/null; fi
+    grep -qF "$HOME/.local/share/dotnet/bin" $HOME/.bashrc
+    if ! [[ -z $VERB  ]] || [[ $just_installed == "true" ]]; then
+        dotnet restore
+    else
+        dotnet restore >/dev/null
+    fi
 
     if [[ $? -eq 0 ]]; then
         if [[ -z $VERB ]]; then say_pass; fi
