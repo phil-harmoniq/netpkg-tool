@@ -2,83 +2,7 @@
 # ------------------------------- Functions ------------------------------
 
 main_loop() {
-    if ! [[ -z $VERB ]]; then 
-        say_hello
-        echo "AppImage auto-mounted at $HERE"
-    fi
-
-    check_for_dotnet
-
-    if [[ $? -eq 0 ]]; then
-        if ! [[ -z $VERB ]]; then
-            echo "-------------------- Program Output: --------------------"
-            echo
-        fi
-
-        start_app
-    fi
-}
-
-check_for_dotnet() {
-    # check_path
-    which dotnet &> /dev/null
-
-    if [[ $? -ne 0 ]]; then
-        if [[ -z $VERB ]]; then echo "${yellow:-}.NET not installed.${normal:-}"; fi
-
-        while true; do
-            read -p "Would you like to download & install the .NET runtime? (y/n): " yn
-            case $yn in
-                [Yy]* )
-                    start_installer
-                    if [[ $? -eq 0 ]]; then
-                        check_path
-                        return 0
-                    else
-                        exit 1
-                    fi
-                    ;;
-                [Nn]* ) echo "${red:-}User aborted the application.${normal:-}"; echo; exit 1;;
-                * ) echo "Please answer yes or no.";;
-            esac
-        done
-    else
-        return 0
-    fi
-}
-
-start_app() {
-    # dotnet $HERE/usr/share/tests/arg-test.dll $ARGS
-    dotnet $HERE/usr/share/app/$DLL_NAME.dll ${ARGS[@]}
-    exit 0
-}
-
-check_path() {
-    if ! [[ -z $VERB ]]; then echo -n "Checking if .NET runtime is installed..."; fi
-    echo $PATH | grep -q  "$HOME/.local/share/dotnet/bin" 2> /dev/null
-    ERR_CODE=$?
-
-    if [[ -f "$HOME/.local/share/dotnet/bin/dotnet" ]] && [[ $ERR_CODE -ne 0 ]]; then
-        if ! [[ -z $VERB ]]; then say_caution; fi
-        echo "${yellow:-}.NET detected but not in \$PATH. Adding for current session.${normal:-}"
-        export PATH=$HOME/.local/share/dotnet/bin:$PATH
-        return 0
-    elif [[ $ERR_CODE -eq 0 ]]; then
-        if ! [[ -z $VERB ]]; then say_pass; fi
-        return 0
-    else
-        if ! [[ -z $VERB ]]; then say_warning; fi
-        return 1
-    fi
-}
-
-start_installer() {
-    $HERE/usr/bin/dotnet-installer.sh
-    if [[ $? -eq 0 ]]; then
-        return 0
-    else
-        exit 1
-    fi
+    $APPDIR/$DLL_NAME
 }
 
 get_colors() {
@@ -101,13 +25,19 @@ get_colors() {
     fi
 }
 
+say_hello() {
+    echo
+    echo -n "------------------ ${cyan:-}"
+    echo -n "${bold:-}NET_Pkg.Tool $PKG_VERSION"
+    echo "${normal:-} -------------------"
+}
+
+say_bye() {
+    echo "---------------------------------------------------------"
+}
 
 say_pass() {
     echo "${bold:-} [ ${green:-}PASS${white:-} ]${normal:-}"
-}
-
-say_caution() {
-    echo "${bold:-} [ ${yellow:-}PASS${white:-} ]${normal:-}"
 }
 
 say_warning() {
@@ -116,13 +46,6 @@ say_warning() {
 
 say_fail() {
     echo "${bold:-} [ ${red:-}FAIL${white:-} ]${normal:-}"
-}
-
-say_hello() {
-    echo
-    echo -n "--------------------- ${cyan:-}"
-    echo -n "${bold:-}NET_Pkg $PKG_VERSION"
-    echo "${normal:-} ---------------------"
 }
 
 arg_filter() {

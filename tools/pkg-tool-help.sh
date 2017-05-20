@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
-if [[ -z "$LOC" ]]; then NET="${red:-}not installed${normal:-}"
-else NET="$(dirname $LOC)"; fi
+if [[ -z "$NET_LOC" ]]; then NET="${red:-}not installed${normal:-}"
+else NET="$(dirname $NET_LOC)"; fi
 
 echo
 echo -n "------------------ ${cyan:-}"
