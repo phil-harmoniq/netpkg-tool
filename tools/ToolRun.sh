@@ -17,15 +17,14 @@ main_loop() {
     if [[ $? -eq 0 ]]; then transfer_files; else exit 1; fi
     if [[ $? -eq 0 ]]; then say_pass; create_pkg; else say_fail; exit 1; fi
     if [[ $? -eq 0 ]]; then
-        echo -n "AppImageKit compression:"
         say_pass
-
         if [[ -z $NO_DEL ]]; then
             delete_temp_files
         fi
     else
-        echo -n "AppImageKit compression:"
         say_fail
+        echo ${red:-}$apptool_result${normal:-}
+        echo 
         exit 1
     fi
     echo -n "Packaging complete:"
@@ -193,7 +192,7 @@ compile_net_project() {
     if ! [[ -z $VERB  ]] || [[ $just_installed == "true" ]]; then
         dotnet restore
     else
-        dotnet restore >/dev/null
+        restore_result=$(dotnet restore 2>&1)
     fi
 
     if [[ $? -eq 0 ]]; then
@@ -203,12 +202,14 @@ compile_net_project() {
         if ! [[ -z $VERB ]]; then
             net_publish
         else
-            net_publish >/dev/null
+            publish_result=$(net_publish 2>&1)
         fi
     else
-        if [[ -z $VERB ]]; then say_fail; fi
-        echo "${red:-}Failed to restore .NET Core application dependencies.${normal:-}"
-        echo
+        if [[ -z $VERB ]]; then
+            say_fail
+            echo ${red:-}$restore_result${normal:-}
+            echo
+        fi
         exit 1
     fi
 
@@ -217,9 +218,11 @@ compile_net_project() {
         cd $PKG_DIR
         return 0
     else
-        if [[ -z $VERB ]]; then say_fail; fi
-        echo "${red:-}Failed to complile .NET Core application.${normal:-}"
-        echo
+        if [[ -z $VERB ]]; then
+            say_fail
+            echo ${red:-}$publish_result${normal:-}
+            echo
+        fi
         exit 1
     fi
 }
@@ -282,10 +285,11 @@ transfer_files() {
 }
 
 create_pkg() {
+    echo -n "AppImageKit compression:"
     if ! [[ -z $VERB ]]; then
         run_appimagetool
     else
-        run_appimagetool &> /dev/null
+        apptool_result=$(run_appimagetool 2>&1)
     fi
 }
 
