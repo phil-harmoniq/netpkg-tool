@@ -20,11 +20,19 @@ main_loop() {
 }
 
 check_for_dotnet() {
+    if ! [[ -z $VERB ]]; then
+        echo -n "Checking if .NET is installed..."
+    fi
     # check_path
     which dotnet &> /dev/null
 
     if [[ $? -ne 0 ]]; then
-        if [[ -z $VERB ]]; then echo "${yellow:-}.NET not installed.${normal:-}"; fi
+        if ! [[ -z $VERB ]]; then say_warning; fi
+
+        if [[ -z $VERB ]]; then
+            say_hello
+            echo "${yellow:-}Warning: .NET not installed.${normal:-}"
+        fi
 
         while true; do
             read -p "Would you like to download & install the .NET runtime? (y/n): " yn
@@ -43,6 +51,7 @@ check_for_dotnet() {
             esac
         done
     else
+        if ! [[ -z $VERB ]]; then say_pass; fi
         return 0
     fi
 }
@@ -140,10 +149,12 @@ export ARGS=($@)
 export PATH="$HERE/usr/bin:$PATH"
 export PKG_LIB="$HERE/usr/lib"
 
-if [[ -z "${LD_LIBRARY_PATH// }" ]]; then 
-    export LD_LIBRARY_PATH="$HERE/usr/lib"
-else
-    export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
+if [[ -d "$HERE/usr/lib" ]]; then
+    if [[ -z "${LD_LIBRARY_PATH// }" ]]; then 
+        export LD_LIBRARY_PATH="$HERE/usr/lib"
+    else
+        export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"
+    fi
 fi
 
 source /etc/os-release
