@@ -41,11 +41,74 @@ main_loop() {
 }
 
 check_for_dotnet() {
+    test_for_appimagetool
     check_for_sdk
     if [[ $? != 0 ]]; then
         install_prompt
     else
         return 0
+    fi
+}
+
+test_for_appimagetool() {
+    echo -n "Checking for AppImageToolkit..."
+    appimagetool -h &> /dev/null
+    if [[ $? != 0 ]]; then
+        say_warning
+        while true; do
+            read -p "Would you like to download AppImageToolkit?: " yn
+            case $yn in
+                [Yy]* )
+                    get_appimagetool
+                    if [[ $1 -eq 0 ]]; then return 0; else exit 1; fi
+                    ;;
+                [Nn]* ) echo "${red:-}User aborted the application.${normal:-}"; echo; exit 1;;
+                * ) echo "Please answer yes or no.";;
+            esac
+        done
+    else
+        say_pass
+        return 0
+    fi
+}
+
+get_appimagetool() {
+    download_appimagetool
+    if [[ $1 -eq 0 ]]; then appimagetool_to_path; else exit 1; fi
+}
+
+download_appimagetool() {
+    echo "Downloading AppImageToolkit..."
+    if [[ ! -d ~/.local/bin ]]; then mkdir -p ~/.local/bin ; fi
+    wget https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O ~/.local/bin/appimagetool -q --show-progress
+    STATUS=$?
+    download_check STATUS
+}
+
+appimagetool_to_path() {
+    PATH_ADD='export PATH="$PATH:$HOME/.local/bin"'
+
+    if ! (grep -qF "$PATH_ADD" $HOME/.bashrc); then
+        if ! [[ -z $VERB ]]; then echo "Adding AppImageTool to \$PATH in ~/.bashrc"; fi
+        echo "# Added by NET_Pkg.Tool" >> "$HOME/.bashrc"
+        echo $PATH_ADD >> "$HOME/.bashrc"
+        echo >> "$HOME/.bashrc"
+        source ~/.bashrc
+    else
+        if ! [[ -z $VERB ]]; then echo "${yellow:-}$HOME/.local//bin already detected in ~/.bashrc, skip adding to \$PATH.${normal:-}"; fi
+    fi
+}
+
+download_check() {
+    if [[ $1 -eq 0 ]]; then
+        echo -n "Attempt to download:"
+        say_pass
+        chmod +x ~/.local/bin/appimagetool
+        return 0
+    else
+        echo -n "Attempt to downlod:"
+        say_fail
+        exit 1
     fi
 }
 

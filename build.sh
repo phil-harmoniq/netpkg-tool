@@ -46,7 +46,7 @@ get_appimagetool() {
 download_appimagetool() {
     echo "Downloading AppImageToolkit..."
     if [[ ! -d ~/.local/bin ]]; then mkdir -p ~/.local/bin ; fi
-    curl -SL -o ~/.local/bin/appimagetool https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+    wget https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O ~/.local/bin/appimagetool -q --show-progress
     STATUS=$?
     download_check STATUS
 }
