@@ -114,7 +114,7 @@ download_check() {
 check_for_sdk() {
     echo -n "Checking if .NET sdk is installed..."
 
-    if [[ -d /tmp/.net-sdk-test ]]; then rm -rf /tmp/.net-sdk-test; fi
+    rm -rf /tmp/.net-sdk-test
 
     mkdir /tmp/.net-sdk-test && cd /tmp/.net-sdk-test
     dotnet new sln &> /dev/null
@@ -245,7 +245,7 @@ find_csproj() {
 transfer_files() {
     echo -n "Transferring files..."
 
-    if [[ -d /tmp/NET_Pkg.Template ]]; then rm -r /tmp/NET_Pkg.Temp; fi
+    rm -rf /tmp/NET_Pkg.Temp
 
     mkdir -p /tmp/NET_Pkg.Temp
     cp -r $PKG_DIR/NET_Pkg.Template/. /tmp/NET_Pkg.Temp

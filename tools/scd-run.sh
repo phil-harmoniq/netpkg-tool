@@ -2,7 +2,7 @@
 # ------------------------------- Functions ------------------------------
 
 main_loop() {
-    $APPDIR/$DLL_NAME
+    $APPDIR/$DLL_NAME ${ARGS[@]}
 }
 
 get_colors() {
