@@ -50,12 +50,12 @@ check_for_dotnet() {
 }
 
 test_for_appimagetool() {
-    echo -n "Checking for AppImageToolkit..."
+    echo -n "Checking for appimagetool..."
     appimagetool -h &> /dev/null
     if [[ $? != 0 ]]; then
         say_warning
         while true; do
-            read -p "Would you like to download AppImageToolkit?: " yn
+            read -p "Would you like to download appimagetool?: " yn
             case $yn in
                 [Yy]* )
                     get_appimagetool
@@ -77,7 +77,7 @@ get_appimagetool() {
 }
 
 download_appimagetool() {
-    echo "Downloading AppImageToolkit..."
+    echo "Downloading appimagetool..."
     if [[ ! -d ~/.local/bin ]]; then mkdir -p ~/.local/bin ; fi
     wget https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O ~/.local/bin/appimagetool -q --show-progress
     STATUS=$?
@@ -88,7 +88,7 @@ appimagetool_to_path() {
     PATH_ADD='export PATH="$PATH:$HOME/.local/bin"'
 
     if ! (grep -qF "$PATH_ADD" $HOME/.bashrc); then
-        if ! [[ -z $VERB ]]; then echo "Adding AppImageTool to \$PATH in ~/.bashrc"; fi
+        if ! [[ -z $VERB ]]; then echo "Adding appimagetool to \$PATH in ~/.bashrc"; fi
         echo "# Added by NET_Pkg.Tool" >> "$HOME/.bashrc"
         echo $PATH_ADD >> "$HOME/.bashrc"
         echo >> "$HOME/.bashrc"
@@ -285,7 +285,7 @@ transfer_files() {
 }
 
 create_pkg() {
-    echo -n "AppImageKit compression:"
+    echo -n "appimagetool compression:"
     if ! [[ -z $VERB ]]; then
         run_appimagetool
     else
