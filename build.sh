@@ -12,7 +12,7 @@ main_loop() {
 
     copy_files
     create_package
-    echo "${green:-}New NET_Pkg created at $TRGT/$CSPROJ$EXTN${normal:-}"
+    echo "${green:-}New NET_Pkg created at $TRGT/NET_Pkg.Tool${normal:-}"
     say_bye
 }
 
@@ -46,7 +46,7 @@ get_appimagetool() {
 download_appimagetool() {
     echo "Downloading AppImageToolkit..."
     if [[ ! -d ~/.local/bin ]]; then mkdir -p ~/.local/bin ; fi
-    curl -SL -o ~/.local/bin/appimagetool https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+    wget https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O ~/.local/bin/appimagetool -q --show-progress
     STATUS=$?
     download_check STATUS
 }
