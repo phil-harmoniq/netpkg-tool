@@ -12,7 +12,7 @@ main_loop() {
 
     copy_files
     create_package
-    echo "${green:-}New NET_Pkg created at $TRGT/$CSPROJ$EXTN${normal:-}"
+    echo "${green:-}New NET_Pkg created at $TRGT/NET_Pkg.Tool${normal:-}"
     say_bye
 }
 
