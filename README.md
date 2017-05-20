@@ -10,5 +10,5 @@ WIP, will update when details are more concrete.
 
 ### Requirements
 
-* [AppImageToolkit](https://github.com/probonopd/appimagekit/) - bundles binaries along with needed libraries into a single file
-* [.NET Core](https://www.microsoft.com/net/download/linux) - open-source implementation of Microsoft's .NET framework.
+* [appimagetool](https://github.com/probonopd/appimagekit/) - bundles binaries along with needed libraries into a single file
+* [.NET Core SDK](https://www.microsoft.com/net/download/linux) - open-source implementation of Microsoft's .NET framework.
