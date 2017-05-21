@@ -29,10 +29,11 @@ main_loop() {
     fi
     echo -n "Packaging complete:"
     say_pass
+    
     if [[ -z $MAKE_SCD ]]; then
-        echo "${green:-}New NET_Pkg created at $TRGT/$NEW_PKG${normal:-}"
+        echo "${green:-}New NET_Pkg created at $TRGT/$CSPROJ$EXTN ${normal:-}"
     else
-        echo "${green:-}New AppImage created at $TRGT/$NEW_PKG${normal:-}"
+        echo "${green:-}New AppImage created at $TRGT/$CSPROJ.AppImage ${normal:-}"
     fi
 
     say_bye
@@ -187,6 +188,7 @@ compile_net_project() {
     cd $PROJ
 
     find_csproj
+    
     if [[ -z $VERB ]]; then echo -n "Restoring .NET project dependencies..."; fi
     grep -qF "$HOME/.local/share/dotnet/bin" $HOME/.bashrc
     if ! [[ -z $VERB  ]] || [[ $just_installed == "true" ]]; then
@@ -285,6 +287,10 @@ transfer_files() {
 }
 
 create_pkg() {
+    if ! [[ -z $CUSTOM_NAME ]]; then
+        CSPROJ=$APP_NAME
+    fi
+
     echo -n "appimagetool compression:"
     if ! [[ -z $VERB ]]; then
         run_appimagetool
@@ -296,10 +302,8 @@ create_pkg() {
 run_appimagetool() {
     if [[ -z $MAKE_SCD ]]; then
         appimagetool -n /tmp/NET_Pkg.Temp $TRGT/$CSPROJ$EXTN
-        export NEW_PKG="$CSPROJ$EXTN"
     else
         appimagetool -n /tmp/NET_Pkg.Temp $TRGT/$CSPROJ.AppImage
-        export NEW_PKG=$CSPROJ.AppImage
     fi
 }
 
@@ -426,7 +430,7 @@ fi
 # ---------------------------- Optional Args -----------------------------
 
 for ((I=0; I <= ${#ARGS[@]}; I++)); do
-    if [[ "${ARGS[$I]}" == "-v" ]]; then
+    if [[ "${ARGS[$I]}" == "-v" ]] || [[ "${ARGS[$I]}" == "--verbose" ]]; then
         export VERB="true"
         arg_filter $I
     elif [[ "${ARGS[$I]}" == "--nodel" ]]; then
@@ -439,6 +443,15 @@ for ((I=0; I <= ${#ARGS[@]}; I++)); do
             arg_filter $I
         else
             echo "You must specify a target OS to use the --scd flag."
+            exit 1
+        fi
+    elif [[ "${ARGS[$I]}" == "-n" ]] || [[ "${ARGS[$I]}" == "--name" ]]; then
+        if ! [[ -z "${ARGS[$I+1]}" ]]; then
+            export CUSTOM_NAME="true"
+            export APP_NAME="${ARGS[$I+1]}"
+            arg_filter $I
+        else
+            echo "You must specify a name to use the --name flag."
             exit 1
         fi
     fi
