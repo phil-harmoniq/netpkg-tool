@@ -416,7 +416,7 @@ elif [[ "${ARGS[0]}" == "-h" ]] || [[ "${ARGS[0]}" == "--help" ]]; then
     exit 0
 elif [[ "${ARGS[0]}" == "--install-sdk" ]]; then
     say_hello
-    force_install
+    $PKG_DIR/NET_Pkg.Template/usr/bin/dotnet-installer.sh -sdk
     exit 0
 elif [[ "${ARGS[0]}" == "--uninstall-sdk" ]]; then
     $PKG_DIR/tools/uninstaller.sh
