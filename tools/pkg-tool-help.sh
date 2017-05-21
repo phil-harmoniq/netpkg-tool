@@ -13,7 +13,7 @@ echo "            OS: $OS_PNAME"
 echo " .NET location: $NET"
 echo
 echo "   ${bold:-}${cyan:-}Usage:${normal:-}"
-echo "  ./NET_Pkg [.NET Project] [Destination] [flags]"
+echo "  ./NET_Pkg.Tool [.NET Project] [Destination] [flags]"
 echo
 echo "   ${bold:-}${cyan:-}Optional Arguments:${normal:-}"
 echo "     --verbose or -v : Verbose output"
