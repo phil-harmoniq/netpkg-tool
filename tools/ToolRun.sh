@@ -457,6 +457,16 @@ for ((I=0; I <= ${#ARGS[@]}; I++)); do
     fi
 done
 
+# ---------------------------- Error Catcher -----------------------------
+
+if ! [[ -d $PROJ ]]; then
+    echo "${red:-}Error: $PROJ is not a valid directory${normal:-}"
+    exit 1
+elif ! [[ -d $TRGT ]]; then
+    echo "${red:-}Error: $TRGT is not a valid directory${normal:-}"
+    exit 1
+fi
+
 # --------------------------------- Init ---------------------------------
 
 main_loop
