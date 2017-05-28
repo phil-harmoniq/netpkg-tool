@@ -383,13 +383,6 @@ say_fail() {
     echo "${bold:-} [ ${red:-}FAIL${white:-} ]${normal:-}"
 }
 
-arg_filter() {
-    params=("${ARGS[@]}")
-    unset params[$1]
-    set -- "${params[@]}"
-    ARGS=("${params[@]}")
-}
-
 # ------------------------------- Variables ------------------------------
 
 source /etc/os-release
@@ -445,18 +438,14 @@ fi
 for ((I=0; I <= ${#ARGS[@]}; I++)); do
     if [[ "${ARGS[$I]}" == "-v" ]] || [[ "${ARGS[$I]}" == "--verbose" ]]; then
         export VERB="true"
-        arg_filter $I
     elif [[ "${ARGS[$I]}" == "--nodel" ]]; then
         export NO_DEL="true"
-        arg_filter $I
     elif [[ "${ARGS[$I]}" == "-c" ]] || [[ "${ARGS[$I]}" == "--compile" ]]; then
         export COMPILE="true"
-        arg_filter $I
     elif [[ "${ARGS[$I]}" == "--scd" ]]; then
         if ! [[ -z "${ARGS[$I+1]}" ]]; then
             export MAKE_SCD="true"
             export TARGET_OS="${ARGS[$I+1]}"
-            arg_filter $I
         else
             say_hello
             echo "${red:-}You must specify a target OS to use the --scd flag.${normal:-}"
@@ -467,7 +456,6 @@ for ((I=0; I <= ${#ARGS[@]}; I++)); do
         if ! [[ -z "${ARGS[$I+1]}" ]]; then
             export CUSTOM_NAME="true"
             export APP_NAME="${ARGS[$I+1]}"
-            arg_filter $I
         else
             say_hello
             echo "${red:-}You must specify a name to use the --name flag.${normal:-}"
