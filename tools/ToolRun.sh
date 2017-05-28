@@ -11,13 +11,20 @@ main_loop() {
         exit 1
     fi
 
-    check_for_dotnet
+    if [[ -z $COMPILE ]]; then
+        check_for_dotnet
+    fi
 
-    if [[ $? -eq 0 ]]; then compile_net_project; else exit 1; fi
+    if [[ $? -eq 0 ]] || [[ -z $COMPILE ]]; then
+        compile_net_project
+    else
+        exit 1
+    fi
+
     if [[ $? -eq 0 ]]; then transfer_files; else exit 1; fi
     if [[ $? -eq 0 ]]; then say_pass; create_pkg; else say_fail; exit 1; fi
     if [[ $? -eq 0 ]]; then
-        say_pass
+        if [[ -z $VERB ]]; then say_pass; fi
         if [[ -z $NO_DEL ]]; then
             delete_temp_files
         fi
@@ -27,8 +34,6 @@ main_loop() {
         echo 
         exit 1
     fi
-    echo -n "Packaging complete:"
-    say_pass
     
     if [[ -z $MAKE_SCD ]]; then
         echo "${green:-}New NET_Pkg created at $TRGT/$CSPROJ$EXTN ${normal:-}"
@@ -37,7 +42,6 @@ main_loop() {
     fi
 
     say_bye
-    echo
 }
 
 check_for_dotnet() {
@@ -189,16 +193,19 @@ compile_net_project() {
 
     find_csproj
     
-    if [[ -z $VERB ]]; then echo -n "Restoring .NET project dependencies..."; fi
-    grep -qF "$HOME/.local/share/dotnet/bin" $HOME/.bashrc
-    if ! [[ -z $VERB  ]] || [[ $just_installed == "true" ]]; then
-        dotnet restore
-    else
-        restore_result=$(dotnet restore 2>&1)
+    if [[ -z $COMPILE ]]; then
+        if [[ -z $VERB ]]; then echo -n "Restoring .NET project dependencies..."; fi
+        grep -qF "$HOME/.local/share/dotnet/bin" $HOME/.bashrc
+        if ! [[ -z $VERB  ]] || [[ $just_installed == "true" ]]; then
+            dotnet restore
+        else
+            restore_result=$(dotnet restore 2>&1)
+        fi
     fi
 
     if [[ $? -eq 0 ]]; then
-        if [[ -z $VERB ]]; then say_pass; fi
+        if [[ -z $VERB ]] && [[ -z $COMPILE ]]; then say_pass; fi
+
         if [[ -z $VERB ]]; then echo -n "Compiling .NET project..."; fi
         export CORE_VERS=$($PKG_DIR/tools/parse-csproj.py 2>&1 >/dev/null)
         if ! [[ -z $VERB ]]; then
@@ -210,7 +217,9 @@ compile_net_project() {
         if [[ -z $VERB ]]; then
             say_fail
             echo ${red:-}$restore_result${normal:-}
-            echo
+            say_bye
+        else
+            say_bye
         fi
         exit 1
     fi
@@ -223,7 +232,9 @@ compile_net_project() {
         if [[ -z $VERB ]]; then
             say_fail
             echo ${red:-}$publish_result${normal:-}
-            echo
+            say_bye
+        else
+            say_bye
         fi
         exit 1
     fi
@@ -291,7 +302,8 @@ create_pkg() {
         CSPROJ=$APP_NAME
     fi
 
-    echo -n "appimagetool compression:"
+    echo -n "Compressing with appimagetool..."
+
     if ! [[ -z $VERB ]]; then
         run_appimagetool
     else
@@ -356,6 +368,7 @@ say_hello() {
 
 say_bye() {
     echo "---------------------------------------------------------"
+    echo
 }
 
 say_pass() {
@@ -436,13 +449,18 @@ for ((I=0; I <= ${#ARGS[@]}; I++)); do
     elif [[ "${ARGS[$I]}" == "--nodel" ]]; then
         export NO_DEL="true"
         arg_filter $I
+    elif [[ "${ARGS[$I]}" == "-c" ]] || [[ "${ARGS[$I]}" == "--compile" ]]; then
+        export COMPILE="true"
+        arg_filter $I
     elif [[ "${ARGS[$I]}" == "--scd" ]]; then
         if ! [[ -z "${ARGS[$I+1]}" ]]; then
             export MAKE_SCD="true"
             export TARGET_OS="${ARGS[$I+1]}"
             arg_filter $I
         else
-            echo "You must specify a target OS to use the --scd flag."
+            say_hello
+            echo "${red:-}You must specify a target OS to use the --scd flag.${normal:-}"
+            say_bye
             exit 1
         fi
     elif [[ "${ARGS[$I]}" == "-n" ]] || [[ "${ARGS[$I]}" == "--name" ]]; then
@@ -451,7 +469,9 @@ for ((I=0; I <= ${#ARGS[@]}; I++)); do
             export APP_NAME="${ARGS[$I+1]}"
             arg_filter $I
         else
-            echo "You must specify a name to use the --name flag."
+            say_hello
+            echo "${red:-}You must specify a name to use the --name flag.${normal:-}"
+            say_bye
             exit 1
         fi
     fi
@@ -459,12 +479,26 @@ done
 
 # ---------------------------- Error Catcher -----------------------------
 
-if ! [[ -d $PROJ ]]; then
-    echo "${red:-}Error: $PROJ is not a valid directory${normal:-}"
-    exit 1
-elif ! [[ -d $TRGT ]]; then
-    echo "${red:-}Error: $TRGT is not a valid directory${normal:-}"
-    exit 1
+if [[ -d "$(pwd)/$PROJ" ]]; then
+    export PROJ="$(pwd)/$PROJ"
+else
+    if ! [[ -d "$PROJ" ]]; then
+        say_hello
+        echo "${red:-}Error: $PROJ is not a valid directory${normal:-}"
+        say_bye
+        exit 1
+    fi
+fi
+
+if [[ -d "$(pwd)/$TRGT" ]]; then
+    export TRGT="$(pwd)/$TRGT"
+else
+    if ! [[ -d "$TRGT" ]]; then
+        say_hello
+        echo "${red:-}Error: $TRGT is not a valid directory${normal:-}"
+        say_bye
+        exit 1
+    fi
 fi
 
 # --------------------------------- Init ---------------------------------
