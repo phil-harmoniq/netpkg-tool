@@ -411,7 +411,7 @@ fi
 export PKG_DIR=$(dirname $(readlink -f "${0}"))
 export PROJ=${ARGS[0]}
 export TRGT=${ARGS[1]}
-export EXTN=".NET"
+export EXTN=".npk"
 get_colors
 
 source $PKG_DIR/tools/version.info
@@ -480,7 +480,7 @@ done
 # ---------------------------- Error Catcher -----------------------------
 
 if [[ -d "$(pwd)/$PROJ" ]]; then
-    export PROJ="$(pwd)/$PROJ"
+    export PROJ="$(readlink -m $(pwd)/$PROJ)"
 else
     if ! [[ -d "$PROJ" ]]; then
         say_hello
@@ -491,7 +491,7 @@ else
 fi
 
 if [[ -d "$(pwd)/$TRGT" ]]; then
-    export TRGT="$(pwd)/$TRGT"
+    export TRGT="$(readlink -m $(pwd)/$TRGT)"
 else
     if ! [[ -d "$TRGT" ]]; then
         say_hello
