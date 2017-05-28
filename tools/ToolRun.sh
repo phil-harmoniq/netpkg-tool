@@ -411,7 +411,7 @@ fi
 export PKG_DIR=$(dirname $(readlink -f "${0}"))
 export PROJ=${ARGS[0]}
 export TRGT=${ARGS[1]}
-export EXTN=".NET"
+export EXTN=".npk"
 get_colors
 
 source $PKG_DIR/tools/version.info
