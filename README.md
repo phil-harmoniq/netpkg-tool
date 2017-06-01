@@ -26,15 +26,16 @@ Run NET_Pkg.Tool and specify a .NET project folder and a destination folder:
 There are several optional commands that offer more control:
 
 ```
-  --verbose or -v : Verbose output
+  --verbose or -v : Verbose output"
   --compile or -c : Skip checks & dotnet-restore
      --name or -n : Set ouput file to custom name
-      --scd or -s : Self-Contained Deployment (requires RID)
-     --help or -h : Help menu (this page)
+      --scd or -s : Self-Contained Deployment (SCD)
+  --scd-rid or -r : SCD with custom RID (default: linux-x64)
       --dir or -d : View location of .NET runtime
+     --help or -h : Help menu (this page)
 
           --nodel : Skip deleting NET_Pkg temporary folder
-    --install-sdk : Install the .NET SDK locally
+    --install-sdk : Install .NET SDK locally
   --uninstall-sdk : Remove local .NET SDK install
 ```
 
@@ -83,13 +84,13 @@ NET_Pkg.Tool will restore and compile your project based on settings in your `*.
 
 ## .AppImage vs .npk
 
-TL;DR: Essentially, an `*.npk` file *is* an `*.AppImage` file with some extra features.
+TL;DR: Essentially, an `.npk` file *is* an `.AppImage` file with some extra features.
 
 .NET Core supports two types of application deployment, [Framework Dependent Deployment (SCD)](https://docs.microsoft.com/en-us/dotnet/core/deploying/#framework-dependent-deployments-fdd) and [Self-Contained Deployment (FDD)](https://docs.microsoft.com/en-us/dotnet/core/deploying/#self-contained-deployments-scd). The concept behind FDD seems to contradict the philosophy behind AppImage but could still be beneficial for console applications. SCD is more suited to the problem AppImage tries to solve but comes out much larger.
 
-Since .NET Core is not installed by default on most Linux distrobutions, it seemed appropriate to designate .NET applications created using FDD with a different file extension and to include tools relevant to ensure a functioning .NET runtime. There are a few extra tools available to `*.npk` files that make the process of checking for, installing, uninstalling, and updating .NET Core simpler. An `*.npk` file will also designate some useful environment variables including `$HERE` as suggested for AppImages.
+Since .NET Core is not installed by default on most Linux distrobutions, it seemed appropriate to designate .NET applications created using FDD with a different file extension and to include tools relevant to ensure a functioning .NET runtime. There are a few extra tools available to `.npk` files that make the process of checking for, installing, uninstalling, and updating .NET Core simpler. An `.npk` file will also designate some useful environment variables including `$HERE` as suggested for AppImages.
 
-Using NET_Pkg.Tool with SCD eliminates the need for any of the extra goodies that come with an `*.npk`, so none of those tools are included when you run NET_Pkg.Tool using the `--scd` flag. The resulting file will have an `*.AppImage` extension and won't be reliant on .NET being installed.
+Using NET_Pkg.Tool with SCD eliminates the need for any of the extra goodies that come with an `.npk`, so none of those tools are included when you run NET_Pkg.Tool using the `--scd` flag. The resulting file will have an `.AppImage` extension and won't be reliant on .NET being installed.
 
 ## Disclaimer
 

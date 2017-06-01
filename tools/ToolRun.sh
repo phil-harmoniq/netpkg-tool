@@ -3,13 +3,20 @@
 # ------------------------------- Functions ------------------------------
 
 main_loop() {
-    say_hello
-
-    if [[ -z "$PROJ" ]] || [[ -z "$TRGT" ]]; then
-        echo "${red:-}You must specify a directory containing a *.csproj file AND a target location.${normal:-}"
-        echo
+    if [[ -z "${ARGS[0]}" ]] || [[ -z "${ARGS[1]}" ]]; then
+        echo "${red:-}You must specify a directory containing a .csproj file AND a target location.${normal:-}"
         exit 1
     fi
+
+    find_csproj
+
+    if [[ -z $CSPROJ ]]; then
+        echo "${red:-}$PROJ does not contain a .csproj file.${normal:-}"
+        exit 1
+    fi
+
+    say_hello
+    say_task
 
     if [[ -z $COMPILE ]]; then
         check_for_dotnet
@@ -36,9 +43,9 @@ main_loop() {
     fi
     
     if [[ -z $MAKE_SCD ]]; then
-        echo "${green:-}New NET_Pkg created at $TRGT/$CSPROJ$EXTN ${normal:-}"
+        echo "${green:-}New NET_Pkg created at $TRGT_REL/$CSPROJ$EXTN ${normal:-}"
     else
-        echo "${green:-}New AppImage created at $TRGT/$CSPROJ.AppImage ${normal:-}"
+        echo "${green:-}New AppImage created at $TRGT_REL/$CSPROJ.AppImage ${normal:-}"
     fi
 
     say_bye
@@ -190,12 +197,10 @@ start_installer() {
 
 compile_net_project() {
     cd $PROJ
-
-    find_csproj
     
     if [[ -z $COMPILE ]]; then
         if [[ -z $VERB ]]; then echo -n "Restoring .NET project dependencies..."; fi
-        grep -qF "$HOME/.local/share/dotnet/bin" $HOME/.bashrc
+            grep -qF "$HOME/.local/share/dotnet/bin" $HOME/.bashrc
         if ! [[ -z $VERB  ]] || [[ $just_installed == "true" ]]; then
             dotnet restore
         else
@@ -207,7 +212,7 @@ compile_net_project() {
         if [[ -z $VERB ]] && [[ -z $COMPILE ]]; then say_pass; fi
 
         if [[ -z $VERB ]]; then echo -n "Compiling .NET project..."; fi
-        export CORE_VERS=$($PKG_DIR/tools/parse-csproj.py 2>&1 >/dev/null)
+            export CORE_VERS=$($PKG_DIR/tools/parse-csproj.py 2>&1 >/dev/null)
         if ! [[ -z $VERB ]]; then
             net_publish
         else
@@ -361,13 +366,26 @@ get_colors() {
 
 say_hello() {
     echo
-    echo -n "------------------ ${cyan:-}"
+    echo -n "-------------------- ${cyan:-}"
     echo -n "${bold:-}NET_Pkg.Tool $PKG_VERSION"
-    echo "${normal:-} -------------------"
+    echo "${normal:-} --------------------"
+}
+
+say_task() {
+    get_trgt_relative
+    get_proj_relative
+
+    if [[ -z $CUSTOM_NAME ]]; then name="$CSPROJ"
+    else name="$APP_NAME"; fi
+
+    if [[ -z $MAKE_SCD ]]; then ext="$EXTN"
+    else ext=".AppImage"; fi
+    
+    echo "${cyan:-}Compile $PROJ_REL to $TRGT_REL/$name$ext${normal:-}"
 }
 
 say_bye() {
-    echo "---------------------------------------------------------"
+    echo "------------------------------------------------------------"
     echo
 }
 
@@ -381,6 +399,18 @@ say_warning() {
 
 say_fail() {
     echo "${bold:-} [ ${red:-}FAIL${white:-} ]${normal:-}"
+}
+
+get_proj_relative() {
+    cd $PROJ
+    export PROJ_REL="$(dirs -0)"
+    cd $PKG_DIR
+}
+
+get_trgt_relative() {
+    cd $TRGT
+    export TRGT_REL="$(dirs -0)"
+    cd $PKG_DIR
 }
 
 # ------------------------------- Variables ------------------------------
@@ -411,7 +441,7 @@ source $PKG_DIR/tools/version.info
 export PKG_VERSION=$NET_PKG_VERSION
 
 # ---------------------------- Critical Args -----------------------------
-# Critical args will interrupt the program and quit when it is finished
+# Critical args will interrupt the program and quit when finished
 
 if [[ -z "${ARGS[0]}" ]]; then
     $PKG_DIR/tools/pkg-tool-help.sh
@@ -431,6 +461,9 @@ elif [[ "${ARGS[0]}" == "--install-sdk" ]]; then
 elif [[ "${ARGS[0]}" == "--uninstall-sdk" ]]; then
     $PKG_DIR/tools/uninstaller.sh
     exit 0
+elif [[ "${ARGS[0]}" == "--new" ]]; then
+    $PKG_DIR/tools/new.sh ${ARGS[@]}
+    exit 0
 fi
 
 # ---------------------------- Optional Args -----------------------------
@@ -438,13 +471,16 @@ fi
 for ((I=0; I <= ${#ARGS[@]}; I++)); do
     if [[ "${ARGS[$I]}" == "-v" ]] || [[ "${ARGS[$I]}" == "--verbose" ]]; then
         export VERB="true"
-    elif [[ "${ARGS[$I]}" == "--nodel" ]]; then
+    elif [[ "${ARGS[$I]}" == "-k" ]] || [[ "${ARGS[$I]}" == "--keep" ]]; then
         export NO_DEL="true"
     elif [[ "${ARGS[$I]}" == "-c" ]] || [[ "${ARGS[$I]}" == "--compile" ]]; then
         export COMPILE="true"
-    elif [[ "${ARGS[$I]}" == "--scd" ]]; then
+    elif [[ "${ARGS[$I]}" == "--scd" ]] || [[ "${ARGS[$I]}" == "-s" ]]; then
+        export MAKE_SCD="true"
+        export TARGET_OS="linux-x64"
+    elif [[ "${ARGS[$I]}" == "--scd-rid" ]] || [[ "${ARGS[$I]}" == "-r" ]]; then
+        export MAKE_SCD="true"
         if ! [[ -z "${ARGS[$I+1]}" ]]; then
-            export MAKE_SCD="true"
             export TARGET_OS="${ARGS[$I+1]}"
         else
             say_hello
@@ -465,7 +501,7 @@ for ((I=0; I <= ${#ARGS[@]}; I++)); do
     fi
 done
 
-# ---------------------------- Error Catcher -----------------------------
+# --------------------------- Directory Check ----------------------------
 
 if [[ -d "$(pwd)/$PROJ" ]]; then
     export PROJ="$(readlink -m $(pwd)/$PROJ)"

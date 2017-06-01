@@ -3,26 +3,29 @@
 main_loop() {
     say_hello
 
-    if [[ -z "$TRGT" ]]; then
+    if [[ -z "${ARGS[0]}" ]]; then
         echo "${red:-}You must specify a target directory.${normal:-}"
+        say_bye
         exit 1
     fi
+
+    say_task
 
     test_for_appimagetool
 
     copy_files
     create_package
-    echo "${green:-}New NET_Pkg created at $TRGT/NET_Pkg.Tool${normal:-}"
+    echo "${green:-}NET_Pkg.Tool created at $TRGT_REL/NET_Pkg.Tool${normal:-}"
     say_bye
 }
 
 test_for_appimagetool() {
-    echo -n "Checking for AppImageToolkit..."
+    echo -n "Checking for appimagetool..."
     appimagetool -h &> /dev/null
     if [[ $? != 0 ]]; then
         say_warning
         while true; do
-            read -p "Would you like to download AppImageToolkit?: " yn
+            read -p "Would you like to download appimagetool?: " yn
             case $yn in
                 [Yy]* )
                     get_appimagetool
@@ -44,7 +47,7 @@ get_appimagetool() {
 }
 
 download_appimagetool() {
-    echo "Downloading AppImageToolkit..."
+    echo "Downloading appimagetool..."
     if [[ ! -d ~/.local/bin ]]; then mkdir -p ~/.local/bin ; fi
     wget https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O ~/.local/bin/appimagetool -q --show-progress
     STATUS=$?
@@ -111,31 +114,37 @@ create_desktop_files() {
 
 create_package() {
     if [[ -z $VERB ]]; then
-        appimagetool -n /tmp/.NET_Pkg.Tool $TRGT/NET_Pkg.Tool &> /dev/null
+        result=$(appimagetool -n /tmp/.NET_Pkg.Tool $TRGT/NET_Pkg.Tool 2>&1)
         if [[ $? -eq 0 ]]; then export complete="true"; fi
     else
         appimagetool -n /tmp/.NET_Pkg.Tool $TRGT/NET_Pkg.Tool
         if [[ $? -eq 0 ]]; then export complete="true"; fi
     fi
-    echo -n "AppImageTool compression:"
+    echo -n "appimagetool compression:"
 
     if [[ $complete == "true" ]]; then
         say_pass
     else
         say_fail
+        echo "${red:-}$result${normal:-}"
         exit 1
     fi
 }
 
 say_hello() {
     echo
-    echo -n "------------------ ${cyan:-}"
+    echo -n "-------------------- ${cyan:-}"
     echo -n "${bold:-}NET_Pkg.Tool $PKG_VERSION"
-    echo "${normal:-} -------------------"
+    echo "${normal:-} --------------------"
+}
+
+say_task() {
+    get_trgt_relative
+    echo "${cyan:-}Compile NET_Pkg source to $TRGT_REL/NET_Pkg.Tool${normal:-}"
 }
 
 say_bye() {
-    echo "---------------------------------------------------------"
+    echo "------------------------------------------------------------"
     echo
 }
 
@@ -151,6 +160,12 @@ say_fail() {
     echo "${bold:-} [ ${red:-}FAIL${white:-} ]${normal:-}"
 }
 
+get_trgt_relative() {
+    cd $TRGT
+    export TRGT_REL="$(dirs -0)"
+    cd $PKG_DIR
+}
+
 # ------------------------------- Variables ------------------------------
 
 source /etc/os-release
@@ -161,6 +176,7 @@ export OS_CODENAME=$VERSION_CODENAME
 export OS_PNAME=$PRETTY_NAME
 export LOC="$(which dotnet 2> /dev/null)"
 export ARGS=($@)
+
 
 export PKG_DIR=$(dirname $(readlink -f "${0}"))
 export TRGT=${ARGS[0]}
@@ -173,10 +189,23 @@ chmod -R +x $PKG_DIR/NET_Pkg.Template/usr/bin
 
 # ---------------------------- Optional Args -----------------------------
 
-if [[ "${ARGS[2]}" == "-v" ]] || [[ "${ARGS[0]}" == "--verbose" ]]; then
+if [[ "${ARGS[1]}" == "-v" ]] || [[ "${ARGS[1]}" == "--verbose" ]]; then
     export VERB="true"
-elif [[ "${ARGS[2]}" == "--nodel" ]]; then
+elif [[ "${ARGS[1]}" == "--nodel" ]]; then
     export NO_DEL="true"
+fi
+
+# --------------------------- Directory Check ----------------------------
+
+if [[ -d "$(pwd)/$TRGT" ]]; then
+    export TRGT="$(readlink -m $(pwd)/$TRGT)"
+else
+    if ! [[ -d "$TRGT" ]]; then
+        say_hello
+        echo "${red:-}Error: $TRGT is not a valid directory${normal:-}"
+        say_bye
+        exit 1
+    fi
 fi
 
 # --------------------------------- Init ---------------------------------
