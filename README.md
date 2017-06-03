@@ -41,6 +41,8 @@ There are several optional commands that offer more control:
 
 Examples:
 
+Note: More detailed examples comins soon.
+
 ```bash
 ./netpkg-tool ~/Documents/CoolApp ~/Desktop
 ```
