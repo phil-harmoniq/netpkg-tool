@@ -26,17 +26,16 @@ Run netpkg-tool and specify a .NET project folder and a destination folder:
 There are several optional commands that offer more control:
 
 ```
-  --verbose or -v : Verbose output"
-  --compile or -c : Skip checks & dotnet-restore
-     --name or -n : Set ouput file to custom name
-      --scd or -s : Self-Contained Deployment (SCD)
-  --scd-rid or -r : SCD with custom RID (default: linux-x64)
-      --dir or -d : View location of .NET runtime
-     --help or -h : Help menu (this page)
+     --verbose or -v: Verbose output
+     --compile or -c: Skip checks & dotnet-restore
+        --name or -n: Set ouput file to custom name
+         --scd or -s: Self-Contained Deployment (SCD)
+     --scd-rid or -r: SCD with custom RID (default: linux-x64)
+        --keep or -k: Keep /tmp/NET_Pkg.Temp directory
 
-          --nodel : Skip deleting NET_Pkg temporary folder
-    --install-sdk : Install .NET SDK locally
-  --uninstall-sdk : Remove local .NET SDK install
+        --help or -h: Help menu (this page)
+       --install-sdk: Install .NET SDK locally
+     --uninstall-sdk: Remove local .NET SDK install
 ```
 
 Examples:
