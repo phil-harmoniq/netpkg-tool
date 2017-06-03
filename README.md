@@ -61,7 +61,7 @@ Examples:
 ```
 
 ```bash
-# Use --keep to inspect the structure of your AppDir located in /tmp/netpkg-tool
+# Use --keep to inspect the structure of your AppDir located in /tmp/npk.temp
 ./netpkg-tool TestProject ../Output --keep
 ```
 
