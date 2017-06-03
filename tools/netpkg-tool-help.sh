@@ -21,7 +21,7 @@ echo "     --compile or -c: Skip checks & dotnet-restore"
 echo "        --name or -n: Set ouput file to custom name"
 echo "         --scd or -s: Self-Contained Deployment (SCD)"
 echo "     --scd-rid or -r: SCD with custom RID (default: linux-x64)"
-echo "        --keep or -k: Keep /tmp/NET_Pkg.Temp directory"
+echo "        --keep or -k: Keep /tmp/npk.temp directory"
 echo
 echo "     ${bold:-}${cyan:-}Extra Functions:${normal:-}"
 echo "        --help or -h: Help menu (this page)"
