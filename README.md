@@ -31,7 +31,7 @@ There are several optional commands that offer more control:
         --name or -n: Set ouput file to custom name
          --scd or -s: Self-Contained Deployment (SCD)
      --scd-rid or -r: SCD with custom RID (default: linux-x64)
-        --keep or -k: Keep /tmp/NET_Pkg.Temp directory
+        --keep or -k: Keep /tmp/npk.temp directory
 
         --help or -h: Help menu (this page)
        --install-sdk: Install .NET SDK locally
