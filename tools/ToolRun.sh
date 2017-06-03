@@ -15,6 +15,10 @@ main_loop() {
         exit 1
     fi
 
+    if [[ -z $CUSTOM_NAME ]]; then
+        export APP_NAME="$CSPROJ"
+    fi
+
     say_hello
     say_task
 
@@ -43,7 +47,7 @@ main_loop() {
     fi
     
     if [[ -z $MAKE_SCD ]]; then
-        echo "${green:-}New NET_Pkg created at $TRGT_REL/$CSPROJ$EXTN ${normal:-}"
+        echo "${green:-}New .NET application created at $TRGT_REL/$CSPROJ$EXTN ${normal:-}"
     else
         echo "${green:-}New AppImage created at $TRGT_REL/$CSPROJ.AppImage ${normal:-}"
     fi
@@ -101,7 +105,7 @@ appimagetool_to_path() {
 
     if ! (grep -qF "$PATH_ADD" $HOME/.bashrc); then
         if ! [[ -z $VERB ]]; then echo "Adding appimagetool to \$PATH in ~/.bashrc"; fi
-        echo "# Added by NET_Pkg.Tool" >> "$HOME/.bashrc"
+        echo "# Added by netpkg-tool" >> "$HOME/.bashrc"
         echo $PATH_ADD >> "$HOME/.bashrc"
         echo >> "$HOME/.bashrc"
         source ~/.bashrc
@@ -147,7 +151,7 @@ check_for_sdk() {
 
 install_prompt() {
     echo -n "Checking if necessary libraries are present"
-    source $PKG_DIR/NET_Pkg.Template/usr/bin/lib-check.sh
+    source $PKG_DIR/npk.template/usr/bin/lib-check.sh
 
     if [[ $libs_needed == "true" ]]; then
         say_warning
@@ -184,10 +188,10 @@ install_prompt() {
 
 start_installer() {
     if [[ $libs_needed == "true" ]]; then
-        $PKG_DIR/NET_Pkg.Template/usr/bin/install-libs.sh
+        $PKG_DIR/npk.template/usr/bin/install-libs.sh
     fi
 
-    $PKG_DIR/NET_Pkg.Template/usr/bin/dotnet-installer.sh -sdk
+    $PKG_DIR/npk.template/usr/bin/dotnet-installer.sh -sdk
     if [[ $? -eq 0 ]]; then
         return 0
     else
@@ -263,43 +267,55 @@ find_csproj() {
 transfer_files() {
     echo -n "Transferring files..."
 
-    rm -rf /tmp/NET_Pkg.Temp
+    rm -rf /tmp/npk.temp
 
-    mkdir -p /tmp/NET_Pkg.Temp
-    cp -r $PKG_DIR/NET_Pkg.Template/. /tmp/NET_Pkg.Temp
-    mkdir -p /tmp/NET_Pkg.Temp/usr/share/app
+    mkdir -p /tmp/npk.temp
+    cp -r $PKG_DIR/npk.template/. /tmp/npk.temp
+    mkdir -p /tmp/npk.temp/usr/share/app
 
     if [[ -z $MAKE_SCD ]]; then
-        cp -r $PROJ/bin/Release/$CORE_VERS/publish/. /tmp/NET_Pkg.Temp/usr/share/app
+        cp -r $PROJ/bin/Release/$CORE_VERS/publish/. /tmp/npk.temp/usr/share/app
     else
-        cp -r $PROJ/bin/Release/$CORE_VERS/$TARGET_OS/publish/. /tmp/NET_Pkg.Temp/usr/share/app
+        cp -r $PROJ/bin/Release/$CORE_VERS/$TARGET_OS/publish/. /tmp/npk.temp/usr/share/app
     fi
 
     if [[ -d "$PROJ/pkg.lib" ]]; then
-        cp -r $PROJ/pkg.lib/. /tmp/NET_Pkg.Temp/usr/lib
+        cp -r $PROJ/pkg.lib/. /tmp/npk.temp/usr/lib
     fi
 
-    touch /tmp/NET_Pkg.Temp/AppRun
-    echo "#! /usr/bin/env bash" >> /tmp/NET_Pkg.Temp/AppRun
-    echo >> /tmp/NET_Pkg.Temp/AppRun
-    echo "# -------------------------------- Config --------------------------------" >> /tmp/NET_Pkg.Temp/AppRun
-    echo >> /tmp/NET_Pkg.Temp/AppRun
-    echo DLL_NAME=$CSPROJ >> /tmp/NET_Pkg.Temp/AppRun
-    echo PKG_VERSION=$PKG_VERSION >> /tmp/NET_Pkg.Temp/AppRun
-    echo >> /tmp/NET_Pkg.Temp/AppRun
+
+    touch /tmp/npk.temp/AppRun
+    echo "#! /usr/bin/env bash" >> /tmp/npk.temp/AppRun
+    echo >> /tmp/npk.temp/AppRun
+    echo "# -------------------------------- Config --------------------------------" >> /tmp/npk.temp/AppRun
+    echo >> /tmp/npk.temp/AppRun
+    echo DLL_NAME=$CSPROJ >> /tmp/npk.temp/AppRun
+    echo PKG_VERSION=$PKG_VERSION >> /tmp/npk.temp/AppRun
+    echo >> /tmp/npk.temp/AppRun
+
+    touch /tmp/npk.temp/$APP_NAME.desktop
+    echo "[Desktop Entry]" >> /tmp/npk.temp/$APP_NAME.desktop
+    echo >> /tmp/npk.temp/$APP_NAME.desktop
+    echo "Type=Application" >> /tmp/npk.temp/$APP_NAME.desktop
+    echo "Name=$APP_NAME" >> /tmp/npk.temp/$APP_NAME.desktop
+    echo "Exec=AppRun" >> /tmp/npk.temp/$APP_NAME.desktop
+    echo "Icon=$APP_NAME-icon" >> /tmp/npk.temp/$APP_NAME.desktop
+    echo >> /tmp/npk.temp/$APP_NAME.desktop
+
+    touch /tmp/npk.temp/$APP_NAME-icon.png
 
     if [[ -z $MAKE_SCD ]]; then
-        cat $PKG_DIR/tools/AppRun.sh >> /tmp/NET_Pkg.Temp/AppRun
+        cat $PKG_DIR/tools/AppRun.sh >> /tmp/npk.temp/AppRun
     else
-        cat $PKG_DIR/tools/scd-run.sh >> /tmp/NET_Pkg.Temp/AppRun
-        chmod +x /tmp/NET_Pkg.Temp/usr/share/app/$CSPROJ
+        cat $PKG_DIR/tools/scd-run.sh >> /tmp/npk.temp/AppRun
+        chmod +x /tmp/npk.temp/usr/share/app/$CSPROJ
     fi
 
 
-    chmod +x /tmp/NET_Pkg.Temp/AppRun
-    chmod -R +x /tmp/NET_Pkg.Temp/usr/bin
+    chmod +x /tmp/npk.temp/AppRun
+    chmod -R +x /tmp/npk.temp/usr/bin
 
-    rm /tmp/NET_Pkg.Temp/usr/share/app/$CSPROJ.pdb
+    rm -f /tmp/npk.temp/usr/share/app/*.pdb
 }
 
 create_pkg() {
@@ -318,18 +334,19 @@ create_pkg() {
 
 run_appimagetool() {
     if [[ -z $MAKE_SCD ]]; then
-        appimagetool -n /tmp/NET_Pkg.Temp $TRGT/$CSPROJ$EXTN
+        appimagetool -n /tmp/npk.temp $TRGT/$CSPROJ$EXTN
     else
-        appimagetool -n /tmp/NET_Pkg.Temp $TRGT/$CSPROJ.AppImage
+        appimagetool -n /tmp/npk.temp $TRGT/$CSPROJ.AppImage
     fi
 }
 
 delete_temp_files() {
     echo -n "Deleting temporary files..."
-    rm -r /tmp/NET_Pkg.Temp
+    rm -rf /tmp/npk.temp
     if [[ $? -eq 0 ]]; then
         say_pass
     else
+        say_fail
         exit 1
     fi
 }
@@ -367,8 +384,8 @@ get_colors() {
 say_hello() {
     echo
     echo -n "-------------------- ${cyan:-}"
-    echo -n "${bold:-}NET_Pkg.Tool $PKG_VERSION"
-    echo "${normal:-} --------------------"
+    echo -n "${bold:-}netpkg-tool $PKG_VERSION"
+    echo "${normal:-} ---------------------"
 }
 
 say_task() {
@@ -444,7 +461,7 @@ export PKG_VERSION=$NET_PKG_VERSION
 # Critical args will interrupt the program and quit when finished
 
 if [[ -z "${ARGS[0]}" ]]; then
-    $PKG_DIR/tools/pkg-tool-help.sh
+    $PKG_DIR/tools/netpkg-tool-help.sh
     exit 0
 elif [[ "${ARGS[0]}" == "-d" ]] || [[ "${ARGS[0]}" == "--dir" ]]; then
     if [[ -z "$NET_LOC" ]]; then NET="${red:-}not installed${normal:-}"
@@ -452,11 +469,11 @@ elif [[ "${ARGS[0]}" == "-d" ]] || [[ "${ARGS[0]}" == "--dir" ]]; then
     echo ".NET location: $NET"
     exit 0
 elif [[ "${ARGS[0]}" == "-h" ]] || [[ "${ARGS[0]}" == "--help" ]]; then
-    $PKG_DIR/tools/pkg-tool-help.sh
+    $PKG_DIR/tools/netpkg-tool-help.sh
     exit 0
 elif [[ "${ARGS[0]}" == "--install-sdk" ]]; then
     say_hello
-    $PKG_DIR/NET_Pkg.Template/usr/bin/dotnet-installer.sh -sdk
+    $PKG_DIR/npk.template/usr/bin/dotnet-installer.sh -sdk
     exit 0
 elif [[ "${ARGS[0]}" == "--uninstall-sdk" ]]; then
     $PKG_DIR/tools/uninstaller.sh

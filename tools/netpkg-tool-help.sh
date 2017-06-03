@@ -5,15 +5,15 @@ else NET="$(dirname $NET_LOC)"; fi
 
 echo
 echo -n "----------------------- ${cyan:-}"
-echo -n "${bold:-}NET_Pkg.Tool $PKG_VERSION"
-echo "${normal:-} ------------------------"
+echo -n "${bold:-}netpkg-tool $PKG_VERSION"
+echo "${normal:-} -------------------------"
 echo
 echo "                ${bold:-}${cyan:-}Info:${normal:-}"
 echo "                  OS: $OS_PNAME"
 echo "       .NET location: $NET"
 echo
 echo "               ${bold:-}${cyan:-}Usage:${normal:-}"
-echo "    ./NET_Pkg.Tool [Project Directory] [Destination] [Flags]"
+echo "    ./netpkg-tool [Project Directory] [Destination] [Flags]"
 echo
 echo "      ${bold:-}${cyan:-}Optional Flags:${normal:-}"
 echo "     --verbose or -v: Verbose output"

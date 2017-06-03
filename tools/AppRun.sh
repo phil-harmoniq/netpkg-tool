@@ -1,4 +1,4 @@
-# If this is the first line of AppRun, NET_Pkg.Tool didn't run properly.
+# If this is the first line of AppRun, netpkg-tool didn't run properly.
 # ------------------------------- Functions ------------------------------
 
 main_loop() {

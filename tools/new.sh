@@ -104,5 +104,5 @@ if [[ "$2" == "lib" ]]; then
         new_standard_lib $@
     fi
 else
-    echo "${red:-}Invalid project type: NET_Pkg.Tool --new [Type]${normal:-}"
+    echo "${red:-}You must specify a project type: netpkg-tool --new [type]${normal:-}"
 fi
