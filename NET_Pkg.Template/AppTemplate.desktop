@@ -1,7 +1,0 @@
-[Desktop Entry]
-
-Type=Application
-Name=NET_Pkg
-Exec=AppRun
-Icon=dotnet-core
-Terminal=false
