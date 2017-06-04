@@ -1,0 +1,22 @@
+#!/bin/bash -eux -y update
+
+# Get appimagetool
+cd /tmp
+curl -L -o appimagetool https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+chmod a+x appimagetool
+./appimagetool --appimage-extract
+rm -f appimagetool
+mv squashfs-root appimagetool
+ln -s /tmp/appimagetool/AppRun /usr/local/bin/appimagetool
+
+# Get NET_Pkg Source
+cd /tmp
+git clone https://github.com/phil-harmoniq/NET_Pkg
+mkdir -p NET_Pkg/usr/share
+cp -r /tmp/appimagetool NET_Pkg/usr/share
+
+# Run source build
+cd NET_Pkg
+chmod a+x build.sh
+mkdir -p /netpkg-build
+./build.sh / --docker-build
