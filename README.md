@@ -69,7 +69,7 @@ Note: More detailed examples comins soon.
 ## Requirements
 
 * [appimagetool](https://github.com/probonopd/appimagekit/) - bundles binaries along with needed libraries into a single file
-* [.NET Core SDK](https://www.microsoft.com/net/download/linux) - open-source implementation of Microsoft's .NET framework.
+* [.NET Core 2.0 SDK](https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.0-preview1-download.md) - open-source implementation of Microsoft's .NET framework.
 
 ## Details
 
