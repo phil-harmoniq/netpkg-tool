@@ -1,0 +1,10 @@
+dist: trusty
+sudo: required
+services:
+  - docker
+
+script:
+  - docker pull philharmoniq/netpkg-tool
+  - docker run --name buildvm philharmoniq/netpkg-tool /bin/bash Recipe
+  - docker cp buildvm:/tmp/NET_Pkg/netpkg-tool netpkg-tool
+  - netpkg-tool --help
