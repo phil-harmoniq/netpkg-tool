@@ -4,6 +4,6 @@ services:
   - docker
 
 script:
-  - docker pull philharmoniq/netpkg-tool:docker-test
-  - docker run --name buildvm philharmoniq/netpkg-tool:docker-test /bin/bash Recipe
+  - docker pull philharmoniq/netpkg-tool:development
+  - docker run --name buildvm philharmoniq/netpkg-tool:development /bin/bash Recipe
   - docker cp buildvm:/tmp/NET_Pkg/netpkg-tool netpkg-tool
