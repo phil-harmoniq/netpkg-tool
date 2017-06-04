@@ -19,6 +19,7 @@ cd NET_Pkg/usr/share/appimagetool
 ln -s AppRun ../../bin/appimagetool
 
 # Run source build
+cd ../../..
 chmod a+x build.sh
 mkdir -p /netpkg-build
 ./build.sh . --docker-build
