@@ -119,8 +119,6 @@ copy_files() {
         mv ./squashfs-root ./appimagetool
         ln -s /tmp/.netpkg-tool/usr/share/appimagetool/AppRun /tmp/.netpkg-tool/usr/bin/appimagetool
         cd $PKG_DIR
-    else
-        ln /tmp/.netpkg-tool/usr/share/appimagetool/AppRun /usr/local/bin/appimagetool
     fi
 
     chmod +x /tmp/.netpkg-tool/AppRun
