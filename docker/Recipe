@@ -15,11 +15,10 @@ cd /tmp
 git clone -b develop --single-branch https://github.com/phil-harmoniq/NET_Pkg --depth 1
 mkdir -p /tmp/NET_Pkg/usr/share
 cp -r /usr/share/appimagetool /tmp/NET_Pkg/usr/share
-cd NET_Pkg/usr/share/appimagetool
-ln -s AppRun ../../bin/appimagetool
+cd NET_Pkg
+ln -s usr/share/appimagetool/AppRun usr/bin/appimagetool
 
 # Run source build
-cd ../../..
 chmod a+x build.sh
 mkdir -p /netpkg-build
 ./build.sh . --docker-build
