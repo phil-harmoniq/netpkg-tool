@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:14.04
 
 ADD Recipe.deps /Recipe.deps
 RUN bash -ex Recipe.deps 
