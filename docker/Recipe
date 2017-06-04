@@ -1,13 +1,14 @@
 #!/bin/bash -eux -y update
 
 # Get appimagetool
-cd /tmp
+mkdir -p /usr/share
+cd /usr/share
 curl -L -o appimagetool https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
 chmod a+x appimagetool
 ./appimagetool --appimage-extract
 rm -f appimagetool
 mv squashfs-root appimagetool-extract
-ln -s /tmp/appimagetool-extract/AppRun /usr/local/bin/appimagetool
+ln -s /usr/share/appimagetool-extract/AppRun /usr/local/bin/appimagetool
 
 # Get NET_Pkg Source
 cd /tmp
