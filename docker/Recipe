@@ -15,6 +15,7 @@ cd /tmp
 git clone -b develop --single-branch https://github.com/phil-harmoniq/NET_Pkg --depth 1
 mkdir -p /tmp/NET_Pkg/usr/share
 cp -r /usr/share/appimagetool /tmp/NET_Pkg/usr/share
+ln -s NET_Pkg/usr/share/appimagetool/AppRun NET_Pkg/usr/bin/appimagetool
 
 # Run source build
 cd NET_Pkg
