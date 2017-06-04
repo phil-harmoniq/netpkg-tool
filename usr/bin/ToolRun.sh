@@ -151,7 +151,7 @@ check_for_sdk() {
 
 install_prompt() {
     echo -n "Checking if necessary libraries are present"
-    source $PKG_DIR/npk.template/usr/bin/lib-check.sh
+    source $PKG_DIR/usr/bin/lib-check.sh
 
     if [[ $libs_needed == "true" ]]; then
         say_warning
@@ -216,7 +216,7 @@ compile_net_project() {
         if [[ -z $VERB ]] && [[ -z $COMPILE ]]; then say_pass; fi
 
         if [[ -z $VERB ]]; then echo -n "Compiling .NET project..."; fi
-            export CORE_VERS=$($PKG_DIR/tools/parse-csproj.py 2>&1 >/dev/null)
+            export CORE_VERS=$(parse-csproj.py 2>&1 >/dev/null)
         if ! [[ -z $VERB ]]; then
             net_publish
         else
@@ -270,7 +270,7 @@ transfer_files() {
     rm -rf /tmp/npk.temp
 
     mkdir -p /tmp/npk.temp
-    cp -r $PKG_DIR/npk.template/. /tmp/npk.temp
+    cp -r $PKG_DIR/usr/share/npk.template/. /tmp/npk.temp
     mkdir -p /tmp/npk.temp/usr/share/app
 
     if [[ -z $MAKE_SCD ]]; then
@@ -305,9 +305,12 @@ transfer_files() {
     touch /tmp/npk.temp/$APP_NAME-icon.png
 
     if [[ -z $MAKE_SCD ]]; then
-        cat $PKG_DIR/tools/AppRun.sh >> /tmp/npk.temp/AppRun
+        cat $PKG_DIR/usr/share/npk.template/AppRun.sh >> /tmp/npk.temp/AppRun
+        cp $PKG_DIR/usr/bin/terminal-colors.sh /tmp/npk.temp/usr/bin
+        cp $PKG_DIR/usr/bin/lib-check.sh /tmp/npk.temp/usr/bin
     else
-        cat $PKG_DIR/tools/scd-run.sh >> /tmp/npk.temp/AppRun
+        cat $PKG_DIR/usr/bin/scd-run.sh >> /tmp/npk.temp/AppRun
+        rm -rf /tmp/npk.temp/usr/bin
         chmod +x /tmp/npk.temp/usr/share/app/$CSPROJ
     fi
 
@@ -441,6 +444,7 @@ export OS_PNAME=$PRETTY_NAME
 export NET_LOC="$(which dotnet 2> /dev/null)"
 export ARGS=($@)
 export HERE=$(dirname $(readlink -f "${0}"))
+export PATH="$HERE/usr/bin:$PATH"
 
 if [[ -z "${LD_LIBRARY_PATH// }" ]]; then 
     export LD_LIBRARY_PATH="$HERE/usr/lib"
@@ -454,14 +458,14 @@ export TRGT=${ARGS[1]}
 export EXTN=".npk"
 get_colors
 
-source $PKG_DIR/tools/version.info
+source $PKG_DIR/version.info
 export PKG_VERSION=$NET_PKG_VERSION
 
 # ---------------------------- Critical Args -----------------------------
 # Critical args will interrupt the program and quit when finished
 
 if [[ -z "${ARGS[0]}" ]]; then
-    $PKG_DIR/tools/netpkg-tool-help.sh
+    netpkg-tool-help.sh
     exit 0
 elif [[ "${ARGS[0]}" == "-d" ]] || [[ "${ARGS[0]}" == "--dir" ]]; then
     if [[ -z "$NET_LOC" ]]; then NET="${red:-}not installed${normal:-}"
@@ -469,17 +473,17 @@ elif [[ "${ARGS[0]}" == "-d" ]] || [[ "${ARGS[0]}" == "--dir" ]]; then
     echo ".NET location: $NET"
     exit 0
 elif [[ "${ARGS[0]}" == "-h" ]] || [[ "${ARGS[0]}" == "--help" ]]; then
-    $PKG_DIR/tools/netpkg-tool-help.sh
+    netpkg-tool-help.sh
     exit 0
 elif [[ "${ARGS[0]}" == "--install-sdk" ]]; then
     say_hello
-    $PKG_DIR/npk.template/usr/bin/dotnet-installer.sh -sdk
+    dotnet-installer.sh -sdk
     exit 0
 elif [[ "${ARGS[0]}" == "--uninstall-sdk" ]]; then
-    $PKG_DIR/tools/uninstaller.sh
+    uninstaller.sh
     exit 0
 elif [[ "${ARGS[0]}" == "--new" ]]; then
-    $PKG_DIR/tools/new.sh ${ARGS[@]}
+    new.sh ${ARGS[@]}
     exit 0
 fi
 

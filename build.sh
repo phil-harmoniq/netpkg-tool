@@ -94,25 +94,32 @@ copy_files() {
     rm -f /tmp/.netpkg-tool/build.sh
     rm -f /tmp/.netpkg-tool/.gitignore
     rm -rf /tmp/.netpkg-tool/.git
+    rm -rf /tmp/.netpkg-tool/travis
 
     create_desktop_files
-    mv /tmp/.netpkg-tool/tools/ToolRun.sh /tmp/.netpkg-tool/AppRun
+    mv /tmp/.netpkg-tool/usr/bin/ToolRun.sh /tmp/.netpkg-tool/AppRun
 
     # Extract appimagetool and create shortcut in $PKG_DIR/usr/bin
     mkdir -p /tmp/.netpkg-tool/usr/share
     mkdir -p /tmp/.netpkg-tool/usr/bin
     cd /tmp/.netpkg-tool/usr/share
     cp $(which appimagetool) .
-    ./appimagetool --appimage-extract
+    
+    result=$(./appimagetool --appimage-extract 2>&1)
+
+    if [[ $? -ne 0 ]]; then
+        say_fail
+        echo "${red:-}$result${normal:-}"
+    fi
+
     rm -f ./appimagetool
     mv ./squashfs-root ./appimagetool
-    ln -s ./appimagetool/AppRun ../bin/appimagetool
+    ln -s /tmp/.netpkg-tool/usr/share/appimagetool/AppRun /tmp/.netpkg-tool/usr/bin/appimagetool
     cd $PKG_DIR
 
-
     chmod +x /tmp/.netpkg-tool/AppRun
-    chmod -R +x /tmp/.netpkg-tool/tools
-    chmod -R +x /tmp/.netpkg-tool/npk.template/usr/bin
+    chmod -R +x /tmp/.netpkg-tool/usr/bin
+    chmod -R +x /tmp/.netpkg-tool/usr/share/npk.template/usr/bin
     say_pass
 }
 
@@ -208,12 +215,12 @@ export ARGS=($@)
 
 export PKG_DIR=$(dirname $(readlink -f "${0}"))
 export TRGT=${ARGS[0]}
-source $PKG_DIR/npk.template/usr/bin/terminal-colors.sh
-source $PKG_DIR/tools/version.info
+source $PKG_DIR/usr/bin/terminal-colors.sh
+source $PKG_DIR/version.info
 export PKG_VERSION=$NET_PKG_VERSION
 
-chmod -R +x $PKG_DIR/tools
-chmod -R +x $PKG_DIR/npk.template/usr/bin
+chmod -R +x $PKG_DIR/usr/bin
+chmod -R +x $PKG_DIR/usr/share/npk.template/usr/bin
 
 # ---------------------------- Optional Args -----------------------------
 
