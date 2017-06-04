@@ -1,0 +1,16 @@
+dist: trusty
+sudo: required
+services:
+- docker
+script:
+- docker pull philharmoniq/netpkg-tool:development
+- docker run --name buildvm philharmoniq/netpkg-tool:development /bin/bash Recipe
+- docker cp buildvm:/tmp/NET_Pkg/netpkg-tool $TRAVIS_BUILD_DIR/netpkg-tool
+deploy:
+  provider: releases
+  api_key:
+    secure: IILiW3DaXkHKeL+LXZGqvyWowtu8IWGKfW02zKcjLfQAX5whi8xq/JFjzP/rjYZeteaKsfZawaoUFeg9itP1LM6GlpBFLSB/+c1HroL/5dDYVpKpVIv9Oa7eMSqSVYP3biAlK2iYtbn6hf9F/e9rz/tfnPEdKjN2P0szWwFsSfcliAmpwtEYejAMelHxORNX8Yf6HOREe1ZOcjr6ETB3AzNBr5w+KvA9FAHfzGQjgsbwDraLu52fN25EjDNbpdykLuGwniuQMBMst6Ck2q11ZB97buoxtNKGcXM3nWHu/A3uUE7rIjbXR7VogRbt4qo50yojyKGKIQAb2VlOwpvREC6+gUiTbwH+hifqy/RCZyaUm1YQ2Xf9V5kc+bv+sdOdVdkUPOBfjli7l7brYQZrJ+QbROyxmz2pS/yLzWNsVMS8zfAgLQyP9Ddg/iKHZ3w6c+nCU75IwTTDmhbFc+ji7v6/+1aA+zqwL4I69HrZOfsH6o2GIt38wM66OzVmcRrlllK70SJVHKBfiArR9TWKvyMGYrzbSUPDrNY6zobHa92ds28bd7MWn2kL3CCZrl47Ibqv65d3ICLGi5VLpXvJuArzCsTCD3ZVs0zDThMCvIYKiunNAaf778zCLARLBzIugkHoYWhgT55K6dEJBoXj1oSves6rp8388Cmk/erbt+4=
+  file: "$TRAVIS_BUILD_DIR/netpkg-tool"
+  on:
+    repo: phil-harmoniq/NET_Pkg
+    branch: develop
