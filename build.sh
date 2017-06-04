@@ -25,24 +25,26 @@ main_loop() {
 }
 
 test_for_appimagetool() {
-    echo -n "Checking for appimagetool..."
-    appimagetool -h &> /dev/null
-    if [[ $? != 0 ]]; then
-        say_warning
-        while true; do
-            read -p "Would you like to download appimagetool?: " yn
-            case $yn in
-                [Yy]* )
-                    get_appimagetool
-                    if [[ $1 -eq 0 ]]; then return 0; else exit 1; fi
-                    ;;
-                [Nn]* ) echo "${red:-}User aborted the application.${normal:-}"; echo; exit 1;;
-                * ) echo "Please answer yes or no.";;
-            esac
-        done
-    else
-        say_pass
-        return 0
+    if [[ -z $DOCKER ]]; then
+        echo -n "Checking for appimagetool..."
+        appimagetool -h &> /dev/null
+        if [[ $? != 0 ]]; then
+            say_warning
+            while true; do
+                read -p "Would you like to download appimagetool?: " yn
+                case $yn in
+                    [Yy]* )
+                        get_appimagetool
+                        if [[ $1 -eq 0 ]]; then return 0; else exit 1; fi
+                        ;;
+                    [Nn]* ) echo "${red:-}User aborted the application.${normal:-}"; echo; exit 1;;
+                    * ) echo "Please answer yes or no.";;
+                esac
+            done
+        else
+            say_pass
+            return 0
+        fi
     fi
 }
 
@@ -229,6 +231,8 @@ for ((I=0; I <= ${#ARGS[@]}; I++)); do
         export VERB="true"
     elif [[ "${ARGS[$I]}" == "-k" ]] || [[ "${ARGS[$I]}" == "--keep" ]]; then
         export NO_DEL="true"
+    elif [[ "${ARGS[$I]}" == "--docker-build" ]]; then
+        export DOCKER="true"
     fi
 done
 
