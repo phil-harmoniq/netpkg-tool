@@ -98,6 +98,18 @@ copy_files() {
     create_desktop_files
     mv /tmp/.netpkg-tool/tools/ToolRun.sh /tmp/.netpkg-tool/AppRun
 
+    # Extract appimagetool and create shortcut in $PKG_DIR/usr/bin
+    mkdir -p /tmp/.netpkg-tool/usr/share
+    mkdir -p /tmp/.netpkg-tool/usr/bin
+    cd /tmp/.netpkg-tool/usr/share
+    cp $(which appimagetool) .
+    ./appimagetool --appimage-extract
+    rm -f ./appimagetool
+    mv ./squashfs-root ./appimagetool
+    ln -s ./appimagetool/AppRun ../bin/appimagetool
+    cd $PKG_DIR
+
+
     chmod +x /tmp/.netpkg-tool/AppRun
     chmod -R +x /tmp/.netpkg-tool/tools
     chmod -R +x /tmp/.netpkg-tool/npk.template/usr/bin
