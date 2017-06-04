@@ -3,7 +3,7 @@ sudo: required
 services:
 - docker
 script:
-- docker pull philharmoniq/netpkg-tool:development
+- docker build -t netpkg-docker docker
 - docker run --name buildvm philharmoniq/netpkg-tool:development /bin/bash Recipe
 - docker cp buildvm:/tmp/NET_Pkg/netpkg-tool $TRAVIS_BUILD_DIR/netpkg-tool
 deploy:
