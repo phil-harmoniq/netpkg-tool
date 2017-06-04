@@ -102,22 +102,24 @@ copy_files() {
     mv /tmp/.netpkg-tool/usr/bin/ToolRun.sh /tmp/.netpkg-tool/AppRun
 
     # Extract appimagetool and create shortcut in $PKG_DIR/usr/bin
-    mkdir -p /tmp/.netpkg-tool/usr/share
-    mkdir -p /tmp/.netpkg-tool/usr/bin
-    cd /tmp/.netpkg-tool/usr/share
-    cp $(which appimagetool) .
-    
-    result=$(./appimagetool --appimage-extract 2>&1)
+    if [[ -z $DOCKER ]]; then
+        mkdir -p /tmp/.netpkg-tool/usr/share
+        mkdir -p /tmp/.netpkg-tool/usr/bin
+        cd /tmp/.netpkg-tool/usr/share
+        cp $(which appimagetool) .
+        
+        result=$(./appimagetool --appimage-extract 2>&1)
 
-    if [[ $? -ne 0 ]]; then
-        say_fail
-        echo "${red:-}$result${normal:-}"
+        if [[ $? -ne 0 ]]; then
+            say_fail
+            echo "${red:-}$result${normal:-}"
+        fi
+
+        rm -f ./appimagetool
+        mv ./squashfs-root ./appimagetool
+        ln -s /tmp/.netpkg-tool/usr/share/appimagetool/AppRun /tmp/.netpkg-tool/usr/bin/appimagetool
+        cd $PKG_DIR
     fi
-
-    rm -f ./appimagetool
-    mv ./squashfs-root ./appimagetool
-    ln -s /tmp/.netpkg-tool/usr/share/appimagetool/AppRun /tmp/.netpkg-tool/usr/bin/appimagetool
-    cd $PKG_DIR
 
     chmod +x /tmp/.netpkg-tool/AppRun
     chmod -R +x /tmp/.netpkg-tool/usr/bin

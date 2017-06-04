@@ -1,11 +1,14 @@
 dist: trusty
 sudo: required
+
 services:
-- docker
+  - docker
+
 script:
-- docker build -t netpkg-docker-image docker
-- docker run --name buildvm netpkh-docker-image /bin/bash Recipe
-- docker cp buildvm:/tmp/NET_Pkg/netpkg-tool $TRAVIS_BUILD_DIR/netpkg-tool
+  - docker build -t netpkg-docker-image docker
+  - docker run --name buildvm netpkg-docker-image /bin/bash Recipe
+  - docker cp buildvm:/tmp/NET_Pkg/netpkg-tool $TRAVIS_BUILD_DIR/netpkg-tool
+
 deploy:
   provider: releases
   api_key:

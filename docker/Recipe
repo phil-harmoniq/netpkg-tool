@@ -6,17 +6,18 @@ curl -L -o appimagetool https://github.com/probonopd/AppImageKit/releases/downlo
 chmod a+x appimagetool
 ./appimagetool --appimage-extract
 rm -f appimagetool
-mv squashfs-root appimagetool
-ln -s /tmp/appimagetool/AppRun /usr/local/bin/appimagetool
+mv squashfs-root appimagetool-extract
+ln -s /tmp/appimagetool-extract/AppRun /usr/local/bin/appimagetool
 
 # Get NET_Pkg Source
 cd /tmp
-git clone https://github.com/phil-harmoniq/NET_Pkg
+git clone -b develop --single-branch https://github.com/phil-harmoniq/NET_Pkg --depth 1
 mkdir -p NET_Pkg/usr/share
-cp -r /tmp/appimagetool NET_Pkg/usr/share
+cp -r /tmp/appimagetool-extract NET_Pkg/usr/share
+rm -rf /tmp/appimagetool-extract
 
 # Run source build
 cd NET_Pkg
 chmod a+x build.sh
 mkdir -p /netpkg-build
-./build.sh / --docker-build
+./build.sh . --docker-build
