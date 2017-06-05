@@ -1,4 +1,4 @@
-# NET_Pkg [![License][License]](LICENSE.md)
+# NET_Pkg [![License][License]](LICENSE.md) [![Build Status](https://travis-ci.org/phil-harmoniq/NET_Pkg.svg?branch=develop)](https://travis-ci.org/phil-harmoniq/NET_Pkg)
 
 [License]: https://img.shields.io/badge/License-MIT-blue.svg
 
