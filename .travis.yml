@@ -14,6 +14,8 @@ before_script:
   - netpkg-tool --help
   - sudo netpkg-tool --install-sdk --yes-all
   - source ~/.bashrc
+  - netpkg-tool --help
+  - dotnet new sln
 
 script:
   - git clone https://github.com/phil-harmoniq/ArgTest $TRAVIS_BUILD_DIR/ArgTest
