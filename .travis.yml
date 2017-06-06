@@ -13,7 +13,9 @@ services:
 
 before_install:
   - sudo apt-get update
-  - sudo apt-get install git curl libunwind8 gettext
+  - sudo apt-get install git curl libunwind8 gettext fuse
+  - sudo modprobe fuse
+  - sudo usermod -a -G fuse "$(whoami)"
   - sudo curl -sSL -o dotnet.tar.gz https://go.microsoft.com/fwlink/?linkid=848738
   - sudo mkdir -p /opt/dotnet && sudo tar zxf dotnet.tar.gz -C /opt/dotnet
   - sudo ln -s /opt/dotnet/dotnet /usr/local/bin
@@ -21,7 +23,7 @@ before_install:
 install:
   - docker build -t netpkg-tool.build docker
   - docker run --name buildvm netpkg-tool.build /bin/bash Recipe
-  - docker cp buildvm:/tmp/NET_Pkg/netpkg-tool $TRAVIS_BUILD_DIR/netpkg-tool
+  - docker cp buildvm:/usr/local/bin $TRAVIS_BUILD_DIR/netpkg-tool
 
 script:
   - cd $TRAVIS_BUILD_DIR
