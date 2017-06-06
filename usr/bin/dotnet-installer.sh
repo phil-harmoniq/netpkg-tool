@@ -205,14 +205,14 @@ get_type() {
 
 wget_sdk() {
     echo "Downloading .NET sdk for $OS_PNAME..."
-    wget https://download.microsoft.com/download/0/6/5/0656B047-5F2F-4281-A851-F30776F8616D/dotnet-dev-linux-x64.2.0.0-preview1-005977.tar.gz -O /tmp/dotnet-sdk.tar.gz -q --show-progress
+    curl -SL -o /tmp/dotnet-sdk.tar.gz https://download.microsoft.com/download/0/6/5/0656B047-5F2F-4281-A851-F30776F8616D/dotnet-dev-linux-x64.2.0.0-preview1-005977.tar.gz
     STATUS=$?
     download_check STATUS
 }
 
 wget_runtime() {
     echo "Downloading .NET runtime for $OS_PNAME..."
-    wget https://download.microsoft.com/download/0/9/0/09060200-E749-4025-A51A-83391C611C86/dotnet-linux-x64.2.0.0-preview1-002111-00.tar.gz -O /tmp/dotnet-runtime.tar.gz -q --show-progress
+    curl -SL -o /tmp/dotnet-runtime.tar.gz https://download.microsoft.com/download/0/9/0/09060200-E749-4025-A51A-83391C611C86/dotnet-linux-x64.2.0.0-preview1-002111-00.tar.gz
     STATUS=$?
     download_check STATUS
 }
