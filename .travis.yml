@@ -23,10 +23,9 @@ before_install:
 install:
   - docker build -t netpkg-tool.build docker
   - docker run --name buildvm netpkg-tool.build /bin/bash Recipe
-  - docker cp buildvm:/usr/local/bin $TRAVIS_BUILD_DIR/netpkg-tool
+  - docker cp buildvm:/usr/local/bin/netpkg-tool $TRAVIS_BUILD_DIR/netpkg-tool
 
 script:
-  - cd $TRAVIS_BUILD_DIR
   - git clone https://github.com/phil-harmoniq/ArgTest $TRAVIS_BUILD_DIR/ArgTest
   - $TRAVIS_BUILD_DIR/netpkg-tool $TRAVIS_BUILD_DIR/ArgTest $TRAVIS_BUILD_DIR
   - $TRAVIS_BUILD_DIR/ArgTest.npk one two thr33 --npk-v four
