@@ -4,8 +4,6 @@ sudo: required
 before_install:
   - sudo apt-get update
   - sudo apt-get install libunwind8
-  - sudo modprobe fuse
-  - sudo usermod -a -G fuse $(whoami)
 
 install:
   - sudo $TRAVIS_BUILD_DIR/build.sh /usr/local/bin --yes-all
