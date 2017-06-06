@@ -12,8 +12,11 @@ services:
   - docker
 
 before_install:
-  - sudo apt-get update
-  - sudo apt-get install git curl libunwind8 gettext
+  - apt-get update
+  - apt-get install git curl libunwind8 gettext
+  - curl -sSL -o dotnet.tar.gz https://go.microsoft.com/fwlink/?linkid=848738
+  - mkdir -p /opt/dotnet && sudo tar zxf dotnet.tar.gz -C /opt/dotnet
+  - ln -s /opt/dotnet/dotnet /usr/local/bin
 
 install:
   - docker build -t netpkg-tool.build docker
@@ -21,4 +24,7 @@ install:
   - docker cp buildvm:/tmp/NET_Pkg/netpkg-tool $TRAVIS_BUILD_DIR/netpkg-tool
 
 script:
-  - $TRAVIS_BUILD_DIR/netpkg-tool --install-sdk
+  - cd $TRAVIS_BUILD_DIR
+  - git clone https://github.com/phil-harmoniq/ArgTest
+  - ./netpkg-tool ArgTest .
+  - ArgTest.npk one two thr33 --npk-v four
