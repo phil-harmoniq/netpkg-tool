@@ -9,6 +9,7 @@ before_install:
 
 install:
   - echo $PATH
+  - cat ~/.bashrc
   - sudo $TRAVIS_BUILD_DIR/build.sh /usr/local/bin --yes-all
 
 before_script:
