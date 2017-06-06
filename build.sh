@@ -95,8 +95,10 @@ copy_files() {
 
     rm -f /tmp/.netpkg-tool/build.sh
     rm -f /tmp/.netpkg-tool/.gitignore
+    rm -f /tmp/.netpkg-tool/.travis.yml
+    rm -f /tmp/.netpkg-tool/netpkg-tool
     rm -rf /tmp/.netpkg-tool/.git
-    rm -rf /tmp/.netpkg-tool/travis
+    rm -rf /tmp/.netpkg-tool/docker
 
     create_desktop_files
     mv /tmp/.netpkg-tool/usr/bin/ToolRun.sh /tmp/.netpkg-tool/AppRun

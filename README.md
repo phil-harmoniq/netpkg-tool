@@ -4,15 +4,18 @@
 
 ## Instructions
 
-A pre-compiled version of the most current netpkg-tool is available from the [releases tab](https://github.com/phil-harmoniq/NET_Pkg/releases):
+A pre-packaged version of the most current netpkg-tool is available from the [releases tab](https://github.com/phil-harmoniq/NET_Pkg/releases):
 
 ```bash
 wget "https://github.com/phil-harmoniq/NET_Pkg/releases/download/current/netpkg-tool"
 chmod a+x netpkg-tool
 ```
+
 To build netpkg-tool from source, just run `build.sh` and specify a destination folder:
+
 ```bash
-./build.sh ~/.local/bin
+git clone https://github.com/phil-harmoniq/NET_Pkg
+./NET_Pkg/build.sh .
 ```
 
 ## Usage
