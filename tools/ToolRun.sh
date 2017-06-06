@@ -23,7 +23,7 @@ main_loop() {
     say_task
 
     if [[ -z $COMPILE ]]; then
-        check_for_sdk
+        check_for_dotnet
     fi
 
     if [[ $? -eq 0 ]] || [[ -z $COMPILE ]]; then
@@ -53,6 +53,65 @@ main_loop() {
     fi
 
     say_bye
+}
+
+check_for_dotnet() {
+    test_for_appimagetool
+    check_for_sdk
+    if [[ $? != 0 ]]; then
+        install_prompt
+    else
+        return 0
+    fi
+}
+
+test_for_appimagetool() {
+    echo -n "Checking for appimagetool..."
+    appimagetool -h &> /dev/null
+    if [[ $? != 0 ]]; then
+        say_warning
+        while true; do
+            read -p "Would you like to download appimagetool?: " yn
+            case $yn in
+                [Yy]* )
+                    get_appimagetool
+                    if [[ $1 -eq 0 ]]; then return 0; else exit 1; fi
+                    ;;
+                [Nn]* ) echo "${red:-}User aborted the application.${normal:-}"; echo; exit 1;;
+                * ) echo "Please answer yes or no.";;
+            esac
+        done
+    else
+        say_pass
+        return 0
+    fi
+}
+
+get_appimagetool() {
+    download_appimagetool
+    if [[ $1 -eq 0 ]]; then appimagetool_to_path; else exit 1; fi
+}
+
+download_appimagetool() {
+    echo "Downloading appimagetool..."
+    if [[ ! -d ~/.local/bin ]]; then mkdir -p ~/.local/bin ; fi
+    wget https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O ~/.local/bin/appimagetool -q --show-progress
+    STATUS=$?
+    download_check STATUS
+}
+
+appimagetool_to_path() {
+    PATH_ADD='export PATH="$PATH:$HOME/.local/bin"'
+
+    if ! (grep -qF "$PATH_ADD" $HOME/.bashrc); then
+        if ! [[ -z $VERB ]]; then echo "Adding appimagetool to \$PATH in ~/.bashrc"; fi
+        echo "# Added by netpkg-tool" >> "$HOME/.bashrc"
+        echo $PATH_ADD >> "$HOME/.bashrc"
+        echo >> "$HOME/.bashrc"
+        source ~/.bashrc
+    else
+        if ! [[ -z $VERB ]]; then echo "${yellow:-}$HOME/.local//bin already detected in ~/.bashrc, skip adding to \$PATH.${normal:-}"; fi
+    fi
 }
 
 download_check() {
@@ -89,12 +148,50 @@ check_for_sdk() {
     fi;
 }
 
-start_installer() {
+
+install_prompt() {
+    echo -n "Checking if necessary libraries are present"
+    source $PKG_DIR/npk.template/usr/bin/lib-check.sh
+
     if [[ $libs_needed == "true" ]]; then
-        $PKG_DIR/usr/bin/install-libs.sh
+        say_warning
+        echo "The following libraries are missing and will also need to be installed:"
+        if [[ $need_unwind == "true" ]]; then echo " - libunwind"; fi
+        if [[ $need_icu == "true" ]]; then echo " - libunicu"; fi
+        if [[ $need_gettext == "true" ]]; then echo " - gettext"; fi
+        echo "${yellow:-}It is recommended that you acquire these from your package manager, but can be locally installed.${normal:-}"
+        read -p "Would you like to download & install the .NET sdk and needed libraries? (y/n): " yn
+        export yn=$yn
+    else
+        say_pass
+        read -p "Would you like to download & install the .NET sdk? (y/n): " yn
+        export yn=$yn
     fi
 
-    $PKG_DIR/usr/bin/dotnet-installer.sh -sdk
+    while true; do
+        case $yn in
+            [Yy]* )
+                start_installer
+                export just_installed="true"
+                if [[ $? -eq 0 ]]; then
+                    check_path
+                    return 0
+                else
+                    exit 1
+                fi
+                ;;
+            [Nn]* ) echo "${red:-}User aborted the application.${normal:-}"; echo; exit 1;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+}
+
+start_installer() {
+    if [[ $libs_needed == "true" ]]; then
+        $PKG_DIR/npk.template/usr/bin/install-libs.sh
+    fi
+
+    $PKG_DIR/npk.template/usr/bin/dotnet-installer.sh -sdk
     if [[ $? -eq 0 ]]; then
         return 0
     else
@@ -119,7 +216,7 @@ compile_net_project() {
         if [[ -z $VERB ]] && [[ -z $COMPILE ]]; then say_pass; fi
 
         if [[ -z $VERB ]]; then echo -n "Compiling .NET project..."; fi
-            export CORE_VERS=$(parse-csproj.py 2>&1 >/dev/null)
+            export CORE_VERS=$($PKG_DIR/tools/parse-csproj.py 2>&1 >/dev/null)
         if ! [[ -z $VERB ]]; then
             net_publish
         else
@@ -170,67 +267,55 @@ find_csproj() {
 transfer_files() {
     echo -n "Transferring files..."
 
-    rm -rf /tmp/$APP_NAME.temp
+    rm -rf /tmp/npk.temp
 
-    # cp -r $PKG_DIR/usr/share/$APP_NAME.template/. /tmp/$APP_NAME.temp
-    mkdir -p /tmp/$APP_NAME.temp/usr/bin
-    mkdir -p /tmp/$APP_NAME.temp/usr/share/app
+    mkdir -p /tmp/npk.temp
+    cp -r $PKG_DIR/npk.template/. /tmp/npk.temp
+    mkdir -p /tmp/npk.temp/usr/share/app
 
     if [[ -z $MAKE_SCD ]]; then
-        cp -r $PROJ/bin/Release/$CORE_VERS/publish/. /tmp/$APP_NAME.temp/usr/share/app
+        cp -r $PROJ/bin/Release/$CORE_VERS/publish/. /tmp/npk.temp/usr/share/app
     else
-        cp -r $PROJ/bin/Release/$CORE_VERS/$TARGET_OS/publish/. /tmp/$APP_NAME.temp/usr/share/app
+        cp -r $PROJ/bin/Release/$CORE_VERS/$TARGET_OS/publish/. /tmp/npk.temp/usr/share/app
     fi
 
     if [[ -d "$PROJ/pkg.lib" ]]; then
-        cp -r $PROJ/pkg.lib/. /tmp/$APP_NAME.temp/usr/lib
+        cp -r $PROJ/pkg.lib/. /tmp/npk.temp/usr/lib
     fi
 
 
-    touch /tmp/$APP_NAME.temp/AppRun
-    echo "#! /usr/bin/env bash" >> /tmp/$APP_NAME.temp/AppRun
-    echo >> /tmp/$APP_NAME.temp/AppRun
-    echo "# -------------------------------- Config --------------------------------" >> /tmp/$APP_NAME.temp/AppRun
-    echo >> /tmp/$APP_NAME.temp/AppRun
-    echo DLL_NAME=$CSPROJ >> /tmp/$APP_NAME.temp/AppRun
-    echo PKG_VERSION=$PKG_VERSION >> /tmp/$APP_NAME.temp/AppRun
-    echo >> /tmp/$APP_NAME.temp/AppRun
+    touch /tmp/npk.temp/AppRun
+    echo "#! /usr/bin/env bash" >> /tmp/npk.temp/AppRun
+    echo >> /tmp/npk.temp/AppRun
+    echo "# -------------------------------- Config --------------------------------" >> /tmp/npk.temp/AppRun
+    echo >> /tmp/npk.temp/AppRun
+    echo DLL_NAME=$CSPROJ >> /tmp/npk.temp/AppRun
+    echo PKG_VERSION=$PKG_VERSION >> /tmp/npk.temp/AppRun
+    echo >> /tmp/npk.temp/AppRun
 
-    touch /tmp/$APP_NAME.temp/$APP_NAME.desktop
-    echo "[Desktop Entry]" >> /tmp/$APP_NAME.temp/$APP_NAME.desktop
-    echo >> /tmp/$APP_NAME.temp/$APP_NAME.desktop
-    echo "Type=Application" >> /tmp/$APP_NAME.temp/$APP_NAME.desktop
-    echo "Name=$APP_NAME" >> /tmp/$APP_NAME.temp/$APP_NAME.desktop
-    echo "Exec=AppRun" >> /tmp/$APP_NAME.temp/$APP_NAME.desktop
-    echo "Icon=$APP_NAME-icon" >> /tmp/$APP_NAME.temp/$APP_NAME.desktop
-    echo >> /tmp/$APP_NAME.temp/$APP_NAME.desktop
+    touch /tmp/npk.temp/$APP_NAME.desktop
+    echo "[Desktop Entry]" >> /tmp/npk.temp/$APP_NAME.desktop
+    echo >> /tmp/npk.temp/$APP_NAME.desktop
+    echo "Type=Application" >> /tmp/npk.temp/$APP_NAME.desktop
+    echo "Name=$APP_NAME" >> /tmp/npk.temp/$APP_NAME.desktop
+    echo "Exec=AppRun" >> /tmp/npk.temp/$APP_NAME.desktop
+    echo "Icon=$APP_NAME-icon" >> /tmp/npk.temp/$APP_NAME.desktop
+    echo >> /tmp/npk.temp/$APP_NAME.desktop
 
-    touch /tmp/$APP_NAME.temp/$APP_NAME-icon.png
+    touch /tmp/npk.temp/$APP_NAME-icon.png
 
     if [[ -z $MAKE_SCD ]]; then
-        cat $PKG_DIR/usr/bin/AppRun.sh >> /tmp/$APP_NAME.temp/AppRun
-        cp $PKG_DIR/usr/bin/terminal-colors.sh /tmp/$APP_NAME.temp/usr/bin
-        cp $PKG_DIR/usr/bin/lib-check.sh /tmp/$APP_NAME.temp/usr/bin
-
-        cp $PKG_DIR/usr/bin/dotnet-installer.sh /tmp/$APP_NAME.temp/usr/bin
-        cp $PKG_DIR/usr/bin/install-libs.sh /tmp/$APP_NAME.temp/usr/bin
-        cp $PKG_DIR/usr/bin/pkg-help-menu.sh /tmp/$APP_NAME.temp/usr/bin
-        cp $PKG_DIR/usr/bin/valid-version.py /tmp/$APP_NAME.temp/usr/bin
-
+        cat $PKG_DIR/tools/AppRun.sh >> /tmp/npk.temp/AppRun
     else
-        cat $PKG_DIR/usr/bin/scd-run.sh >> /tmp/$APP_NAME.temp/AppRun
-        rm -rf /tmp/$APP_NAME.temp/usr/bin
-        chmod +x /tmp/$APP_NAME.temp/usr/share/app/$CSPROJ
+        cat $PKG_DIR/tools/scd-run.sh >> /tmp/npk.temp/AppRun
+        chmod +x /tmp/npk.temp/usr/share/app/$CSPROJ
     fi
 
 
-    chmod +x /tmp/$APP_NAME.temp/AppRun
+    chmod +x /tmp/npk.temp/AppRun
+    chmod -R +x /tmp/npk.temp/usr/bin
 
-    if [[ -z $MAKE_SCD ]]; then
-        chmod -R +x /tmp/$APP_NAME.temp/usr/bin
-    fi
-
-    rm -f /tmp/$APP_NAME.temp/usr/share/app/*.pdb
+    rm -f /tmp/npk.temp/usr/share/app/*.pdb
 }
 
 create_pkg() {
@@ -249,15 +334,15 @@ create_pkg() {
 
 run_appimagetool() {
     if [[ -z $MAKE_SCD ]]; then
-        appimagetool -n /tmp/$APP_NAME.temp $TRGT/$CSPROJ$EXTN
+        appimagetool -n /tmp/npk.temp $TRGT/$CSPROJ$EXTN
     else
-        appimagetool -n /tmp/$APP_NAME.temp $TRGT/$CSPROJ.AppImage
+        appimagetool -n /tmp/npk.temp $TRGT/$CSPROJ.AppImage
     fi
 }
 
 delete_temp_files() {
     echo -n "Deleting temporary files..."
-    rm -rf /tmp/$APP_NAME.temp
+    rm -rf /tmp/npk.temp
     if [[ $? -eq 0 ]]; then
         say_pass
     else
@@ -356,7 +441,6 @@ export OS_PNAME=$PRETTY_NAME
 export NET_LOC="$(which dotnet 2> /dev/null)"
 export ARGS=($@)
 export HERE=$(dirname $(readlink -f "${0}"))
-export PATH="$HERE/usr/bin:$PATH"
 
 if [[ -z "${LD_LIBRARY_PATH// }" ]]; then 
     export LD_LIBRARY_PATH="$HERE/usr/lib"
@@ -370,14 +454,14 @@ export TRGT=${ARGS[1]}
 export EXTN=".npk"
 get_colors
 
-source $PKG_DIR/version.info
+source $PKG_DIR/tools/version.info
 export PKG_VERSION=$NET_PKG_VERSION
 
 # ---------------------------- Critical Args -----------------------------
 # Critical args will interrupt the program and quit when finished
 
 if [[ -z "${ARGS[0]}" ]]; then
-    netpkg-tool-help.sh
+    $PKG_DIR/tools/netpkg-tool-help.sh
     exit 0
 elif [[ "${ARGS[0]}" == "-d" ]] || [[ "${ARGS[0]}" == "--dir" ]]; then
     if [[ -z "$NET_LOC" ]]; then NET="${red:-}not installed${normal:-}"
@@ -385,17 +469,17 @@ elif [[ "${ARGS[0]}" == "-d" ]] || [[ "${ARGS[0]}" == "--dir" ]]; then
     echo ".NET location: $NET"
     exit 0
 elif [[ "${ARGS[0]}" == "-h" ]] || [[ "${ARGS[0]}" == "--help" ]]; then
-    netpkg-tool-help.sh
+    $PKG_DIR/tools/netpkg-tool-help.sh
     exit 0
 elif [[ "${ARGS[0]}" == "--install-sdk" ]]; then
     say_hello
-    dotnet-installer.sh -sdk
+    $PKG_DIR/npk.template/usr/bin/dotnet-installer.sh -sdk
     exit 0
 elif [[ "${ARGS[0]}" == "--uninstall-sdk" ]]; then
-    uninstaller.sh
+    $PKG_DIR/tools/uninstaller.sh
     exit 0
 elif [[ "${ARGS[0]}" == "--new" ]]; then
-    new.sh ${ARGS[@]}
+    $PKG_DIR/tools/new.sh ${ARGS[@]}
     exit 0
 fi
 
@@ -431,8 +515,6 @@ for ((I=0; I <= ${#ARGS[@]}; I++)); do
             say_bye
             exit 1
         fi
-    elif [[ "${ARGS[$I]}" == "--yes-all" ]]; then
-        export YES_ALL="true"
     fi
 done
 
