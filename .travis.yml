@@ -1,31 +1,27 @@
 dist: trusty
 sudo: required
 
-branches:
-  only:
-    - master
-    - develop
-    - rc
-    - travis-test
-
-services:
-  - docker
-
 before_install:
   - sudo apt-get update
-  - sudo apt-get install git curl libunwind8 gettext fuse
+  - sudo apt-get install libunwind8
   - sudo modprobe fuse
-  - sudo usermod -a -G fuse "$(whoami)"
-  - sudo curl -sSL -o dotnet.tar.gz https://go.microsoft.com/fwlink/?linkid=848738
-  - sudo mkdir -p /opt/dotnet && sudo tar zxf dotnet.tar.gz -C /opt/dotnet
-  - sudo ln -s /opt/dotnet/dotnet /usr/local/bin
+  - sudo usermod -a -G fuse $(whoami)
 
 install:
-  - docker build -t netpkg-tool.build docker
-  - docker run --name buildvm netpkg-tool.build /bin/bash Recipe
-  - docker cp buildvm:/usr/local/bin/netpkg-tool $TRAVIS_BUILD_DIR/netpkg-tool
+  - sudo $TRAVIS_BUILD_DIR/build.sh /usr/local/bin --yes-all
+
+before_script:
+  - netpkg-tool --help
+  - sudo netpkg-tool --install-sdk --yes-all
+  - source ~/.bashrc
+  - netpkg-tool --help
+  - dotnet new sln
 
 script:
   - git clone https://github.com/phil-harmoniq/ArgTest $TRAVIS_BUILD_DIR/ArgTest
-  - $TRAVIS_BUILD_DIR/netpkg-tool $TRAVIS_BUILD_DIR/ArgTest $TRAVIS_BUILD_DIR
+  - netpkg-tool $TRAVIS_BUILD_DIR/ArgTest $TRAVIS_BUILD_DIR
+  - $TRAVIS_BUILD_DIR/ArgTest.npk one two thr33 --npk-v four
+  - netpkg-tool $TRAVIS_BUILD_DIR/ArgTest $TRAVIS_BUILD_DIR --scd
+  - $TRAVIS_BUILD_DIR/ArgTest.AppImage one two thr33 --npk-v four
+  - netpkg-tool $TRAVIS_BUILD_DIR/ArgTest $TRAVIS_BUILD_DIR -v -n Arrrg --keep
   - $TRAVIS_BUILD_DIR/ArgTest.npk one two thr33 --npk-v four

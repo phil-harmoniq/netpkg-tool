@@ -28,13 +28,18 @@ test_for_appimagetool() {
     if [[ -z $DOCKER ]]; then
         echo -n "Checking for appimagetool..."
         appimagetool -h &> /dev/null
-        if [[ $? != 0 ]]; then
+        if [[ $? -ne 0 ]]; then
             say_warning
             while true; do
-                read -p "Would you like to download appimagetool?: " yn
+                if [[ -z $YES_ALL ]]; then
+                    read -p "Would you like to download appimagetool?: " yn
+                else
+                    yn="Y"
+                fi
                 case $yn in
                     [Yy]* )
                         get_appimagetool
+                        export appimagetool_loc="/tmp/appimagetool"
                         if [[ $1 -eq 0 ]]; then return 0; else exit 1; fi
                         ;;
                     [Nn]* ) echo "${red:-}User aborted the application.${normal:-}"; echo; exit 1;;
@@ -42,6 +47,7 @@ test_for_appimagetool() {
                 esac
             done
         else
+            export appimagetool_loc="$(which appimagetool)"
             say_pass
             return 0
         fi
@@ -49,26 +55,18 @@ test_for_appimagetool() {
 }
 
 get_appimagetool() {
-    download_appimagetool
-    if [[ $1 -eq 0 ]]; then appimagetool_to_path; else exit 1; fi
-}
-
-download_appimagetool() {
-    echo "Downloading appimagetool..."
-    if [[ ! -d ~/.local/bin ]]; then mkdir -p ~/.local/bin ; fi
-    wget https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O ~/.local/bin/appimagetool -q --show-progress
+    echo -n "Downloading appimagetool..."
+    curl -sSL -o /tmp/appimagetool https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
     STATUS=$?
     download_check STATUS
 }
 
 download_check() {
     if [[ $1 -eq 0 ]]; then
-        echo -n "Attempt to download:"
         say_pass
-        chmod +x ~/.local/bin/appimagetool
+        chmod +x /tmp/appimagetool
         return 0
     else
-        echo -n "Attempt to downlod:"
         say_fail
         exit 1
     fi
@@ -101,14 +99,13 @@ copy_files() {
     rm -rf /tmp/netpkg-tool.temp/docker
 
     create_desktop_files
-    mv /tmp/netpkg-tool.temp/usr/bin/ToolRun.sh /tmp/netpkg-tool.temp/AppRun
 
     # Extract appimagetool and create shortcut in $PKG_DIR/usr/bin
     if [[ -z $DOCKER ]]; then
         mkdir -p /tmp/netpkg-tool.temp/usr/share
         mkdir -p /tmp/netpkg-tool.temp/usr/bin
         cd /tmp/netpkg-tool.temp/usr/share
-        cp $(which appimagetool) .
+        cp $appimagetool_loc .
         
         result=$(./appimagetool --appimage-extract 2>&1)
 
@@ -144,14 +141,15 @@ create_desktop_files() {
 }
 
 create_package() {
+    echo -n "Compressing with appimagetool..."
+
     if [[ -z $VERB ]]; then
-        result=$(appimagetool -n /tmp/netpkg-tool.temp $TRGT/netpkg-tool 2>&1)
+        result=$($appimagetool_loc -n /tmp/netpkg-tool.temp $TRGT/netpkg-tool 2>&1)
         if [[ $? -eq 0 ]]; then export complete="true"; fi
     else
-        appimagetool -n /tmp/netpkg-tool.temp $TRGT/netpkg-tool
+        $appimagetool_loc -n /tmp/netpkg-tool.temp $TRGT/netpkg-tool
         if [[ $? -eq 0 ]]; then export complete="true"; fi
     fi
-    echo -n "Compressing with appimagetool..."
 
     if [[ $complete == "true" ]]; then
         say_pass
@@ -237,6 +235,8 @@ for ((I=0; I <= ${#ARGS[@]}; I++)); do
         export NO_DEL="true"
     elif [[ "${ARGS[$I]}" == "--docker-build" ]]; then
         export DOCKER="true"
+    elif [[ "${ARGS[$I]}" == "--yes-all" ]]; then
+        export YES_ALL="true"
     fi
 done
 

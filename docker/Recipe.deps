@@ -1,4 +1,0 @@
-#!/bin/bash -eux -y update
-
-apt-get update
-apt-get install -y curl git libglib2.0.0

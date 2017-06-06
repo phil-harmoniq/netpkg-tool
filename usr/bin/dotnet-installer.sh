@@ -52,6 +52,7 @@ main_loop() {
         else echo -n '.NET runtime install:'; fi
         say_pass
         echo 'You may need to log-out and back in or type ". ~/.bashrc" for the changes to take effect.'
+        say_bye
         return 0
     else
         if [[ $SDK == "true" ]]; then echo -n '.NET sdk install:'
@@ -64,6 +65,8 @@ main_loop() {
 }
 
 add_to_path() {
+    echo -n "Adding .NET SDK to ~/.bashrc"
+
     PATH_ADD='export PATH="$HOME/.local/share/dotnet/bin:$PATH"'
 
     if ! (grep -qF "$PATH_ADD" $HOME/.bashrc); then
@@ -74,6 +77,7 @@ add_to_path() {
     else
         echo "${yellow:-}$HOME/.local/share/dotnet/bin already detected in ~/.bashrc, skip adding to \$PATH.${normal:-}"
     fi
+    say_pass
 }
 
 download_dotnet() {
@@ -205,14 +209,14 @@ get_type() {
 
 wget_sdk() {
     echo "Downloading .NET sdk for $OS_PNAME..."
-    wget https://download.microsoft.com/download/0/6/5/0656B047-5F2F-4281-A851-F30776F8616D/dotnet-dev-linux-x64.2.0.0-preview1-005977.tar.gz -O /tmp/dotnet-sdk.tar.gz -q --show-progress
+    curl -SL -o /tmp/dotnet-sdk.tar.gz https://download.microsoft.com/download/0/6/5/0656B047-5F2F-4281-A851-F30776F8616D/dotnet-dev-linux-x64.2.0.0-preview1-005977.tar.gz
     STATUS=$?
     download_check STATUS
 }
 
 wget_runtime() {
     echo "Downloading .NET runtime for $OS_PNAME..."
-    wget https://download.microsoft.com/download/0/9/0/09060200-E749-4025-A51A-83391C611C86/dotnet-linux-x64.2.0.0-preview1-002111-00.tar.gz -O /tmp/dotnet-runtime.tar.gz -q --show-progress
+    curl -SL -o /tmp/dotnet-runtime.tar.gz https://download.microsoft.com/download/0/9/0/09060200-E749-4025-A51A-83391C611C86/dotnet-linux-x64.2.0.0-preview1-002111-00.tar.gz
     STATUS=$?
     download_check STATUS
 }
@@ -223,6 +227,11 @@ say_pass() {
 
 say_fail() {
     echo "${bold:-} [ ${red:-}FAIL${white:-} ] ${normal:-}"
+}
+
+say_bye() {
+    echo "------------------------------------------------------------"
+    echo
 }
 
 download_check() {
