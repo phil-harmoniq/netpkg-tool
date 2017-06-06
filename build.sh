@@ -55,20 +55,18 @@ test_for_appimagetool() {
 }
 
 get_appimagetool() {
-    echo "Downloading appimagetool..."
-    wget https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /tmp/appimagetool -q --show-progress
+    echo -n "Downloading appimagetool..."
+    curl -sSL -o appimagetool https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
     STATUS=$?
     download_check STATUS
 }
 
 download_check() {
     if [[ $1 -eq 0 ]]; then
-        echo -n "Attempt to download:"
         say_pass
         chmod +x /tmp/appimagetool
         return 0
     else
-        echo -n "Attempt to downlod:"
         say_fail
         exit 1
     fi
