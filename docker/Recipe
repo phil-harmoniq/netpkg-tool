@@ -23,6 +23,7 @@ mkdir -p /netpkg-build
 ./build.sh /usr/local/bin --docker-build
 
 # Test netpkg-tool
+netpk-tool --install-sdk
 mkdir -p /git
 cd /git
 git clone https://github.com/phil-harmoniq/ArgTest

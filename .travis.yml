@@ -11,7 +11,14 @@ branches:
 services:
   - docker
 
-script:
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install git curl libunwind8 gettext
+
+install:
   - docker build -t netpkg-tool.build docker
   - docker run --name buildvm netpkg-tool.build /bin/bash Recipe
   - docker cp buildvm:/tmp/NET_Pkg/netpkg-tool $TRAVIS_BUILD_DIR/netpkg-tool
+
+script:
+  - $TRAVIS_BUILD_DIR/netpkg-tool --install-sdk
