@@ -225,7 +225,10 @@ transfer_files() {
 
 
     chmod +x /tmp/$APP_NAME.temp/AppRun
-    chmod -R +x /tmp/$APP_NAME.temp/usr/bin
+
+    if [[ -z $MAKE_SCD ]]; then
+        chmod -R +x /tmp/$APP_NAME.temp/usr/bin
+    fi
 
     rm -f /tmp/$APP_NAME.temp/usr/share/app/*.pdb
 }
