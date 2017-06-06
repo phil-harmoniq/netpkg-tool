@@ -3,14 +3,12 @@ sudo: required
 
 before_install:
   - sudo apt-get update
-  - sudo apt-get install git curl libunwind8 gettext fuse wget
+  - sudo apt-get install curl libunwind8 gettext fuse wget
   - sudo modprobe fuse
   - sudo usermod -a -G fuse $(whoami)
 
 install:
-  - echo $PATH
-  - git clone https://github.com/phil-harmoniq/NET_Pkg $TRAVIS_BUILD_DIR/NET_Pkg
-  - $TRAVIS_BUILD_DIR/NET_Pkg/build.sh /usr/local/bin --yes-all
+  - $TRAVIS_BUILD_DIR/build.sh /usr/local/bin --yes-all
 
 before_script:
   - netpkg-tool --help
