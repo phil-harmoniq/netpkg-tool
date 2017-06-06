@@ -176,7 +176,7 @@ for I in "${!ARGS[@]}"; do
         export VERB="true"
         arg_filter $I
     elif [[ "${ARGS[$I]}" == "--npk-h" ]] || [[ "${ARGS[$I]}" == "--npk-help" ]]; then
-        $HERE/usr/bin/help-menu.sh
+        $HERE/usr/bin/pkg-help-menu.sh
         exit 0
     elif [[ "${ARGS[$I]}" == "--npk-d" ]] || [[ "${ARGS[$I]}" == "--npk-dir" ]]; then
         echo ".NET installed at: $LOC"

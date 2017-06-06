@@ -1,18 +1,21 @@
-# NET_Pkg [![License][License]](LICENSE.md)
+# NET_Pkg [![License][License]](LICENSE.md) [![Build Status](https://travis-ci.org/phil-harmoniq/NET_Pkg.svg?branch=develop)](https://travis-ci.org/phil-harmoniq/NET_Pkg)
 
 [License]: https://img.shields.io/badge/License-MIT-blue.svg
 
 ## Instructions
 
-A pre-compiled version of the most current netpkg-tool is available from the [releases tab](https://github.com/phil-harmoniq/NET_Pkg/releases):
+A pre-packaged version of the most current netpkg-tool is available from the [releases tab](https://github.com/phil-harmoniq/NET_Pkg/releases):
 
 ```bash
 wget "https://github.com/phil-harmoniq/NET_Pkg/releases/download/current/netpkg-tool"
 chmod a+x netpkg-tool
 ```
+
 To build netpkg-tool from source, just run `build.sh` and specify a destination folder:
+
 ```bash
-./build.sh ~/.local/bin
+git clone https://github.com/phil-harmoniq/NET_Pkg
+./NET_Pkg/build.sh .
 ```
 
 ## Usage
@@ -69,7 +72,7 @@ Note: More detailed examples comins soon.
 ## Requirements
 
 * [appimagetool](https://github.com/probonopd/appimagekit/) - bundles binaries along with needed libraries into a single file
-* [.NET Core SDK](https://www.microsoft.com/net/download/linux) - open-source implementation of Microsoft's .NET framework.
+* [.NET Core 2.0 SDK](https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.0-preview1-download.md) - open-source implementation of Microsoft's .NET framework.
 
 ## Details
 
