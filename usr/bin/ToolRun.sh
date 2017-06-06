@@ -188,10 +188,10 @@ install_prompt() {
 
 start_installer() {
     if [[ $libs_needed == "true" ]]; then
-        $PKG_DIR/npk.template/usr/bin/install-libs.sh
+        $PKG_DIR/usr/bin/install-libs.sh
     fi
 
-    $PKG_DIR/npk.template/usr/bin/dotnet-installer.sh -sdk
+    $PKG_DIR/usr/bin/dotnet-installer.sh -sdk
     if [[ $? -eq 0 ]]; then
         return 0
     else
@@ -267,58 +267,64 @@ find_csproj() {
 transfer_files() {
     echo -n "Transferring files..."
 
-    rm -rf /tmp/npk.temp
+    rm -rf /tmp/$APP_NAME.temp
 
-    mkdir -p /tmp/npk.temp
-    cp -r $PKG_DIR/usr/share/npk.template/. /tmp/npk.temp
-    mkdir -p /tmp/npk.temp/usr/share/app
+    # cp -r $PKG_DIR/usr/share/$APP_NAME.template/. /tmp/$APP_NAME.temp
+    mkdir -p /tmp/$APP_NAME.temp/usr/bin
+    mkdir -p /tmp/$APP_NAME.temp/usr/share/app
 
     if [[ -z $MAKE_SCD ]]; then
-        cp -r $PROJ/bin/Release/$CORE_VERS/publish/. /tmp/npk.temp/usr/share/app
+        cp -r $PROJ/bin/Release/$CORE_VERS/publish/. /tmp/$APP_NAME.temp/usr/share/app
     else
-        cp -r $PROJ/bin/Release/$CORE_VERS/$TARGET_OS/publish/. /tmp/npk.temp/usr/share/app
+        cp -r $PROJ/bin/Release/$CORE_VERS/$TARGET_OS/publish/. /tmp/$APP_NAME.temp/usr/share/app
     fi
 
     if [[ -d "$PROJ/pkg.lib" ]]; then
-        cp -r $PROJ/pkg.lib/. /tmp/npk.temp/usr/lib
+        cp -r $PROJ/pkg.lib/. /tmp/$APP_NAME.temp/usr/lib
     fi
 
 
-    touch /tmp/npk.temp/AppRun
-    echo "#! /usr/bin/env bash" >> /tmp/npk.temp/AppRun
-    echo >> /tmp/npk.temp/AppRun
-    echo "# -------------------------------- Config --------------------------------" >> /tmp/npk.temp/AppRun
-    echo >> /tmp/npk.temp/AppRun
-    echo DLL_NAME=$CSPROJ >> /tmp/npk.temp/AppRun
-    echo PKG_VERSION=$PKG_VERSION >> /tmp/npk.temp/AppRun
-    echo >> /tmp/npk.temp/AppRun
+    touch /tmp/$APP_NAME.temp/AppRun
+    echo "#! /usr/bin/env bash" >> /tmp/$APP_NAME.temp/AppRun
+    echo >> /tmp/$APP_NAME.temp/AppRun
+    echo "# -------------------------------- Config --------------------------------" >> /tmp/$APP_NAME.temp/AppRun
+    echo >> /tmp/$APP_NAME.temp/AppRun
+    echo DLL_NAME=$CSPROJ >> /tmp/$APP_NAME.temp/AppRun
+    echo PKG_VERSION=$PKG_VERSION >> /tmp/$APP_NAME.temp/AppRun
+    echo >> /tmp/$APP_NAME.temp/AppRun
 
-    touch /tmp/npk.temp/$APP_NAME.desktop
-    echo "[Desktop Entry]" >> /tmp/npk.temp/$APP_NAME.desktop
-    echo >> /tmp/npk.temp/$APP_NAME.desktop
-    echo "Type=Application" >> /tmp/npk.temp/$APP_NAME.desktop
-    echo "Name=$APP_NAME" >> /tmp/npk.temp/$APP_NAME.desktop
-    echo "Exec=AppRun" >> /tmp/npk.temp/$APP_NAME.desktop
-    echo "Icon=$APP_NAME-icon" >> /tmp/npk.temp/$APP_NAME.desktop
-    echo >> /tmp/npk.temp/$APP_NAME.desktop
+    touch /tmp/$APP_NAME.temp/$APP_NAME.desktop
+    echo "[Desktop Entry]" >> /tmp/$APP_NAME.temp/$APP_NAME.desktop
+    echo >> /tmp/$APP_NAME.temp/$APP_NAME.desktop
+    echo "Type=Application" >> /tmp/$APP_NAME.temp/$APP_NAME.desktop
+    echo "Name=$APP_NAME" >> /tmp/$APP_NAME.temp/$APP_NAME.desktop
+    echo "Exec=AppRun" >> /tmp/$APP_NAME.temp/$APP_NAME.desktop
+    echo "Icon=$APP_NAME-icon" >> /tmp/$APP_NAME.temp/$APP_NAME.desktop
+    echo >> /tmp/$APP_NAME.temp/$APP_NAME.desktop
 
-    touch /tmp/npk.temp/$APP_NAME-icon.png
+    touch /tmp/$APP_NAME.temp/$APP_NAME-icon.png
 
     if [[ -z $MAKE_SCD ]]; then
-        cat $PKG_DIR/usr/share/npk.template/AppRun.sh >> /tmp/npk.temp/AppRun
-        cp $PKG_DIR/usr/bin/terminal-colors.sh /tmp/npk.temp/usr/bin
-        cp $PKG_DIR/usr/bin/lib-check.sh /tmp/npk.temp/usr/bin
+        cat $PKG_DIR/usr/bin/AppRun.sh >> /tmp/$APP_NAME.temp/AppRun
+        cp $PKG_DIR/usr/bin/terminal-colors.sh /tmp/$APP_NAME.temp/usr/bin
+        cp $PKG_DIR/usr/bin/lib-check.sh /tmp/$APP_NAME.temp/usr/bin
+
+        cp $PKG_DIR/usr/bin/dotnet-installer.sh /tmp/$APP_NAME.temp/usr/bin
+        cp $PKG_DIR/usr/bin/install-libs.sh /tmp/$APP_NAME.temp/usr/bin
+        cp $PKG_DIR/usr/bin/pkg-help-menu.sh /tmp/$APP_NAME.temp/usr/bin
+        cp $PKG_DIR/usr/bin/valid-version.py /tmp/$APP_NAME.temp/usr/bin
+
     else
-        cat $PKG_DIR/usr/bin/scd-run.sh >> /tmp/npk.temp/AppRun
-        rm -rf /tmp/npk.temp/usr/bin
-        chmod +x /tmp/npk.temp/usr/share/app/$CSPROJ
+        cat $PKG_DIR/usr/bin/scd-run.sh >> /tmp/$APP_NAME.temp/AppRun
+        rm -rf /tmp/$APP_NAME.temp/usr/bin
+        chmod +x /tmp/$APP_NAME.temp/usr/share/app/$CSPROJ
     fi
 
 
-    chmod +x /tmp/npk.temp/AppRun
-    chmod -R +x /tmp/npk.temp/usr/bin
+    chmod +x /tmp/$APP_NAME.temp/AppRun
+    chmod -R +x /tmp/$APP_NAME.temp/usr/bin
 
-    rm -f /tmp/npk.temp/usr/share/app/*.pdb
+    rm -f /tmp/$APP_NAME.temp/usr/share/app/*.pdb
 }
 
 create_pkg() {
@@ -337,15 +343,15 @@ create_pkg() {
 
 run_appimagetool() {
     if [[ -z $MAKE_SCD ]]; then
-        appimagetool -n /tmp/npk.temp $TRGT/$CSPROJ$EXTN
+        appimagetool -n /tmp/$APP_NAME.temp $TRGT/$CSPROJ$EXTN
     else
-        appimagetool -n /tmp/npk.temp $TRGT/$CSPROJ.AppImage
+        appimagetool -n /tmp/$APP_NAME.temp $TRGT/$CSPROJ.AppImage
     fi
 }
 
 delete_temp_files() {
     echo -n "Deleting temporary files..."
-    rm -rf /tmp/npk.temp
+    rm -rf /tmp/$APP_NAME.temp
     if [[ $? -eq 0 ]]; then
         say_pass
     else
