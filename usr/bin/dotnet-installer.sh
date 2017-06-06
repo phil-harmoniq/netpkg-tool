@@ -52,6 +52,7 @@ main_loop() {
         else echo -n '.NET runtime install:'; fi
         say_pass
         echo 'You may need to log-out and back in or type ". ~/.bashrc" for the changes to take effect.'
+        say_bye
         return 0
     else
         if [[ $SDK == "true" ]]; then echo -n '.NET sdk install:'
@@ -64,6 +65,8 @@ main_loop() {
 }
 
 add_to_path() {
+    echo -n "Adding .NET SDK to ~/.bashrc"
+
     PATH_ADD='export PATH="$HOME/.local/share/dotnet/bin:$PATH"'
 
     if ! (grep -qF "$PATH_ADD" $HOME/.bashrc); then
@@ -74,6 +77,7 @@ add_to_path() {
     else
         echo "${yellow:-}$HOME/.local/share/dotnet/bin already detected in ~/.bashrc, skip adding to \$PATH.${normal:-}"
     fi
+    say_pass
 }
 
 download_dotnet() {
@@ -223,6 +227,11 @@ say_pass() {
 
 say_fail() {
     echo "${bold:-} [ ${red:-}FAIL${white:-} ] ${normal:-}"
+}
+
+say_bye() {
+    echo "------------------------------------------------------------"
+    echo
 }
 
 download_check() {
