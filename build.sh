@@ -90,24 +90,24 @@ appimagetool_to_path() {
 
 copy_files() {
     echo -n "Transferring files..."
-    rm -rf /tmp/.netpkg-tool
-    cp -r $PKG_DIR /tmp/.netpkg-tool
+    rm -rf /tmp/netpkg-tool.temp
+    cp -r $PKG_DIR /tmp/netpkg-tool.temp
 
-    rm -f /tmp/.netpkg-tool/build.sh
-    rm -f /tmp/.netpkg-tool/.gitignore
-    rm -f /tmp/.netpkg-tool/.travis.yml
-    rm -f /tmp/.netpkg-tool/netpkg-tool
-    rm -rf /tmp/.netpkg-tool/.git
-    rm -rf /tmp/.netpkg-tool/docker
+    rm -f /tmp/netpkg-tool.temp/build.sh
+    rm -f /tmp/netpkg-tool.temp/.gitignore
+    rm -f /tmp/netpkg-tool.temp/.travis.yml
+    rm -f /tmp/netpkg-tool.temp/netpkg-tool
+    rm -rf /tmp/netpkg-tool.temp/.git
+    rm -rf /tmp/netpkg-tool.temp/docker
 
     create_desktop_files
-    mv /tmp/.netpkg-tool/usr/bin/ToolRun.sh /tmp/.netpkg-tool/AppRun
+    mv /tmp/netpkg-tool.temp/usr/bin/ToolRun.sh /tmp/netpkg-tool.temp/AppRun
 
     # Extract appimagetool and create shortcut in $PKG_DIR/usr/bin
     if [[ -z $DOCKER ]]; then
-        mkdir -p /tmp/.netpkg-tool/usr/share
-        mkdir -p /tmp/.netpkg-tool/usr/bin
-        cd /tmp/.netpkg-tool/usr/share
+        mkdir -p /tmp/netpkg-tool.temp/usr/share
+        mkdir -p /tmp/netpkg-tool.temp/usr/bin
+        cd /tmp/netpkg-tool.temp/usr/share
         cp $(which appimagetool) .
         
         result=$(./appimagetool --appimage-extract 2>&1)
@@ -122,34 +122,33 @@ copy_files() {
         cd $PKG_DIR
     fi
 
-    cd /tmp/.netpkg-tool/usr/bin
+    cd /tmp/netpkg-tool.temp/usr/bin
     ln -s ../share/appimagetool/AppRun appimagetool
 
-    chmod +x /tmp/.netpkg-tool/AppRun
-    chmod -R +x /tmp/.netpkg-tool/usr/bin
-    chmod -R +x /tmp/.netpkg-tool/usr/share/npk.template/usr/bin
+    chmod +x /tmp/netpkg-tool.temp/AppRun
+    chmod -R +x /tmp/netpkg-tool.temp/usr/bin
     say_pass
 }
 
 create_desktop_files() {
-    touch /tmp/.netpkg-tool/AppIcon.png
-    touch /tmp/.netpkg-tool/netpkg-tool.desktop
+    touch /tmp/netpkg-tool.temp/AppIcon.png
+    touch /tmp/netpkg-tool.temp/netpkg-tool.desktop
 
-    echo "[Desktop Entry]" >> /tmp/.netpkg-tool/netpkg-tool.desktop
-    echo >> /tmp/.netpkg-tool/netpkg-tool.desktop
-    echo "Type=Application" >> /tmp/.netpkg-tool/netpkg-tool.desktop
-    echo "Name=netpkg-tool" >> /tmp/.netpkg-tool/netpkg-tool.desktop
-    echo "Exec=AppRun" >> /tmp/.netpkg-tool/netpkg-tool.desktop
-    echo "Icon=AppIcon" >> /tmp/.netpkg-tool/netpkg-tool.desktop
-    echo "Terminal=true" >> /tmp/.netpkg-tool/netpkg-tool.desktop
+    echo "[Desktop Entry]" >> /tmp/netpkg-tool.temp/netpkg-tool.desktop
+    echo >> /tmp/netpkg-tool.temp/netpkg-tool.desktop
+    echo "Type=Application" >> /tmp/netpkg-tool.temp/netpkg-tool.desktop
+    echo "Name=netpkg-tool" >> /tmp/netpkg-tool.temp/netpkg-tool.desktop
+    echo "Exec=AppRun" >> /tmp/netpkg-tool.temp/netpkg-tool.desktop
+    echo "Icon=AppIcon" >> /tmp/netpkg-tool.temp/netpkg-tool.desktop
+    echo "Terminal=true" >> /tmp/netpkg-tool.temp/netpkg-tool.desktop
 }
 
 create_package() {
     if [[ -z $VERB ]]; then
-        result=$(appimagetool -n /tmp/.netpkg-tool $TRGT/netpkg-tool 2>&1)
+        result=$(appimagetool -n /tmp/netpkg-tool.temp $TRGT/netpkg-tool 2>&1)
         if [[ $? -eq 0 ]]; then export complete="true"; fi
     else
-        appimagetool -n /tmp/.netpkg-tool $TRGT/netpkg-tool
+        appimagetool -n /tmp/netpkg-tool.temp $TRGT/netpkg-tool
         if [[ $? -eq 0 ]]; then export complete="true"; fi
     fi
     echo -n "Compressing with appimagetool..."
@@ -165,7 +164,7 @@ create_package() {
 
 delete_temp_files() {
     echo -n "Deleting temporary files..."
-    rm -rf /tmp/.netpkg-tool
+    rm -rf /tmp/netpkg-tool.temp
     if [[ $? -eq 0 ]]; then
         say_pass
     else
@@ -228,7 +227,6 @@ source $PKG_DIR/version.info
 export PKG_VERSION=$NET_PKG_VERSION
 
 chmod -R +x $PKG_DIR/usr/bin
-chmod -R +x $PKG_DIR/usr/share/npk.template/usr/bin
 
 # ---------------------------- Optional Args -----------------------------
 
