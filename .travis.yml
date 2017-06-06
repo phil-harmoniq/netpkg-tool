@@ -27,6 +27,6 @@ install:
 
 script:
   - cd $TRAVIS_BUILD_DIR
-  - git clone https://github.com/phil-harmoniq/ArgTest
-  - ./netpkg-tool ArgTest .
-  - ./ArgTest.npk one two thr33 --npk-v four
+  - git clone https://github.com/phil-harmoniq/ArgTest $TRAVIS_BUILD_DIR/ArgTest
+  - $TRAVIS_BUILD_DIR/netpkg-tool ArgTest .
+  - $TRAVIS_BUILD_DIR/ArgTest.npk one two thr33 --npk-v four
