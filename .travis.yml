@@ -5,7 +5,7 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install git curl libunwind8 gettext fuse wget
   - sudo modprobe fuse
-  - sudo usermod -a -G fuse "$(whoami)
+  - sudo usermod -a -G fuse $(whoami)
 
 install:
   - echo $PATH
