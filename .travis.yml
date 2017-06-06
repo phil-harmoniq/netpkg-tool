@@ -12,11 +12,11 @@ services:
   - docker
 
 before_install:
-  - apt-get update
-  - apt-get install git curl libunwind8 gettext
-  - curl -sSL -o dotnet.tar.gz https://go.microsoft.com/fwlink/?linkid=848738
-  - mkdir -p /opt/dotnet && sudo tar zxf dotnet.tar.gz -C /opt/dotnet
-  - ln -s /opt/dotnet/dotnet /usr/local/bin
+  - sudo apt-get update
+  - sudo apt-get install git curl libunwind8 gettext
+  - sudo curl -sSL -o dotnet.tar.gz https://go.microsoft.com/fwlink/?linkid=848738
+  - sudo mkdir -p /opt/dotnet && sudo tar zxf dotnet.tar.gz -C /opt/dotnet
+  - sudo ln -s /opt/dotnet/dotnet /usr/local/bin
 
 install:
   - docker build -t netpkg-tool.build docker
