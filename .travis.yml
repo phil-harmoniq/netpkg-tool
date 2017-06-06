@@ -8,7 +8,7 @@ before_install:
   - sudo usermod -a -G fuse $(whoami)
 
 install:
-  - $TRAVIS_BUILD_DIR/build.sh /usr/local/bin --yes-all
+  - sudo $TRAVIS_BUILD_DIR/build.sh /usr/local/bin --yes-all
 
 before_script:
   - netpkg-tool --help

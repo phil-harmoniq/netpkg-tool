@@ -99,7 +99,6 @@ copy_files() {
     rm -rf /tmp/netpkg-tool.temp/docker
 
     create_desktop_files
-    mv /tmp/netpkg-tool.temp/usr/bin/ToolRun.sh /tmp/netpkg-tool.temp/AppRun
 
     # Extract appimagetool and create shortcut in $PKG_DIR/usr/bin
     if [[ -z $DOCKER ]]; then
