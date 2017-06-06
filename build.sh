@@ -56,7 +56,7 @@ test_for_appimagetool() {
 
 get_appimagetool() {
     echo -n "Downloading appimagetool..."
-    curl -sSL -o $appimagetool_loc https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+    curl -sSL -o /tmp/appimagetool https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
     STATUS=$?
     download_check STATUS
 }
