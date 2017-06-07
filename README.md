@@ -2,18 +2,29 @@
 
 [License]: https://img.shields.io/badge/License-MIT-blue.svg
 
-## Instructions
-
-A pre-compiled version of the most current netpkg-tool is available from the [releases tab](https://github.com/phil-harmoniq/NET_Pkg/releases):
+A pre-packaged version of the most current netpkg-tool is available from the [releases tab](https://github.com/phil-harmoniq/NET_Pkg/releases):
 
 ```bash
-wget "https://github.com/phil-harmoniq/NET_Pkg/releases/download/current/netpkg-tool"
+wget https://github.com/phil-harmoniq/NET_Pkg/releases/download/0.2.1-rc1/netpkg-tool
 chmod a+x netpkg-tool
 ```
 To build netpkg-tool from source, just run `build.sh` and specify a destination folder:
 ```bash
 ./build.sh ~/.local/bin
 ```
+
+## Example
+
+```bash
+# Download netpkg-tool and compile a simple .NET Core app
+wget https://github.com/phil-harmoniq/NET_Pkg/releases/download/0.2.1-rc1/netpkg-tool
+git clone https://github.com/phil-harmoniq/ArgTest
+chmod a+x netpkg-tool
+./netpkg-tool ArgTest .
+./ArgTest.npk one two --npk-v three
+```
+
+[ArgTest source](https://github.com/phil-harmoniq/ArgTest)
 
 ## Usage
 
@@ -38,50 +49,23 @@ There are several optional commands that offer more control:
      --uninstall-sdk: Remove local .NET SDK install
 ```
 
-Examples:
-
-Note: More detailed examples comins soon.
-
-```bash
-./netpkg-tool ~/Documents/CoolApp ~/Desktop
-```
-
-```bash
-# Verbose output for more details
-./netpkg-tool relative/folders/too . -v
-```
-
-```bash
-# Specify a custom output name after the -n flag
-./netpkg-tool ~/AnotherApp ~/Desktop -n NewName
-```
-
-```bash
-# A Runtime Identifer is required for Self-Contained Deployment
-./netpkg-tool ~/CsharpProject /tmp --scd ubuntu.16.04-x64
-```
-
-```bash
-# Use --keep to inspect the structure of your AppDir located in /tmp/npk.temp
-./netpkg-tool TestProject ../Output --keep
-```
-
 ## Requirements
 
 * [appimagetool](https://github.com/probonopd/appimagekit/) - bundles binaries along with needed libraries into a single file
 * [.NET Core SDK](https://www.microsoft.com/net/download/linux) - open-source implementation of Microsoft's .NET framework.
 
+Note: netpkg-tool can attempt to install these locally to your home directory
+
 ## Details
 
 Using netpkg-tool will restore and compile your project based on settings in your `*.csproj` file. By default; netpkg-tool will use [Framework Dependent Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#framework-dependent-deployments-fdd) to compile your project and create a customized AppImage with the extension `*.npk`. To use [Self-Contained Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#self-contained-deployments-scd), use the `--scd` flag and designate your target Linux Distro; the resulting file will have an `*.AppImage` extension. The full process for netpkg-tool:
 
-1. Check for appimagetool (netpkg-tool can download if missing)
-2. Check for .NET Core SDK (netpkg-tool can download if missing)
-3. Restore project dependencies
-4. Compile .NET Core app
-5. Create AppDir and transfer files
-6. Run appimagetool on created AppDir
-7. Delete temporary files
+1. Check for .NET Core SDK (netpkg-tool can download if missing)
+2. Restore project dependencies
+3. Compile .NET Core app
+4. Create AppDir and transfer files
+5. Run appimagetool on created AppDir
+6. Delete temporary files
 
 ## .AppImage vs .npk
 
