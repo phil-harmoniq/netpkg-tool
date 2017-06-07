@@ -96,7 +96,7 @@ copy_files() {
     rm -f /tmp/netpkg-tool.temp/.travis.yml
     rm -f /tmp/netpkg-tool.temp/netpkg-tool
     rm -rf /tmp/netpkg-tool.temp/.git
-    rm -rf /tmp/netpkg-tool.temp/docker
+    rm -rf /tmp/netpkg-tool.temp/meta
 
     create_desktop_files
 
