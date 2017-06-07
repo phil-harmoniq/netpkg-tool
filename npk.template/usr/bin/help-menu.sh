@@ -5,8 +5,8 @@ else NET="$(dirname $LOC)"; fi
 
 echo
 echo -n "--------------------- ${cyan:-}"
-echo -n "${bold:-}NET_Pkg v$PKG_VERSION"
-echo "${normal:-} --------------------"
+echo -n "${bold:-}NET_Pkg $PKG_VERSION"
+echo "${normal:-} ---------------------"
 echo
 echo "          ${bold:-}${cyan:-}Info:${normal:-}"
 echo "           App: $DLL_NAME.dll"

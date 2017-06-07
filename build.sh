@@ -25,48 +25,48 @@ main_loop() {
 }
 
 test_for_appimagetool() {
-    if [[ -z $DOCKER ]]; then
-        echo -n "Checking for appimagetool..."
-        appimagetool -h &> /dev/null
-        if [[ $? -ne 0 ]]; then
-            say_warning
-            while true; do
-                if [[ -z $YES_ALL ]]; then
-                    read -p "Would you like to download appimagetool?: " yn
-                else
-                    yn="Y"
-                fi
-                case $yn in
-                    [Yy]* )
-                        get_appimagetool
-                        export appimagetool_loc="/tmp/appimagetool"
-                        if [[ $1 -eq 0 ]]; then return 0; else exit 1; fi
-                        ;;
-                    [Nn]* ) echo "${red:-}User aborted the application.${normal:-}"; echo; exit 1;;
-                    * ) echo "Please answer yes or no.";;
-                esac
-            done
-        else
-            export appimagetool_loc="$(which appimagetool)"
-            say_pass
-            return 0
-        fi
+    echo -n "Checking for appimagetool..."
+    appimagetool -h &> /dev/null
+    if [[ $? != 0 ]]; then
+        say_warning
+        while true; do
+            read -p "Would you like to download appimagetool?: " yn
+            case $yn in
+                [Yy]* )
+                    get_appimagetool
+                    if [[ $1 -eq 0 ]]; then return 0; else exit 1; fi
+                    ;;
+                [Nn]* ) echo "${red:-}User aborted the application.${normal:-}"; echo; exit 1;;
+                * ) echo "Please answer yes or no.";;
+            esac
+        done
+    else
+        say_pass
+        return 0
     fi
 }
 
 get_appimagetool() {
-    echo -n "Downloading appimagetool..."
-    curl -sSL -o /tmp/appimagetool https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+    download_appimagetool
+    if [[ $1 -eq 0 ]]; then appimagetool_to_path; else exit 1; fi
+}
+
+download_appimagetool() {
+    echo "Downloading appimagetool..."
+    if [[ ! -d ~/.local/bin ]]; then mkdir -p ~/.local/bin ; fi
+    wget https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O ~/.local/bin/appimagetool -q --show-progress
     STATUS=$?
     download_check STATUS
 }
 
 download_check() {
     if [[ $1 -eq 0 ]]; then
+        echo -n "Attempt to download:"
         say_pass
-        chmod +x /tmp/appimagetool
+        chmod +x ~/.local/bin/appimagetool
         return 0
     else
+        echo -n "Attempt to downlod:"
         say_fail
         exit 1
     fi
@@ -88,68 +88,44 @@ appimagetool_to_path() {
 
 copy_files() {
     echo -n "Transferring files..."
-    rm -rf /tmp/netpkg-tool.temp
-    cp -r $PKG_DIR /tmp/netpkg-tool.temp
+    rm -rf /tmp/.netpkg-tool
+    cp -r $PKG_DIR /tmp/.netpkg-tool
 
-    rm -f /tmp/netpkg-tool.temp/build.sh
-    rm -f /tmp/netpkg-tool.temp/.gitignore
-    rm -f /tmp/netpkg-tool.temp/.travis.yml
-    rm -f /tmp/netpkg-tool.temp/netpkg-tool
-    rm -rf /tmp/netpkg-tool.temp/.git
-    rm -rf /tmp/netpkg-tool.temp/docker
+    rm -f /tmp/.netpkg-tool/build.sh
+    rm -f /tmp/.netpkg-tool/.gitignore
+    rm -rf /tmp/.netpkg-tool/.git
 
     create_desktop_files
+    mv /tmp/.netpkg-tool/tools/ToolRun.sh /tmp/.netpkg-tool/AppRun
 
-    # Extract appimagetool and create shortcut in $PKG_DIR/usr/bin
-    if [[ -z $DOCKER ]]; then
-        mkdir -p /tmp/netpkg-tool.temp/usr/share
-        mkdir -p /tmp/netpkg-tool.temp/usr/bin
-        cd /tmp/netpkg-tool.temp/usr/share
-        cp $appimagetool_loc .
-        
-        result=$(./appimagetool --appimage-extract 2>&1)
-
-        if [[ $? -ne 0 ]]; then
-            say_fail
-            echo "${red:-}$result${normal:-}"
-        fi
-
-        rm -f ./appimagetool
-        mv ./squashfs-root ./appimagetool
-        cd $PKG_DIR
-    fi
-
-    cd /tmp/netpkg-tool.temp/usr/bin
-    ln -s ../share/appimagetool/AppRun appimagetool
-
-    chmod +x /tmp/netpkg-tool.temp/AppRun
-    chmod -R +x /tmp/netpkg-tool.temp/usr/bin
+    chmod +x /tmp/.netpkg-tool/AppRun
+    chmod -R +x /tmp/.netpkg-tool/tools
+    chmod -R +x /tmp/.netpkg-tool/npk.template/usr/bin
     say_pass
 }
 
 create_desktop_files() {
-    touch /tmp/netpkg-tool.temp/AppIcon.png
-    touch /tmp/netpkg-tool.temp/netpkg-tool.desktop
+    touch /tmp/.netpkg-tool/AppIcon.png
+    touch /tmp/.netpkg-tool/netpkg-tool.desktop
 
-    echo "[Desktop Entry]" >> /tmp/netpkg-tool.temp/netpkg-tool.desktop
-    echo >> /tmp/netpkg-tool.temp/netpkg-tool.desktop
-    echo "Type=Application" >> /tmp/netpkg-tool.temp/netpkg-tool.desktop
-    echo "Name=netpkg-tool" >> /tmp/netpkg-tool.temp/netpkg-tool.desktop
-    echo "Exec=AppRun" >> /tmp/netpkg-tool.temp/netpkg-tool.desktop
-    echo "Icon=AppIcon" >> /tmp/netpkg-tool.temp/netpkg-tool.desktop
-    echo "Terminal=true" >> /tmp/netpkg-tool.temp/netpkg-tool.desktop
+    echo "[Desktop Entry]" >> /tmp/.netpkg-tool/netpkg-tool.desktop
+    echo >> /tmp/.netpkg-tool/netpkg-tool.desktop
+    echo "Type=Application" >> /tmp/.netpkg-tool/netpkg-tool.desktop
+    echo "Name=netpkg-tool" >> /tmp/.netpkg-tool/netpkg-tool.desktop
+    echo "Exec=AppRun" >> /tmp/.netpkg-tool/netpkg-tool.desktop
+    echo "Icon=AppIcon" >> /tmp/.netpkg-tool/netpkg-tool.desktop
+    echo "Terminal=true" >> /tmp/.netpkg-tool/netpkg-tool.desktop
 }
 
 create_package() {
-    echo -n "Compressing with appimagetool..."
-
     if [[ -z $VERB ]]; then
-        result=$($appimagetool_loc -n /tmp/netpkg-tool.temp $TRGT/netpkg-tool 2>&1)
+        result=$(appimagetool -n /tmp/.netpkg-tool $TRGT/netpkg-tool 2>&1)
         if [[ $? -eq 0 ]]; then export complete="true"; fi
     else
-        $appimagetool_loc -n /tmp/netpkg-tool.temp $TRGT/netpkg-tool
+        appimagetool -n /tmp/.netpkg-tool $TRGT/netpkg-tool
         if [[ $? -eq 0 ]]; then export complete="true"; fi
     fi
+    echo -n "Compressing with appimagetool..."
 
     if [[ $complete == "true" ]]; then
         say_pass
@@ -162,7 +138,7 @@ create_package() {
 
 delete_temp_files() {
     echo -n "Deleting temporary files..."
-    rm -rf /tmp/netpkg-tool.temp
+    rm -rf /tmp/.netpkg-tool
     if [[ $? -eq 0 ]]; then
         say_pass
     else
@@ -220,11 +196,12 @@ export ARGS=($@)
 
 export PKG_DIR=$(dirname $(readlink -f "${0}"))
 export TRGT=${ARGS[0]}
-source $PKG_DIR/usr/bin/terminal-colors.sh
-source $PKG_DIR/version.info
+source $PKG_DIR/npk.template/usr/bin/terminal-colors.sh
+source $PKG_DIR/tools/version.info
 export PKG_VERSION=$NET_PKG_VERSION
 
-chmod -R +x $PKG_DIR/usr/bin
+chmod -R +x $PKG_DIR/tools
+chmod -R +x $PKG_DIR/npk.template/usr/bin
 
 # ---------------------------- Optional Args -----------------------------
 
@@ -233,10 +210,6 @@ for ((I=0; I <= ${#ARGS[@]}; I++)); do
         export VERB="true"
     elif [[ "${ARGS[$I]}" == "-k" ]] || [[ "${ARGS[$I]}" == "--keep" ]]; then
         export NO_DEL="true"
-    elif [[ "${ARGS[$I]}" == "--docker-build" ]]; then
-        export DOCKER="true"
-    elif [[ "${ARGS[$I]}" == "--yes-all" ]]; then
-        export YES_ALL="true"
     fi
 done
 

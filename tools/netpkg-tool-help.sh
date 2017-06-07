@@ -5,8 +5,8 @@ else NET="$(dirname $NET_LOC)"; fi
 
 echo
 echo -n "----------------------- ${cyan:-}"
-echo -n "${bold:-}netpkg-tool v$PKG_VERSION"
-echo "${normal:-} ------------------------"
+echo -n "${bold:-}netpkg-tool $PKG_VERSION"
+echo "${normal:-} -------------------------"
 echo
 echo "                ${bold:-}${cyan:-}Info:${normal:-}"
 echo "                  OS: $OS_PNAME"
