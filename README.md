@@ -5,7 +5,7 @@
 A pre-packaged version of the most current netpkg-tool is available from the [releases tab](https://github.com/phil-harmoniq/NET_Pkg/releases):
 
 ```bash
-wget https://github.com/phil-harmoniq/NET_Pkg/releases/download/0.2.1-rc1/netpkg-tool
+wget https://github.com/phil-harmoniq/NET_Pkg/releases/download/master/netpkg-tool
 chmod a+x netpkg-tool
 ```
 
