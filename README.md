@@ -2,8 +2,6 @@
 
 [License]: https://img.shields.io/badge/License-MIT-blue.svg
 
-## Instructions
-
 A pre-packaged version of the most current netpkg-tool is available from the [releases tab](https://github.com/phil-harmoniq/NET_Pkg/releases):
 
 ```bash
@@ -18,10 +16,10 @@ git clone https://github.com/phil-harmoniq/NET_Pkg
 ./NET_Pkg/build.sh .
 ```
 
-## Full Example
+## Example
 
 ```bash
-# Download and compile [ArgTest](https://github.com/phil-harmoniq/ArgTest)
+# Download netpkg-tool and compile a simple .NET Core app
 wget https://github.com/phil-harmoniq/NET_Pkg/releases/download/0.2.1-rc1/netpkg-tool
 git clone https://github.com/phil-harmoniq/ArgTest
 chmod a+x netpkg-tool
@@ -29,7 +27,7 @@ chmod a+x netpkg-tool
 ./ArgTest.npk one two --npk-v three
 ```
 
-More detailed examples coming soon
+[ArgTest source](https://github.com/phil-harmoniq/ArgTest)
 
 ## Usage
 
@@ -65,13 +63,12 @@ Note: netpkg-tool can attempt to install these locally to your home directory
 
 Using netpkg-tool will restore and compile your project based on settings in your `*.csproj` file. By default; netpkg-tool will use [Framework Dependent Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#framework-dependent-deployments-fdd) to compile your project and create a customized AppImage with the extension `*.npk`. To use [Self-Contained Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#self-contained-deployments-scd), use the `--scd` flag and designate your target Linux Distro; the resulting file will have an `*.AppImage` extension. The full process for netpkg-tool:
 
-1. Check for appimagetool (netpkg-tool can download if missing)
-2. Check for .NET Core SDK (netpkg-tool can download if missing)
-3. Restore project dependencies
-4. Compile .NET Core app
-5. Create AppDir and transfer files
-6. Run appimagetool on created AppDir
-7. Delete temporary files
+1. Check for .NET Core SDK (netpkg-tool can download if missing)
+2. Restore project dependencies
+3. Compile .NET Core app
+4. Create AppDir and transfer files
+5. Run appimagetool on created AppDir
+6. Delete temporary files
 
 ## .AppImage vs .npk
 
