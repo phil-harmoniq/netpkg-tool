@@ -20,8 +20,8 @@ git clone https://github.com/phil-harmoniq/NET_Pkg
 
 ## Full Example
 
-Download & compile [ArgTest](https://github.com/phil-harmoniq/ArgTest), a simple .NET core test app.
 ```bash
+# Download and compile [ArgTest](https://github.com/phil-harmoniq/ArgTest)
 wget https://github.com/phil-harmoniq/NET_Pkg/releases/download/0.2.1-rc1/netpkg-tool
 git clone https://github.com/phil-harmoniq/ArgTest
 chmod a+x netpkg-tool
