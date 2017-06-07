@@ -20,7 +20,7 @@ git clone https://github.com/phil-harmoniq/NET_Pkg
 
 ```bash
 # Download netpkg-tool and compile a simple .NET Core app
-wget https://github.com/phil-harmoniq/NET_Pkg/releases/download/0.2.1-rc1/netpkg-tool
+wget https://github.com/phil-harmoniq/NET_Pkg/releases/download/master/netpkg-tool
 git clone https://github.com/phil-harmoniq/ArgTest
 chmod a+x netpkg-tool
 ./netpkg-tool ArgTest .
