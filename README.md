@@ -21,13 +21,17 @@ git clone https://github.com/phil-harmoniq/NET_Pkg
 ```bash
 # Download netpkg-tool and compile a simple .NET Core app
 wget https://github.com/phil-harmoniq/NET_Pkg/releases/download/master/netpkg-tool
-git clone https://github.com/phil-harmoniq/ArgTest
+git clone https://github.com/phil-harmoniq/Hello
 chmod a+x netpkg-tool
 ./netpkg-tool ArgTest .
 ./ArgTest.npk one two --npk-v three
 ```
 
-[ArgTest source](https://github.com/phil-harmoniq/ArgTest)
+[Hello App Source](https://github.com/phil-harmoniq/Hello)
+
+![](meta/example.gif)
+
+More examples coming soon.
 
 ## Usage
 
@@ -39,18 +43,7 @@ Run netpkg-tool and specify a .NET project folder and a destination folder:
 
 There are several optional commands that offer more control:
 
-```
-     --verbose or -v: Verbose output
-     --compile or -c: Skip checks & dotnet-restore
-        --name or -n: Set ouput file to custom name
-         --scd or -s: Self-Contained Deployment (SCD)
-     --scd-rid or -r: SCD with custom RID (default: linux-x64)
-        --keep or -k: Keep /tmp/npk.temp directory
-
-        --help or -h: Help menu (this page)
-       --install-sdk: Install .NET SDK locally
-     --uninstall-sdk: Remove local .NET SDK install
-```
+![](meta/help-menu.png)
 
 ## Requirements
 
