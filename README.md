@@ -49,7 +49,7 @@ There are several optional commands that offer more control:
 
 * [appimagetool](https://github.com/probonopd/appimagekit/) - bundles binaries along with needed libraries into a single file
 * [.NET Core 2.0 SDK](https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.0-preview1-download.md) - open-source implementation of Microsoft's .NET framework.
-  * v2.0 introduced the `linux-x64` [Runtime Identifier (RID)](https://github.com/dotnet/docs/blob/master/docs/core/rid-catalog.md) to replace the individual Linux distro RID's to simpligy distribution
+  * v2.0 introduced the `linux-x64` [Runtime Identifier (RID)](https://github.com/dotnet/docs/blob/master/docs/core/rid-catalog.md) to replace the individual Linux distro RID's to simplify distribution
 
 Note: netpkg-tool can attempt to install these locally to your home directory
 

@@ -85,7 +85,7 @@ check_for_sdk() {
         say_warning
         cd $PKG_DIR
         rm -rf /tmp/.net-sdk-test
-        return 1;
+        exit 1;
     fi;
 }
 
@@ -162,7 +162,11 @@ net_publish() {
 
 find_csproj() {
     cd $PROJ
-    CSFILE=$(find . -name '*.csproj')
+    CSFILE=$(find . -maxdepth 1 -name '*.csproj')
+    if [[ $? -ne 0 ]]; then
+        echo "${red:-}Unable to locate a .csproj file in $PROJ"
+        exit 1
+    fi
     LEN=${#CSFILE}
     export CSPROJ=${CSFILE:2:LEN-9}
 }
