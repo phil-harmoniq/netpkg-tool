@@ -27,8 +27,19 @@ main_loop() {
 test_for_appimagetool() {
     if [[ -z $DOCKER ]]; then
         echo -n "Checking for appimagetool..."
+
         appimagetool -h &> /dev/null
+
         if [[ $? -ne 0 ]]; then
+
+            /tmp/appimagetool -h &> /dev/null
+
+            if [[ $? -eq 0 ]]; then
+                export appimagetool_loc="/tmp/appimagetool"
+                say_pass
+                return 0
+            fi
+
             say_warning
             while true; do
                 if [[ -z $YES_ALL ]]; then
@@ -40,7 +51,7 @@ test_for_appimagetool() {
                     [Yy]* )
                         get_appimagetool
                         export appimagetool_loc="/tmp/appimagetool"
-                        if [[ $1 -eq 0 ]]; then return 0; else exit 1; fi
+                        if [[ $? -eq 0 ]]; then return 0; else exit 1; fi
                         ;;
                     [Nn]* ) echo "${red:-}User aborted the application.${normal:-}"; echo; exit 1;;
                     * ) echo "Please answer yes or no.";;
@@ -96,7 +107,7 @@ copy_files() {
     rm -f /tmp/netpkg-tool.temp/.travis.yml
     rm -f /tmp/netpkg-tool.temp/netpkg-tool
     rm -rf /tmp/netpkg-tool.temp/.git
-    rm -rf /tmp/netpkg-tool.temp/docker
+    rm -rf /tmp/netpkg-tool.temp/meta
 
     create_desktop_files
 

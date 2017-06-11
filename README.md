@@ -21,13 +21,17 @@ git clone https://github.com/phil-harmoniq/NET_Pkg
 ```bash
 # Download netpkg-tool and compile a simple .NET Core app
 wget https://github.com/phil-harmoniq/NET_Pkg/releases/download/master/netpkg-tool
-git clone https://github.com/phil-harmoniq/ArgTest
+git clone https://github.com/phil-harmoniq/Hello
 chmod a+x netpkg-tool
-./netpkg-tool ArgTest .
-./ArgTest.npk one two --npk-v three
+./netpkg-tool Hello .
+./Hello.npk one two three
 ```
 
-[ArgTest source](https://github.com/phil-harmoniq/ArgTest)
+[Hello App Source](https://github.com/phil-harmoniq/Hello)
+
+![](meta/example.gif)
+
+More examples coming soon.
 
 ## Usage
 
@@ -39,23 +43,13 @@ Run netpkg-tool and specify a .NET project folder and a destination folder:
 
 There are several optional commands that offer more control:
 
-```
-     --verbose or -v: Verbose output
-     --compile or -c: Skip checks & dotnet-restore
-        --name or -n: Set ouput file to custom name
-         --scd or -s: Self-Contained Deployment (SCD)
-     --scd-rid or -r: SCD with custom RID (default: linux-x64)
-        --keep or -k: Keep /tmp/npk.temp directory
-
-        --help or -h: Help menu (this page)
-       --install-sdk: Install .NET SDK locally
-     --uninstall-sdk: Remove local .NET SDK install
-```
+![](meta/help-menu.png)
 
 ## Requirements
 
 * [appimagetool](https://github.com/probonopd/appimagekit/) - bundles binaries along with needed libraries into a single file
-* [.NET Core 2.0 SDK](https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.0-preview1-download.md) - open-source implementation of Microsoft's .NET framework.
+* [.NET Core 2.0 SDK](https://github.com/dotnet/core/blob/master/release-notes/download-archives/2.0.0-preview1-download.md) - open-source implementation of Microsoft's .NET framework
+  * v2.0 introduced the `linux-x64` [Runtime Identifier (RID)](https://github.com/dotnet/docs/blob/master/docs/core/rid-catalog.md) to replace the individual Linux distro RID's to simplify distribution. You must have a linux-x64 RID in your project to use SCD.
 
 Note: netpkg-tool can attempt to install these locally to your home directory
 
