@@ -154,7 +154,7 @@ compile_net_project() {
 
 net_publish() {
     if [[ -z $MAKE_SCD ]]; then
-        dotnet publish -f $CORE_VERS -c Release
+        dotnet publish -c Release
     else
         dotnet publish -c Release -r $TARGET_OS
     fi
