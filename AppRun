@@ -3,8 +3,11 @@
 # ------------------------------- Functions ------------------------------
 
 main_loop() {
+    say_hello
+
     if [[ -z "${ARGS[0]}" ]] || [[ -z "${ARGS[1]}" ]]; then
         echo "${red:-}You must specify a directory containing a .csproj file AND a target location.${normal:-}"
+        say_bye
         exit 1
     fi
 
@@ -12,6 +15,7 @@ main_loop() {
 
     if [[ -z $CSPROJ ]]; then
         echo "${red:-}$PROJ does not contain a .csproj file.${normal:-}"
+        say_bye
         exit 1
     fi
 
@@ -19,7 +23,6 @@ main_loop() {
         export APP_NAME="$CSPROJ"
     fi
 
-    say_hello
     say_task
 
     if [[ -z $COMPILE ]]; then
@@ -163,10 +166,6 @@ net_publish() {
 find_csproj() {
     cd $PROJ
     CSFILE=$(find . -maxdepth 1 -name '*.csproj')
-    if [[ $? -ne 0 ]]; then
-        echo "${red:-}Unable to locate a .csproj file in $PROJ"
-        exit 1
-    fi
     LEN=${#CSFILE}
     export CSPROJ=${CSFILE:2:LEN-9}
 }
