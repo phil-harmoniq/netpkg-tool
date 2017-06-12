@@ -3,8 +3,11 @@
 # ------------------------------- Functions ------------------------------
 
 main_loop() {
+    say_hello
+
     if [[ -z "${ARGS[0]}" ]] || [[ -z "${ARGS[1]}" ]]; then
         echo "${red:-}You must specify a directory containing a .csproj file AND a target location.${normal:-}"
+        say_bye
         exit 1
     fi
 
@@ -12,6 +15,7 @@ main_loop() {
 
     if [[ -z $CSPROJ ]]; then
         echo "${red:-}$PROJ does not contain a .csproj file.${normal:-}"
+        say_bye
         exit 1
     fi
 
@@ -19,7 +23,6 @@ main_loop() {
         export APP_NAME="$CSPROJ"
     fi
 
-    say_hello
     say_task
 
     if [[ -z $COMPILE ]]; then
@@ -85,7 +88,7 @@ check_for_sdk() {
         say_warning
         cd $PKG_DIR
         rm -rf /tmp/.net-sdk-test
-        return 1;
+        exit 1;
     fi;
 }
 
@@ -162,7 +165,7 @@ net_publish() {
 
 find_csproj() {
     cd $PROJ
-    CSFILE=$(find . -name '*.csproj')
+    CSFILE=$(find . -maxdepth 1 -name '*.csproj')
     LEN=${#CSFILE}
     export CSPROJ=${CSFILE:2:LEN-9}
 }
