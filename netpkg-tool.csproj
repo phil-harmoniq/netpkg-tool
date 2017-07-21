@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Title>netpkg-tool</Title>
+    <AssemblyTitle>netpkg-tool</AssemblyTitle>
+    <Authors>Phil Hawkins</Authors>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <VersionPrefix>0.3.0</VersionPrefix>
+    <VersionSuffix>alpha1</VersionSuffix>
+    <Description>Quick and easy console colors for C#/Unix</Description>
+    <Copyright>MIT</Copyright>
+    <PackageProjectUrl>https://github.com/phil-harmoniq/netpkg-tool</PackageProjectUrl>
+    <RepositoryUrl>git://github.com/phil-harmoniq/netpkg-tool.git</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/phil-harmoniq/netpkg-tool/blob/master/LICENSE.md</PackageLicenseUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ConsoleColors" Version="0.1.6-alpha"/>
+    <PackageReference Include="Shell.NET" Version="0.1.4-alpha"/>
+    <Content Include="./file-transfer.sh">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>
