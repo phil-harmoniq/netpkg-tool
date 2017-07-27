@@ -8,16 +8,16 @@ before_install:
   - sudo apt-get install dotnet-sdk-2.*
 
 install:
-  - cd $TRAVIS_BUILD_DIR %% sudo dotnet run . /usr/local/bin
+  - dotnet run --project $TRAVIS_BUILD_DIR /usr/local/bin
 
 before_script:
   - netpkg-tool --help
 
 script:
-  - git clone https://github.com/phil-harmoniq/ArgTest $TRAVIS_BUILD_DIR/ArgTest
-  - netpkg-tool $TRAVIS_BUILD_DIR/ArgTest $TRAVIS_BUILD_DIR
-  - $TRAVIS_BUILD_DIR/ArgTest one two thr33 --npk-v four
-  - netpkg-tool $TRAVIS_BUILD_DIR/ArgTest $TRAVIS_BUILD_DIR --scd
-  - $TRAVIS_BUILD_DIR/ArgTest one two thr33 --npk-v four
-  - netpkg-tool $TRAVIS_BUILD_DIR/ArgTest $TRAVIS_BUILD_DIR -v -n Arrrg --keep
-  - $TRAVIS_BUILD_DIR/Arrrg one two thr33 --npk-v four
+  - git clone https://github.com/phil-harmoniq/Hello $TRAVIS_BUILD_DIR/Hello
+  - netpkg-tool $TRAVIS_BUILD_DIR/Hello $TRAVIS_BUILD_DIR
+  - $TRAVIS_BUILD_DIR/Hello one two thr33 --npk-v four
+  - netpkg-tool $TRAVIS_BUILD_DIR/Hello $TRAVIS_BUILD_DIR --scd
+  - $TRAVIS_BUILD_DIR/Hello one two thr33 --npk-v four
+  - netpkg-tool $TRAVIS_BUILD_DIR/Hello $TRAVIS_BUILD_DIR -v -n MrMeeseeks --keep
+  - $TRAVIS_BUILD_DIR/MrMeeseeks one two thr33 --npk-v four
