@@ -21,6 +21,7 @@ class Program
     static string DllName;
     static string AppName;
     static string dotNetVersion;
+    static string Here = AppDomain.CurrentDomain.BaseDirectory;
 
     static bool Verbose = false;
     static bool SkipRestore = false;
@@ -162,7 +163,7 @@ class Program
 
     static void TransferFiles()
     {
-        var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "file-transfer.sh");
+        var path = $"{Here}/file-transfer.sh";
         string cmd;
 
         if (SelfContainedDeployment)
@@ -178,7 +179,8 @@ class Program
 
     static void RunAppImageTool()
     {
-        var cmd = $"appimagetool -n /tmp/{AppName}.temp {destination}/{AppName}";
+        var appimgtool = $"{Here}/appimagetool/AppRun";
+        var cmd = $"{appimgtool} -n /tmp/{AppName}.temp {destination}/{AppName}";
 
         if (Verbose)
         {

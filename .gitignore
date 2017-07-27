@@ -218,3 +218,6 @@ _Pvt_Extensions
 
 # VS: Code config
 .vscode/
+
+# Build-prep appimagetool
+appimagetool/
