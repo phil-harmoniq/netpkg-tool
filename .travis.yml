@@ -1,5 +1,4 @@
 dist: trusty
-sudo: required
 
 before_install:
   - sudo sh -c 'echo "deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ trusty main" > /etc/apt/sources.list.d/dotnetdev.list'
@@ -9,16 +8,13 @@ before_install:
 
 install:
   - $TRAVIS_BUILD_DIR/build-prep.sh
-  - sudo dotnet run --project $TRAVIS_BUILD_DIR $TRAVIS_BUILD_DIR /usr/local/bin
+  - dotnet run --project $TRAVIS_BUILD_DIR $TRAVIS_BUILD_DIR $HOME
 
 before_script:
-  - netpkg-tool --help
+  - $HOME/netpkg-tool --help
 
 script:
   - git clone https://github.com/phil-harmoniq/Hello $TRAVIS_BUILD_DIR/Hello
-  - netpkg-tool $TRAVIS_BUILD_DIR/Hello $TRAVIS_BUILD_DIR
+  - dotnet restore $TRAVIS_BUILD_DIR/Hello
+  - $HOME/netpkg-tool $TRAVIS_BUILD_DIR/Hello $TRAVIS_BUILD_DIR -v
   - $TRAVIS_BUILD_DIR/Hello one two thr33 --npk-v four
-  - netpkg-tool $TRAVIS_BUILD_DIR/Hello $TRAVIS_BUILD_DIR --scd
-  - $TRAVIS_BUILD_DIR/Hello one two thr33 --npk-v four
-  - netpkg-tool $TRAVIS_BUILD_DIR/Hello $TRAVIS_BUILD_DIR -v -n MrMeeseeks --keep
-  - $TRAVIS_BUILD_DIR/MrMeeseeks one two thr33 --npk-v four
