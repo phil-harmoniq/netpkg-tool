@@ -16,5 +16,7 @@ before_script:
 script:
   - git clone https://github.com/phil-harmoniq/Hello $TRAVIS_BUILD_DIR/Hello
   - dotnet restore $TRAVIS_BUILD_DIR/Hello
-  - $HOME/netpkg-tool $TRAVIS_BUILD_DIR/Hello $TRAVIS_BUILD_DIR -v
-  - $TRAVIS_BUILD_DIR/Hello one two thr33 --npk-v four
+  - $HOME/netpkg-tool $TRAVIS_BUILD_DIR/Hello $HOME -v -n Hello.AppImage
+  - $HOME/Hello.AppImage one two thr33 --npk-v four
+  - $HOME/netpkg-tool $TRAVIS_BUILD_DIR/Hello $HOME --scd --keep -c
+  - $TRAVIS_BUILD_DIR/Hello.AppImage one two thr33 --npk-v four
