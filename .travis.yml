@@ -9,7 +9,7 @@ before_install:
 
 install:
   - $TRAVIS_BUILD_DIR/build-prep.sh
-  - dotnet run --project $TRAVIS_BUILD_DIR $TRAVIS_BUILD_DIR /usr/local/bin
+  - sudo dotnet run --project $TRAVIS_BUILD_DIR $TRAVIS_BUILD_DIR /usr/local/bin
 
 before_script:
   - netpkg-tool --help
