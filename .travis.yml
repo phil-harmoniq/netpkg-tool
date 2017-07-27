@@ -1,0 +1,23 @@
+dist: trusty
+sudo: required
+
+before_install:
+  - sudo sh -c 'echo "deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ trusty main" > /etc/apt/sources.list.d/dotnetdev.list'
+  - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 417A0893
+  - sudo apt-get update
+  - sudo apt-get install dotnet-sdk-2.*
+
+install:
+  - cd $TRAVIS_BUILD_DIR %% sudo dotnet run . /usr/local/bin
+
+before_script:
+  - netpkg-tool --help
+
+script:
+  - git clone https://github.com/phil-harmoniq/ArgTest $TRAVIS_BUILD_DIR/ArgTest
+  - netpkg-tool $TRAVIS_BUILD_DIR/ArgTest $TRAVIS_BUILD_DIR
+  - $TRAVIS_BUILD_DIR/ArgTest one two thr33 --npk-v four
+  - netpkg-tool $TRAVIS_BUILD_DIR/ArgTest $TRAVIS_BUILD_DIR --scd
+  - $TRAVIS_BUILD_DIR/ArgTest one two thr33 --npk-v four
+  - netpkg-tool $TRAVIS_BUILD_DIR/ArgTest $TRAVIS_BUILD_DIR -v -n Arrrg --keep
+  - $TRAVIS_BUILD_DIR/Arrrg one two thr33 --npk-v four
