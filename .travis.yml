@@ -8,7 +8,7 @@ before_install:
   - sudo apt-get install dotnet-sdk-2.*
 
 install:
-  - dotnet run --project $TRAVIS_BUILD_DIR /usr/local/bin
+  - dotnet run --project $TRAVIS_BUILD_DIR $TRAVIS_BUILD_DIR /usr/local/bin
 
 before_script:
   - netpkg-tool --help
