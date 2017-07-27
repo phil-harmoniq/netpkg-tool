@@ -19,4 +19,4 @@ script:
   - $HOME/netpkg-tool $TRAVIS_BUILD_DIR/Hello $HOME -v -n Hello.AppImage
   - $HOME/Hello.AppImage one two thr33 --npk-v four
   - $HOME/netpkg-tool $TRAVIS_BUILD_DIR/Hello $HOME --scd --keep -c
-  - $TRAVIS_BUILD_DIR/Hello.AppImage one two thr33 --npk-v four
+  - $HOME/Hello one two thr33 --npk-v four
