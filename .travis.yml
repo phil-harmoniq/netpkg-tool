@@ -1,25 +1,38 @@
 dist: trusty
-sudo: required
+language: csharp
+mono: none
 
 before_install:
+  - sudo sh -c 'echo "deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ trusty main" > /etc/apt/sources.list.d/dotnetdev.list'
+  - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 417A0893
   - sudo apt-get update
-  - sudo apt-get install libunwind8
+  - sudo apt-get install realpath dotnet-sdk-2.*
 
 install:
-  - sudo $TRAVIS_BUILD_DIR/build.sh /usr/local/bin --yes-all
+  - "./build.sh $HOME"
 
 before_script:
-  - netpkg-tool --help
-  - sudo netpkg-tool --install-sdk --yes-all
-  - source ~/.bashrc
-  - netpkg-tool --help
-  - dotnet new sln
+  - "$HOME/netpkg-tool --help"
 
 script:
-  - git clone https://github.com/phil-harmoniq/ArgTest $TRAVIS_BUILD_DIR/ArgTest
-  - netpkg-tool $TRAVIS_BUILD_DIR/ArgTest $TRAVIS_BUILD_DIR
-  - $TRAVIS_BUILD_DIR/ArgTest.npk one two thr33 --npk-v four
-  - netpkg-tool $TRAVIS_BUILD_DIR/ArgTest $TRAVIS_BUILD_DIR --scd
-  - $TRAVIS_BUILD_DIR/ArgTest.AppImage one two thr33 --npk-v four
-  - netpkg-tool $TRAVIS_BUILD_DIR/ArgTest $TRAVIS_BUILD_DIR -v -n Arrrg --keep
-  - $TRAVIS_BUILD_DIR/ArgTest.npk one two thr33 --npk-v four
+  - "git clone https://github.com/phil-harmoniq/Hello $TRAVIS_BUILD_DIR/Hello"
+  - "$HOME/netpkg-tool $TRAVIS_BUILD_DIR/Hello $HOME -v -n Hello.AppImage"
+  - "$HOME/Hello.AppImage one two thr33 --npk-v four"
+  - "$HOME/netpkg-tool $TRAVIS_BUILD_DIR/Hello $HOME --scd --keep -c"
+  - "$HOME/Hello one two thr33 --npk-v four"
+
+deploy:
+  provider: releases
+  api_key:
+    secure: LOj0/HLOPhk08nY7cxeiR2MAt0dVJ0PtGmUaVv7xkHAInda7JExKLLsR9afAxXczLaFSQMt4H7tdWeWHNN/qFJBXHAQVwIqy50pIZZwo3+lOdA5+ZBTpQhRvvzAGya30th5SBs7ADjyS7AoGXpZKp4X8PtGu73wTO1xI8X/IgBBdBIOC8YesuDIQfxteMhhWE0NlBto1Arpo4qy+Xz+qvGxqCTeH1t5nv2Mrfr0YBnHuZawSGtvIN59Yeey2m8ZkGs+3ewNHshvXeh4TEE4f8Z8tE5Pce0DTpVf+BzDNa6CCLdCjFSbzYAJGDUgtAiE4sT9J4EiTgIXF3UQtf0ILaxHrLIQQAYZr3OudxsBURiachv3HGogXsFu2NKmPTM2sxZva50f9r03u+6R9LW3TL6nIR6t129TMQ9YB9VJcGKuwwzElZZWUBL1WVhc0DfVHa+KSDbG1SFx0ImLhgQCygAzvJ4JP+T/pzBeW7ifWXgcPhAZMGWQQkicKgTePH0Z1aXa4tikABRXyH6OrB8XbUJr8IY5StxR00S7zrN0u21WU178/xODYAELKNbASyW+8W/Nr/fxxzTt5CvBlDj5vQstPYcv3YUXHw446VvutD6s7hApftQqhDi2rTVx8b/rvgb3sDTvnpyyAp61zbCHY+wd2Ajyq07/IRHC54vmV7fM=
+  file: "$HOME/netpkg-tool"
+  on:
+    repo: phil-harmoniq/netpkg-tool
+    branch: master
+    tags: false
+    overwrite: true
+  on:
+    repo: phil-harmoniq/netpkg-tool
+    branch: release-candidate
+    tags: true
+    overwrite: false
