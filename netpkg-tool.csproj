@@ -19,7 +19,13 @@
   <ItemGroup>
     <PackageReference Include="ConsoleColors" Version="0.1.6-alpha"/>
     <PackageReference Include="Shell.NET" Version="0.1.4-alpha"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="./file-transfer.sh">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="./appimagetool/**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

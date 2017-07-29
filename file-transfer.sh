@@ -2,12 +2,12 @@
 
 # Store variables from C#
 PROJECT="$1"
-APP_NAME="$2"
-CORE_VERS="$3"
-MAKE_SCD="$4"
+DLL_NAME="$2"
+APP_NAME="$3"
+CORE_VERS="$4"
+MAKE_SCD="$5"
 
-echo "$PROJECT $APP_NAME $CORE_VERS $MAKE_SCD"
-
+# Hard exit if any part of the script fails
 set -e
 
 # Remove old temp folder & make new one
@@ -29,11 +29,10 @@ touch /tmp/"$APP_NAME".temp/AppRun
     echo
     echo 'export HERE=$(dirname "$(readlink -f "${0}")")'
     if [[ -z $MAKE_SCD ]]; then
-        echo 'dotnet $HERE/usr/share/app/'"$APP_NAME.dll"' $@'
+        echo 'dotnet "$HERE/usr/share/app/'"$DLL_NAME.dll"'" "$@"'
     else
-        echo '$HERE/usr/share/app/'"$APP_NAME"' $@'
+        echo '$HERE/usr/share/app/'"$DLL_NAME"' "$@"'
     fi
-    echo
 } >> /tmp/"$APP_NAME".temp/AppRun
 
 # Create a desktop entry

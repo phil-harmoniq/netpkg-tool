@@ -1,26 +1,26 @@
-# NET_Pkg [![License][License]](LICENSE.md) [![Build Status](https://travis-ci.org/phil-harmoniq/NET_Pkg.svg?branch=develop)](https://travis-ci.org/phil-harmoniq/NET_Pkg)
+# netpkg-tool [![License][License]](LICENSE.md) [![Build Status](https://travis-ci.org/phil-harmoniq/netpkg-tool.svg?branch=develop)](https://travis-ci.org/phil-harmoniq/netpkg-tool)
 
 [License]: https://img.shields.io/badge/License-MIT-blue.svg
 
-A pre-packaged version of the most current netpkg-tool is available from the [releases tab](https://github.com/phil-harmoniq/NET_Pkg/releases):
+A pre-packaged version of the most current netpkg-tool is available from the [releases tab](https://github.com/phil-harmoniq/netpkg-tool/releases):
 
 ```bash
-wget https://github.com/phil-harmoniq/NET_Pkg/releases/download/master/netpkg-tool
+wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/master/netpkg-tool
 chmod a+x netpkg-tool
 ```
 
 To build netpkg-tool from source, just run `build.sh` and specify a destination folder:
 
 ```bash
-git clone https://github.com/phil-harmoniq/NET_Pkg
-./NET_Pkg/build.sh .
+git clone https://github.com/phil-harmoniq/netpkg-tool
+./netpkg-tool/build.sh .
 ```
 
 ## Example
 
 ```bash
 # Download netpkg-tool and compile a simple .NET Core app
-wget https://github.com/phil-harmoniq/NET_Pkg/releases/download/master/netpkg-tool
+wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/master/netpkg-tool
 git clone https://github.com/phil-harmoniq/Hello
 chmod a+x netpkg-tool
 ./netpkg-tool Hello .
