@@ -29,3 +29,10 @@ deploy:
   on:
     repo: phil-harmoniq/netpkg-tool
     branch: master
+    tags: false
+    overwrite: true
+  on:
+    repo: phil-harmoniq/netpkg-tool
+    branch: release-candidate
+    tags: true
+    overwrite: false
