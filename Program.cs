@@ -95,16 +95,20 @@ class Program
 
     static void FindCsproj(string project)
     {
+        
         bash.Command($"find {project} -maxdepth 1 -name '*.csproj'", redirect: true);
         var location = bash.Output.Split("\n", StringSplitOptions.RemoveEmptyEntries);
+        var absolutePath = location[0];
 
         if (location.Length < 1)
             ExitWithError($"No .csproj found in {project}", 10);
         if (location.Length > 1)
             ExitWithError($"More than one .csproj found in {project}", 11);
         
-        var output = location[0].Split('/');
-        csproj = output[output.Length - 1];
+        var folderSplit = absolutePath.Split('/');
+        var folder = string.Join('/', folderSplit.Take(folderSplit.Length - 1));
+        csproj = folderSplit[folderSplit.Length - 1];
+        projectDir = GetRelativePath(folder);
         dotNetVersion = GetCoreVersion();
         var split = csproj.Split('.');
         DllName = string.Join('.', split.Take(split.Length - 1));
@@ -112,6 +116,7 @@ class Program
         if (!CustomAppName)
             AppName = DllName;
     }
+    
 
     static string GetCoreVersion()
     {
@@ -228,12 +233,11 @@ class Program
         
         Printer.WriteLine($"\n{leftBar}{Clr.Cyan}{Frmt.Bold}{title}{Reset.Code}{rightBar}");
     }
-    
-    static string AbsolutePath(string relativePath)
+
+    static string GetRelativePath(string path)
     {
-        bash.Command($"readlink -f {relativePath}", redirect: true);
-        var output = bash.Output.Split("\n", StringSplitOptions.RemoveEmptyEntries);
-        return output[0];
+        bash.Command($"cd {path} && dirs -0", redirect: true);
+        return bash.Output.Split("\n", StringSplitOptions.RemoveEmptyEntries)[0];
     }
 
     static void HelpMenu()
