@@ -23,12 +23,9 @@ git clone https://github.com/phil-harmoniq/netpkg-tool
 Packaging a simple ["Hello World"](https://github.com/phil-harmoniq/Hello) app:
 
 ```bash
-# Download netpkg-tool and compile a simple .NET Core app
-wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/master/netpkg-tool
 git clone https://github.com/phil-harmoniq/Hello
-chmod a+x netpkg-tool
-./netpkg-tool Hello .
-./Hello.npk one two three
+netpkg-tool Hello ~/Desktop
+~/Desktop/Hello one two three
 ```
 
 There are several optional commands that offer more control:
@@ -37,7 +34,7 @@ There are several optional commands that offer more control:
 
 ## Details
 
-Using netpkg-tool will restore and compile your project based on settings in your `*.csproj` file. By default, netpkg-tool will use [Framework Dependent Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#framework-dependent-deployments-fdd) to compile your project. To use [Self-Contained Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#self-contained-deployments-scd), use the `--scd` flag and designate your target Linux Distro. The full process for netpkg-tool:
+Using netpkg-tool will restore and compile your project based on settings in your `*.csproj` file. By default, netpkg-tool will use [Framework Dependent Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#framework-dependent-deployments-fdd) to compile your project. To use [Self-Contained Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#self-contained-deployments-scd), use the `--scd` flag. The full process for netpkg-tool:
 
 1. Restore project dependencies
 2. Compile .NET Core app
