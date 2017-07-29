@@ -95,7 +95,7 @@ class Program
 
     static void FindCsproj(string project)
     {
-        bash.Command($"realpath $(find {project} -maxdepth 1 -name '*.csproj')", redirect: true);
+        bash.Command($"find {project} -maxdepth 1 -name '*.csproj'", redirect: true);
         var location = bash.Output.Split("\n", StringSplitOptions.RemoveEmptyEntries);
 
         if (location.Length < 1)
