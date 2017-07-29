@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <VersionPrefix>0.3.0</VersionPrefix>
-    <VersionSuffix>alpha1</VersionSuffix>
+    <VersionSuffix>rc1</VersionSuffix>
     <Description>Quick and easy console colors for C#/Unix</Description>
     <Copyright>MIT</Copyright>
     <PackageProjectUrl>https://github.com/phil-harmoniq/netpkg-tool</PackageProjectUrl>
