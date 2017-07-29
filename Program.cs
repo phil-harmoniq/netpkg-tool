@@ -120,9 +120,10 @@ class Program
 
     static string GetCoreVersion()
     {
+        var path = GetAbsolutePath($"{projectDir}/{csproj}");
         var node = "/Project/PropertyGroup/TargetFramework";
         var xml = new XmlDocument();
-        xml.LoadXml(File.ReadAllText(csproj));
+        xml.LoadXml(File.ReadAllText(path));
         return xml.DocumentElement.SelectSingleNode(node).InnerText;
     }
 
@@ -237,6 +238,12 @@ class Program
     static string GetRelativePath(string path)
     {
         bash.Command($"cd {path} && dirs -0", redirect: true);
+        return bash.Output.Split("\n", StringSplitOptions.RemoveEmptyEntries)[0];
+    }
+
+    static string GetAbsolutePath(string path)
+    {
+        bash.Command($"readlink -f {path}", redirect: true);
         return bash.Output.Split("\n", StringSplitOptions.RemoveEmptyEntries)[0];
     }
 
