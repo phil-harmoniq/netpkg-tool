@@ -29,6 +29,8 @@ deploy:
   on:
     repo: phil-harmoniq/netpkg-tool
     branch: master
+    tags: true
+    overwrite: true
   on:
     repo: phil-harmoniq/netpkg-tool
     branch: 0.3.0-rc
