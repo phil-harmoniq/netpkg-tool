@@ -115,10 +115,9 @@ class Program
 
     static string GetCoreVersion()
     {
-        var location = AbsolutePath($"{projectDir}/{csproj}");
         var node = "/Project/PropertyGroup/TargetFramework";
         var xml = new XmlDocument();
-        xml.LoadXml(File.ReadAllText(location));
+        xml.LoadXml(File.ReadAllText(csproj));
         return xml.DocumentElement.SelectSingleNode(node).InnerText;
     }
 
