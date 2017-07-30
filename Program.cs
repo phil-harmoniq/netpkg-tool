@@ -177,7 +177,7 @@ class Program
             cmd = $"{path} {projectDir} {DllName} {AppName} {dotNetVersion}";
         
         
-        Console.Write("Transferring Files... ");
+        Console.Write("Transferring files... ");
         bash.Command(cmd, redirect: true);
         CheckCommandOutput(errorCode: 22);
     }
@@ -222,7 +222,7 @@ class Program
 
     static void SayHello()
     {
-        var title = $" {toolName} {toolVersion} ";
+        var title = $" {toolName} v{toolVersion} ";
         var newWidth = width - title.Length;
         var leftBar = new String('-', newWidth / 2);
         string rightBar;
