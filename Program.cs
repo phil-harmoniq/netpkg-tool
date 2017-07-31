@@ -131,12 +131,12 @@ class Program
     {
         if (Verbose)
         {
-            Console.WriteLine("Restoring .NET project dependencies... ");
+            Console.WriteLine("Restoring .NET project dependencies...");
             bash.Command($"cd {projectDir} && dotnet restore", redirect: false);
         }
         else
         {
-            Console.Write("Restoring .NET project dependencies... ");
+            Console.Write("Restoring .NET project dependencies...");
             bash.Command($"cd {projectDir} && dotnet restore", redirect: true);
         }
         
@@ -154,12 +154,12 @@ class Program
 
         if (Verbose)
         {
-            Console.WriteLine("Compiling .NET project... ");
+            Console.WriteLine("Compiling .NET project...");
             bash.Command(cmd, redirect: false);
         }
         else
         {
-            Console.Write("Compiling .NET project... ");
+            Console.Write("Compiling .NET project...");
             bash.Command(cmd, redirect: true);
         }
         
@@ -177,7 +177,7 @@ class Program
             cmd = $"{path} {projectDir} {DllName} {AppName} {dotNetVersion} {toolVersion}";
         
         
-        Console.Write("Transferring files... ");
+        Console.Write("Transferring files...");
         bash.Command(cmd, redirect: true);
         CheckCommandOutput(errorCode: 22);
     }
@@ -189,12 +189,12 @@ class Program
 
         if (Verbose)
         {
-            Console.WriteLine("Compressing with appimagetool... ");
+            Console.WriteLine("Compressing with appimagetool...");
             bash.Command(cmd, redirect: false);
         }
         else
         {
-            Console.Write("Compressing with appimagetool... ");
+            Console.Write("Compressing with appimagetool...");
             bash.Command(cmd, redirect: true);
         }
         
@@ -203,7 +203,7 @@ class Program
     
     static void DeleteTempFiles()
     {
-        Console.Write("Deleting temporary files... ");
+        Console.Write("Deleting temporary files...");
         bash.Command($"rm -rf /tmp/{DllName}.temp");
         CheckCommandOutput(24);
     }
@@ -281,17 +281,12 @@ class Program
 
     static void SayPass()
     {
-        Printer.WriteLine($"{Frmt.Bold}[ {Clr.Green}PASS{Clr.Default} ]{Reset.Code}");
-    }
-
-    static void SayWarning()
-    {
-        Printer.WriteLine($"{Frmt.Bold}[ {Clr.Yellow}FAIL{Clr.Default} ]{Reset.Code}");
+        Printer.WriteLine($" {Frmt.Bold}[ {Clr.Green}PASS{Clr.Default} ]{Reset.Code}");
     }
 
     static void SayFail()
     {
-        Printer.WriteLine($"{Frmt.Bold}[ {Clr.Red}FAIL{Clr.Default} ]{Reset.Code}");
+        Printer.WriteLine($" {Frmt.Bold}[ {Clr.Red}FAIL{Clr.Default} ]{Reset.Code}");
     }
 
     static void ExitWithError(string message, int code)
