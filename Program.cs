@@ -131,12 +131,12 @@ class Program
     {
         if (Verbose)
         {
-            Console.WriteLine("Restoring .NET project dependencies... ");
+            Console.WriteLine("Restoring .NET project dependencies...");
             bash.Command($"cd {projectDir} && dotnet restore", redirect: false);
         }
         else
         {
-            Console.Write("Restoring .NET project dependencies... ");
+            Console.Write("Restoring .NET project dependencies...");
             bash.Command($"cd {projectDir} && dotnet restore", redirect: true);
         }
         
@@ -154,12 +154,12 @@ class Program
 
         if (Verbose)
         {
-            Console.WriteLine("Compiling .NET project... ");
+            Console.WriteLine("Compiling .NET project...");
             bash.Command(cmd, redirect: false);
         }
         else
         {
-            Console.Write("Compiling .NET project... ");
+            Console.Write("Compiling .NET project...");
             bash.Command(cmd, redirect: true);
         }
         
@@ -172,12 +172,12 @@ class Program
         string cmd;
 
         if (SelfContainedDeployment)
-            cmd = $"{path} {projectDir} {DllName} {AppName} {dotNetVersion} true";
+            cmd = $"{path} {projectDir} {DllName} {AppName} {dotNetVersion} {toolVersion} true";
         else
-            cmd = $"{path} {projectDir} {DllName} {AppName} {dotNetVersion}";
+            cmd = $"{path} {projectDir} {DllName} {AppName} {dotNetVersion} {toolVersion}";
         
         
-        Console.Write("Transferring Files... ");
+        Console.Write("Transferring files...");
         bash.Command(cmd, redirect: true);
         CheckCommandOutput(errorCode: 22);
     }
@@ -189,12 +189,12 @@ class Program
 
         if (Verbose)
         {
-            Console.WriteLine("Compressing with appimagetool... ");
+            Console.WriteLine("Compressing with appimagetool...");
             bash.Command(cmd, redirect: false);
         }
         else
         {
-            Console.Write("Compressing with appimagetool... ");
+            Console.Write("Compressing with appimagetool...");
             bash.Command(cmd, redirect: true);
         }
         
@@ -203,7 +203,7 @@ class Program
     
     static void DeleteTempFiles()
     {
-        Console.Write("Deleting temporary files... ");
+        Console.Write("Deleting temporary files...");
         bash.Command($"rm -rf /tmp/{DllName}.temp");
         CheckCommandOutput(24);
     }
@@ -222,7 +222,7 @@ class Program
 
     static void SayHello()
     {
-        var title = $" {toolName} {toolVersion} ";
+        var title = $" {toolName} v{toolVersion} ";
         var newWidth = width - title.Length;
         var leftBar = new String('-', newWidth / 2);
         string rightBar;
@@ -251,17 +251,20 @@ class Program
     {
         Printer.WriteLine(
             $"\n            {Frmt.Bold}{Clr.Cyan}Usage:{Reset.Code}\n"
-            +  $"    ./netpkg-tool [Project Directory] [Destination] [Flags]\n\n"
-            +  $"            {Frmt.Bold}{Clr.Cyan}Flags:{Reset.Code}\n"
-            +  $"     --verbose or -v: Verbose output\n"
-            +  $"     --compile or -c: Skip restoring dependencies\n"
-            +  $"        --name or -n: Set ouput file to custom name\n"
-            +  $"         --scd or -s: Self-Contained Deployment (SCD)\n"
-            +  @"        --keep or -k: Keep /tmp/{AppName}.temp directory\n"
-            +  $"        --help or -h: Help menu (this page)\n\n"
-            +  $"    More information & source code available on github:\n"
-            +  $"    https://github.com/phil-harmoniq/netpkg-tool\n"
-            +  $"    Copyright (c) 2017 - MIT License\n"
+            + $"    {Frmt.Bold}netpkg-tool{Frmt.UnBold} "
+            + $"[{Frmt.Underline}Project{Reset.Code}] "
+            + $"[{Frmt.Underline}Destination{Reset.Code}] "
+            + $"[{Frmt.Underline}Flags{Reset.Code}]\n\n"
+            + $"            {Frmt.Bold}{Clr.Cyan}Flags:{Reset.Code}\n"
+            + $"     --verbose or -v: Verbose output\n"
+            + $"     --compile or -c: Skip restoring dependencies\n"
+            + $"        --name or -n: Set ouput file to a custom name\n"
+            + $"         --scd or -s: Self-Contained Deployment (SCD)\n"
+            + @"        --keep or -k: Keep /tmp/{AppName}.temp directory\n"
+            + $"        --help or -h: Help menu (this page)\n\n"
+            + $"    More information & source code available on github:\n"
+            + $"    https://github.com/phil-harmoniq/netpkg-tool\n"
+            + $"    Copyright (c) 2017 - MIT License\n"
         );
         SayBye();
         Environment.Exit(0);
@@ -281,22 +284,17 @@ class Program
 
     static void SayPass()
     {
-        Printer.WriteLine($"{Frmt.Bold}[ {Clr.Green}PASS{Clr.Default} ]{Reset.Code}");
-    }
-
-    static void SayWarning()
-    {
-        Printer.WriteLine($"{Frmt.Bold}[ {Clr.Yellow}FAIL{Clr.Default} ]{Reset.Code}");
+        Printer.WriteLine($" {Frmt.Bold}[ {Clr.Green}PASS{Clr.Default} ]{Reset.Code}");
     }
 
     static void SayFail()
     {
-        Printer.WriteLine($"{Frmt.Bold}[ {Clr.Red}FAIL{Clr.Default} ]{Reset.Code}");
+        Printer.WriteLine($" {Frmt.Bold}[ {Clr.Red}FAIL{Clr.Default} ]{Reset.Code}");
     }
 
     static void ExitWithError(string message, int code)
     {
-        Printer.WriteLine($"{Clr.Red}{message}{Clr.Default}");
+        Printer.Write($"{Clr.Red}{message}{Clr.Default}");
         SayBye();
         Environment.Exit(code);
     }
@@ -307,7 +305,10 @@ class Program
         if (bash.ExitCode != 0)
         {
             SayFail();
-            ExitWithError(bash.ErrorMsg, errorCode);
+            if (string.IsNullOrEmpty(bash.ErrorMsg))
+                ExitWithError(bash.Output, errorCode);
+            else
+                ExitWithError(bash.ErrorMsg, errorCode);
         }
         SayPass();
     }
