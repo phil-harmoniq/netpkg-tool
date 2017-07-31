@@ -48,11 +48,11 @@ class Program
     static void CheckPaths(string[] args)
     {
         if (args.Length < 2 || !Directory.Exists(args[0]) && !Directory.Exists(args[1]))
-            ExitWithError("You must specify a valid .NET project AND destination folder.", 1);
+            ExitWithError("You must specify a valid .NET project AND destination folder.\n", 1);
         if (Directory.Exists(args[0]) && !Directory.Exists(args[1]))
-            ExitWithError($"{args[1]} is not a valid folder", 2);
+            ExitWithError($"{args[1]} is not a valid folder\n", 2);
         if (!Directory.Exists(args[0]) && Directory.Exists(args[1]))
-            ExitWithError($"{args[0]} is not a valid folder", 3);
+            ExitWithError($"{args[0]} is not a valid folder\n", 3);
         
         projectDir = ConsolidatePath(args[0]);
         destination = ConsolidatePath(args[1]);
@@ -101,9 +101,9 @@ class Program
         var absolutePath = location[0];
 
         if (location.Length < 1)
-            ExitWithError($"No .csproj found in {project}", 10);
+            ExitWithError($"No .csproj found in {project}\n", 10);
         if (location.Length > 1)
-            ExitWithError($"More than one .csproj found in {project}", 11);
+            ExitWithError($"More than one .csproj found in {project}\n", 11);
         
         var folderSplit = absolutePath.Split('/');
         var folder = string.Join('/', folderSplit.Take(folderSplit.Length - 1));
