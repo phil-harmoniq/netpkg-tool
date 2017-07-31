@@ -36,8 +36,8 @@ Packaging a simple ["Hello World"](https://github.com/phil-harmoniq/Hello) app:
 
 ```bash
 git clone https://github.com/phil-harmoniq/Hello
-netpkg-tool Hello .
-./Hello one two thr33
+netpkg-tool Hello ~/Desktop
+~/Desktop/Hello one two three
 ```
 
 ## Optional Flags
