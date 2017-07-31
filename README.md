@@ -2,7 +2,7 @@
 
 [License]: https://img.shields.io/badge/License-MIT-blue.svg
 
-<img src="http://imgur.com/Yl2F57K.gif" width="732" height="438">
+<img src="https://imgur.com/VZtQh3q.gif" width="734" height="438">
 
 A pre-packaged version of the most current netpkg-tool is available from the [releases tab](https://github.com/phil-harmoniq/netpkg-tool/releases):
 
@@ -42,7 +42,7 @@ netpkg-tool Hello .
 
 ## Optional Flags
 
-<img src="http://imgur.com/Is6HKDO.png" width="732" height="438">
+<img src="http://imgur.com/GfhJuCf.png" width="734" height="438">
 
 ## Details
 
