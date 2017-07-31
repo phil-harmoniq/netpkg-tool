@@ -28,12 +28,11 @@ touch /tmp/"$APP_NAME".temp/AppRun
     echo '#! /usr/bin/env bash'
     echo
     echo 'export HERE=$(dirname "$(readlink -f "${0}")")'
-    echo "export NET_PKG=\"$NET_PKG\""
+    echo 'export NET_PKG='\""$NET_PKG"\"
 
-    if [[ -d $PROJECT/netpkg.lib ]] && [[ -z $LD_LIBRARY_PATH ]]; then
-        echo 'export LD_LIBRARY_PATH="$HERE/usr/lib"'
-    elif [[ -d $PROJECT/netpkg.lib ]]; then
-        echo 'export LD_LIBRARY_PATH="$HERE/usr/lib:$LD_LIBRARY_PATH"'
+    if [[ -d $PROJECT/netpkg.lib ]]; then
+        echo 'if [[ -z $LD_LIBRARY_PATH ]]; then export LD_LIBRARY_PATH="$HERE/usr/lib"'
+        echo 'else export LD_LIBRARY_PATH="$HERE:/usr/lib:$LD_LIBRARY_PATH"; fi'
     fi
 
     if [[ -z $MAKE_SCD ]]; then
@@ -45,13 +44,14 @@ touch /tmp/"$APP_NAME".temp/AppRun
 
 # Create a desktop entry
 touch /tmp/"$APP_NAME".temp/"$APP_NAME".desktop
-echo "[Desktop Entry]" >> /tmp/"$APP_NAME".temp/"$APP_NAME".desktop
-echo >> /tmp/"$APP_NAME".temp/"$APP_NAME".desktop
-echo "Type=Application" >> /tmp/"$APP_NAME".temp/"$APP_NAME".desktop
-echo "Name=$APP_NAME" >> /tmp/"$APP_NAME".temp/"$APP_NAME".desktop
-echo "Exec=AppRun" >> /tmp/"$APP_NAME".temp/"$APP_NAME".desktop
-echo "Icon=$APP_NAME-icon" >> /tmp/"$APP_NAME".temp/"$APP_NAME".desktop
-echo >> /tmp/"$APP_NAME".temp/"$APP_NAME".desktop
+{
+    echo '[Desktop Entry]'
+    echo
+    echo 'Type=Application'
+    echo "Name=$APP_NAME"
+    echo 'Exec=AppRun'
+    echo "Icon=$APP_NAME-icon"
+} >> /tmp/"$APP_NAME".temp/"$APP_NAME".desktop
 
 # Generate fake app icon (icons aren't supported by appimagetool right now)
 touch /tmp/"$APP_NAME".temp/"$APP_NAME"-icon.png

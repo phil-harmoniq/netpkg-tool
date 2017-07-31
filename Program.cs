@@ -296,7 +296,7 @@ class Program
 
     static void ExitWithError(string message, int code)
     {
-        Printer.WriteLine($"{Clr.Red}{message}{Clr.Default}");
+        Printer.Write($"{Clr.Red}{message}{Clr.Default}");
         SayBye();
         Environment.Exit(code);
     }
@@ -307,7 +307,10 @@ class Program
         if (bash.ExitCode != 0)
         {
             SayFail();
-            ExitWithError(bash.ErrorMsg, errorCode);
+            if (string.IsNullOrEmpty(bash.ErrorMsg))
+                ExitWithError(bash.Output, errorCode);
+            else
+                ExitWithError(bash.ErrorMsg, errorCode);
         }
         SayPass();
     }
