@@ -251,17 +251,20 @@ class Program
     {
         Printer.WriteLine(
             $"\n            {Frmt.Bold}{Clr.Cyan}Usage:{Reset.Code}\n"
-            +  $"    ./netpkg-tool [Project Directory] [Destination] [Flags]\n\n"
-            +  $"            {Frmt.Bold}{Clr.Cyan}Flags:{Reset.Code}\n"
-            +  $"     --verbose or -v: Verbose output\n"
-            +  $"     --compile or -c: Skip restoring dependencies\n"
-            +  $"        --name or -n: Set ouput file to custom name\n"
-            +  $"         --scd or -s: Self-Contained Deployment (SCD)\n"
-            +  @"        --keep or -k: Keep /tmp/{AppName}.temp directory\n"
-            +  $"        --help or -h: Help menu (this page)\n\n"
-            +  $"    More information & source code available on github:\n"
-            +  $"    https://github.com/phil-harmoniq/netpkg-tool\n"
-            +  $"    Copyright (c) 2017 - MIT License\n"
+            + $"    {Frmt.Bold}netpkg-tool{Frmt.UnBold} "
+            + $"[{Frmt.Underline}Project{Reset.Code}] "
+            + $"[{Frmt.Underline}Destination{Reset.Code}] "
+            + $"[{Frmt.Underline}Flags{Reset.Code}]\n\n"
+            + $"            {Frmt.Bold}{Clr.Cyan}Flags:{Reset.Code}\n"
+            + $"     --verbose or -v: Verbose output\n"
+            + $"     --compile or -c: Skip restoring dependencies\n"
+            + $"        --name or -n: Set ouput file to a custom name\n"
+            + $"         --scd or -s: Self-Contained Deployment (SCD)\n"
+            + @"        --keep or -k: Keep /tmp/{AppName}.temp directory\n"
+            + $"        --help or -h: Help menu (this page)\n\n"
+            + $"    More information & source code available on github:\n"
+            + $"    https://github.com/phil-harmoniq/netpkg-tool\n"
+            + $"    Copyright (c) 2017 - MIT License\n"
         );
         SayBye();
         Environment.Exit(0);
