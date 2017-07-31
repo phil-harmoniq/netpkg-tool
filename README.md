@@ -24,14 +24,6 @@ git clone https://github.com/phil-harmoniq/netpkg-tool
 
 ## Examples
 
-Packaging a default ASP.NET Core MVC template:
-
-```bash
-dotnet new mvc -n aspnet-src
-netpkg-tool aspnet-src . -n aspnet-pkg
-./aspnet-pkg
-```
-
 Packaging a simple ["Hello World"](https://github.com/phil-harmoniq/Hello) app:
 
 ```bash
@@ -40,9 +32,44 @@ netpkg-tool Hello ~/Desktop
 ~/Desktop/Hello one two three
 ```
 
+Packaging a default ASP.NET Core MVC template:
+
+```bash
+dotnet new mvc -n aspnet-src
+netpkg-tool aspnet-src . -n aspnet-pkg
+./aspnet-pkg
+```
+
 ## Optional Flags
 
 <img src="http://imgur.com/GfhJuCf.png" width="734" height="438">
+
+## ASP.NET
+
+ASP.NET is picky about where its content root directory is located. By default, it searches for `wwwroot` in `Directory.GetCurrentDirectory()`. Using netpkg-tool on an unmodified ASP.NET project will result in your web app being unable to locate any of its assets. A simple workaround would be to check for the existence of an environment variable set by netpkg-tool, like `$HERE`, and setting the content directory accordingly. This will allow the project's content to be found regardless of whether it's packaged up or being run with `dotnet run`. Example:
+
+```C#
+public class Program
+{
+    static string root;
+
+    public static void Main(string[] args)
+    {
+        if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("NET_PKG")))
+            root = Directory.GetCurrentDirectory();
+        else
+            root = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+        BuildWebHost(args).Run();
+    }
+
+    public static IWebHost BuildWebHost(string[] args) =>
+        WebHost.CreateDefaultBuilder(args)
+            .UseStartup<Startup>()
+            .UseContentRoot(root)
+            .Build();
+}
+```
 
 ## Details
 
