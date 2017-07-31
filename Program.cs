@@ -172,9 +172,9 @@ class Program
         string cmd;
 
         if (SelfContainedDeployment)
-            cmd = $"{path} {projectDir} {DllName} {AppName} {dotNetVersion} true";
+            cmd = $"{path} {projectDir} {DllName} {AppName} {dotNetVersion} {toolVersion} true";
         else
-            cmd = $"{path} {projectDir} {DllName} {AppName} {dotNetVersion}";
+            cmd = $"{path} {projectDir} {DllName} {AppName} {dotNetVersion} {toolVersion}";
         
         
         Console.Write("Transferring files... ");

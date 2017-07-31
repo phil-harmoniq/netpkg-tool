@@ -5,7 +5,8 @@ PROJECT="$1"
 DLL_NAME="$2"
 APP_NAME="$3"
 CORE_VERS="$4"
-MAKE_SCD="$5"
+NET_PKG="$5"
+MAKE_SCD="$6"
 
 # Hard exit if any part of the script fails
 set -e
@@ -13,13 +14,13 @@ set -e
 # Remove old temp folder & make new one
 rm -rf /tmp/"$APP_NAME".temp
 mkdir -p /tmp/"$APP_NAME".temp/usr/bin
-mkdir -p /tmp/"$APP_NAME".temp/usr/share/app
+mkdir -p /tmp/"$APP_NAME".temp/usr/share/"$APP_NAME"
 
 # Transfer files from publish folder into temp folder
 if [[ -z $MAKE_SCD ]]; then
-    cp -r "$PROJECT"/bin/Release/"$CORE_VERS"/publish/. /tmp/"$APP_NAME".temp/usr/share/app
+    cp -r "$PROJECT"/bin/Release/"$CORE_VERS"/publish/. /tmp/"$APP_NAME".temp/usr/share/"$APP_NAME"
 else
-    cp -r "$PROJECT"/bin/Release/"$CORE_VERS"/linux-x64/publish/. /tmp/"$APP_NAME".temp/usr/share/app
+    cp -r "$PROJECT"/bin/Release/"$CORE_VERS"/linux-x64/publish/. /tmp/"$APP_NAME".temp/usr/share/"$APP_NAME"
 fi
 
 # Create an AppRun launcher
@@ -28,10 +29,11 @@ touch /tmp/"$APP_NAME".temp/AppRun
     echo '#! /usr/bin/env bash'
     echo
     echo 'export HERE=$(dirname "$(readlink -f "${0}")")'
+    echo "export NET_PKG=\"$NET_PKG\""
     if [[ -z $MAKE_SCD ]]; then
-        echo 'dotnet "$HERE/usr/share/app/'"$DLL_NAME.dll"'" "$@"'
+        echo 'dotnet "$HERE/usr/share/'"$APP_NAME"'/'"$DLL_NAME.dll"'" "$@"'
     else
-        echo '$HERE/usr/share/app/'"$DLL_NAME"' "$@"'
+        echo '$HERE/usr/share/'"$APP_NAME"'/'"$DLL_NAME"' "$@"'
     fi
 } >> /tmp/"$APP_NAME".temp/AppRun
 
@@ -52,4 +54,4 @@ touch /tmp/"$APP_NAME".temp/"$APP_NAME"-icon.png
 chmod +x /tmp/"$APP_NAME".temp/AppRun
 
 # Delete .NET Core debug databse files
-rm -f /tmp/"$APP_NAME".temp/usr/share/app/*.pdb
+rm -f /tmp/"$APP_NAME".temp/usr/share/"$APP_NAME"/*.pdb
