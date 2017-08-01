@@ -98,13 +98,13 @@ class Program
         
         bash.Command($"find {project} -maxdepth 1 -name '*.csproj'", redirect: true);
         var location = bash.Output.Split("\n", StringSplitOptions.RemoveEmptyEntries);
-        var absolutePath = location[0];
 
         if (location.Length < 1)
             ExitWithError($"No .csproj found in {project}\n", 10);
         if (location.Length > 1)
             ExitWithError($"More than one .csproj found in {project}\n", 11);
         
+        var absolutePath = location[0];
         var folderSplit = absolutePath.Split('/');
         var folder = string.Join('/', folderSplit.Take(folderSplit.Length - 1));
         csproj = folderSplit[folderSplit.Length - 1];
