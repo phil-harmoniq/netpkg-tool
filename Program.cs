@@ -54,8 +54,8 @@ class Program
         if (!Directory.Exists(args[0]) && Directory.Exists(args[1]))
             ExitWithError($"{args[0]} is not a valid folder\n", 3);
         
-        projectDir = ConsolidatePath(args[0]);
-        destination = ConsolidatePath(args[1]);
+        projectDir = GetRelativePath(args[0]);
+        destination = GetRelativePath(args[1]);
     }
 
     static void ParseArgs(string[] args)
@@ -100,9 +100,9 @@ class Program
         var location = bash.Output.Split("\n", StringSplitOptions.RemoveEmptyEntries);
 
         if (location.Length < 1)
-            ExitWithError($"No .csproj found in {project}\n", 10);
+            ExitWithError($"No .csproj found in {GetRelativePath(project)}\n", 10);
         if (location.Length > 1)
-            ExitWithError($"More than one .csproj found in {project}\n", 11);
+            ExitWithError($"More than one .csproj found in {GetRelativePath(project)}\n", 11);
         
         var absolutePath = location[0];
         var folderSplit = absolutePath.Split('/');
@@ -211,13 +211,6 @@ class Program
     static void SayFinished(string message)
     {
         Printer.WriteLine($"{Clr.Green}{message}{Clr.Default}");
-    }
-
-    static string ConsolidatePath(string path)
-    {
-        bash.Command($"cd {path} && dirs -0", redirect: true);
-        var output = bash.Output.Split("\n", StringSplitOptions.RemoveEmptyEntries);
-        return output[0];
     }
 
     static void SayHello()
