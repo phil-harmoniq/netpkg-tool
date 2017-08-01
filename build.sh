@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
 
+set -e
+
 export HERE=$(dirname "$(readlink -f "${0}")")
 cd "$HERE"
 
