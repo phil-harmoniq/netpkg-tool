@@ -1,6 +1,7 @@
 #! /usr/bin/env bash
 
 export HERE=$(dirname "$(readlink -f "${0}")")
+cd "$HERE"
 
 if [[ -z "$1" ]] || [[ ! -d "$1" ]]; then
     echo "You must specify a build destination folder"
