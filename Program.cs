@@ -292,9 +292,15 @@ class Program
 
     static void ExitWithError(string message, int code)
     {
-        Printer.Write($"{Clr.Red}{message}{Clr.Default}");
-        if (Verbose) WriteToErrorLog("[Error message was written to verbose output]", code);
-        else WriteToErrorLog(message, code);
+        if (Verbose)
+        {
+            WriteToErrorLog("[Error message was written to verbose output]", code);
+        }
+        else
+        {
+            Printer.Write($"{Clr.Red}{message}{Clr.Default}");
+            WriteToErrorLog(message, code);
+        }
         SayBye();
         Environment.Exit(code);
     }
