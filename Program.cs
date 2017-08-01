@@ -13,6 +13,8 @@ class Program
     static Assembly tool = Assembly.GetExecutingAssembly();
     static string  toolName = tool.GetName().Name;
     static string toolVersion = FileVersionInfo.GetVersionInfo(tool.Location).ProductVersion;
+    static string home = Environment.GetEnvironmentVariable("HOME");
+    static string configDir = $"{home}/.local/share/netpkg-tool";
     static int width = 64;
     static Bash bash = new Bash();
     static string csproj;
@@ -22,6 +24,7 @@ class Program
     static string AppName;
     static string dotNetVersion;
     static string Here = AppDomain.CurrentDomain.BaseDirectory;
+    static string[] Args;
 
     static bool Verbose = false;
     static bool SkipRestore = false;
@@ -60,6 +63,8 @@ class Program
 
     static void ParseArgs(string[] args)
     {
+        Args = args;
+
         if (args == null || args.Length == 0)
             HelpMenu();
 
@@ -288,8 +293,28 @@ class Program
     static void ExitWithError(string message, int code)
     {
         Printer.Write($"{Clr.Red}{message}{Clr.Default}");
+        if (Verbose) WriteToErrorLog("[Error message was written to verbose output]", code);
+        else WriteToErrorLog(message, code);
         SayBye();
         Environment.Exit(code);
+    }
+
+    static void WriteToErrorLog(string message, int code)
+    {
+        if (!Directory.Exists(configDir))
+            Directory.CreateDirectory(configDir);
+        
+        using (var tw = new StreamWriter($"{configDir}/error.log", true))
+        {
+            var now = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            var dir = Directory.GetCurrentDirectory();
+
+            tw.WriteLine($"{new string('-', width)}");
+            tw.WriteLine($"{GetRelativePath(dir)}$ netpkg-tool {string.Join(' ', Args)}");
+            tw.WriteLine($"Errored with code {code} - ({now}):\n");
+            tw.WriteLine(message.TrimEnd('\n'));
+            tw.WriteLine($"{new string('-', width)}");
+        }
     }
 
     /// <param name="errorCode">Desired error code if the command didn't run properly</param>
