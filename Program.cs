@@ -67,6 +67,9 @@ class Program
 
         if (args == null || args.Length == 0)
             HelpMenu();
+        
+        if (args[0] == "--clear-log")
+            ClearLogs();
 
         for (int i = 0; i < args.Length; i++)
         {
@@ -264,6 +267,15 @@ class Program
             + $"    https://github.com/phil-harmoniq/netpkg-tool\n"
             + $"    Copyright (c) 2017 - MIT License\n"
         );
+        SayBye();
+        Environment.Exit(0);
+    }
+
+    static void ClearLogs()
+    {
+        Console.Write($"Clear log at {GetRelativePath(configDir)}/error.log");
+        bash.Command($"rm -f {configDir}/error.log");
+        CheckCommandOutput(errorCode: 5);
         SayBye();
         Environment.Exit(0);
     }
