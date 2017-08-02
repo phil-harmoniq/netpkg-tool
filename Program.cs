@@ -13,6 +13,8 @@ class Program
     static Assembly tool = Assembly.GetExecutingAssembly();
     static string  toolName = tool.GetName().Name;
     static string toolVersion = FileVersionInfo.GetVersionInfo(tool.Location).ProductVersion;
+    static string home = Environment.GetEnvironmentVariable("HOME");
+    static string configDir = $"{home}/.local/share/netpkg-tool";
     static int width = 64;
     static Bash bash = new Bash();
     static string csproj;
@@ -22,6 +24,7 @@ class Program
     static string AppName;
     static string dotNetVersion;
     static string Here = AppDomain.CurrentDomain.BaseDirectory;
+    static string[] Args;
 
     static bool Verbose = false;
     static bool SkipRestore = false;
@@ -48,20 +51,25 @@ class Program
     static void CheckPaths(string[] args)
     {
         if (args.Length < 2 || !Directory.Exists(args[0]) && !Directory.Exists(args[1]))
-            ExitWithError("You must specify a valid .NET project AND destination folder.", 1);
+            ExitWithError("You must specify a valid .NET project AND destination folder.\n", 1);
         if (Directory.Exists(args[0]) && !Directory.Exists(args[1]))
-            ExitWithError($"{args[1]} is not a valid folder", 2);
+            ExitWithError($"{args[1]} is not a valid folder\n", 2);
         if (!Directory.Exists(args[0]) && Directory.Exists(args[1]))
-            ExitWithError($"{args[0]} is not a valid folder", 3);
+            ExitWithError($"{args[0]} is not a valid folder\n", 3);
         
-        projectDir = ConsolidatePath(args[0]);
-        destination = ConsolidatePath(args[1]);
+        projectDir = GetRelativePath(args[0]);
+        destination = GetRelativePath(args[1]);
     }
 
     static void ParseArgs(string[] args)
     {
+        Args = args;
+
         if (args == null || args.Length == 0)
             HelpMenu();
+        
+        if (args[0] == "--clear-log")
+            ClearLogs();
 
         for (int i = 0; i < args.Length; i++)
         {
@@ -98,13 +106,13 @@ class Program
         
         bash.Command($"find {project} -maxdepth 1 -name '*.csproj'", redirect: true);
         var location = bash.Output.Split("\n", StringSplitOptions.RemoveEmptyEntries);
-        var absolutePath = location[0];
 
         if (location.Length < 1)
-            ExitWithError($"No .csproj found in {project}", 10);
+            ExitWithError($"No .csproj found in {GetRelativePath(project)}\n", 10);
         if (location.Length > 1)
-            ExitWithError($"More than one .csproj found in {project}", 11);
+            ExitWithError($"More than one .csproj found in {GetRelativePath(project)}\n", 11);
         
+        var absolutePath = location[0];
         var folderSplit = absolutePath.Split('/');
         var folder = string.Join('/', folderSplit.Take(folderSplit.Length - 1));
         csproj = folderSplit[folderSplit.Length - 1];
@@ -213,13 +221,6 @@ class Program
         Printer.WriteLine($"{Clr.Green}{message}{Clr.Default}");
     }
 
-    static string ConsolidatePath(string path)
-    {
-        bash.Command($"cd {path} && dirs -0", redirect: true);
-        var output = bash.Output.Split("\n", StringSplitOptions.RemoveEmptyEntries);
-        return output[0];
-    }
-
     static void SayHello()
     {
         var title = $" {toolName} v{toolVersion} ";
@@ -269,6 +270,15 @@ class Program
         SayBye();
         Environment.Exit(0);
     }
+
+    static void ClearLogs()
+    {
+        Console.Write($"Clear log at {GetRelativePath(configDir)}/error.log");
+        bash.Command($"rm -f {configDir}/error.log");
+        CheckCommandOutput(errorCode: 5);
+        SayBye();
+        Environment.Exit(0);
+    }
     
     static void SayBye()
     {
@@ -294,9 +304,35 @@ class Program
 
     static void ExitWithError(string message, int code)
     {
-        Printer.Write($"{Clr.Red}{message}{Clr.Default}");
+        if (Verbose)
+        {
+            WriteToErrorLog("[Error message was written to verbose output]", code);
+        }
+        else
+        {
+            Printer.Write($"{Clr.Red}{message}{Clr.Default}");
+            WriteToErrorLog(message, code);
+        }
         SayBye();
         Environment.Exit(code);
+    }
+
+    static void WriteToErrorLog(string message, int code)
+    {
+        if (!Directory.Exists(configDir))
+            Directory.CreateDirectory(configDir);
+        
+        using (var tw = new StreamWriter($"{configDir}/error.log", true))
+        {
+            var now = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            var dir = Directory.GetCurrentDirectory();
+
+            tw.WriteLine($"{new string('-', width)}");
+            tw.WriteLine($"{GetRelativePath(dir)}$ netpkg-tool {string.Join(' ', Args)}");
+            tw.WriteLine($"Errored with code {code} - ({now}):\n");
+            tw.WriteLine(message.TrimEnd('\n'));
+            tw.WriteLine($"{new string('-', width)}");
+        }
     }
 
     /// <param name="errorCode">Desired error code if the command didn't run properly</param>

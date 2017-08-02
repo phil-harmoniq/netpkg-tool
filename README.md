@@ -7,8 +7,8 @@
 A pre-packaged version of the most current netpkg-tool is available from the [releases tab](https://github.com/phil-harmoniq/netpkg-tool/releases):
 
 ```bash
-# The Master branch will always hold the latest release
-wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/master/netpkg-tool
+# Get the latest release using the 0.x git tag
+wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/0.x/netpkg-tool
 chmod a+x netpkg-tool
 
 # Place it somewhere on your $PATH (Optional)
@@ -46,7 +46,7 @@ netpkg-tool aspnet-src . -n aspnet-pkg
 
 ## ASP.NET
 
-ASP.NET is picky about where its content root directory is located. By default, it searches for `wwwroot` in `Directory.GetCurrentDirectory()`. Using netpkg-tool on an unmodified ASP.NET project will result in your web app being unable to locate any of its assets. A simple workaround would be to check for the existence of an environment variable set by netpkg-tool, like `$HERE`, and setting the content directory accordingly. This will allow the project's content to be found regardless of whether it's packaged up or being run with `dotnet run`. Example:
+ASP.NET is picky about where its content root directory is located. By default, it searches for `wwwroot` in `Directory.GetCurrentDirectory()`. Using netpkg-tool on an unmodified ASP.NET project will result in your web app being unable to locate any of its assets. A simple workaround would be to check for the existence of an environment variable set by netpkg-tool, like `$NET_PKG`, and setting the content directory to the Assembly location if it exists. This will allow the project's content to be found regardless of whether it's packaged up or being run with `dotnet run`. Example:
 
 ```C#
 public class Program
