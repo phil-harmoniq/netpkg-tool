@@ -38,7 +38,7 @@ touch /tmp/"$APP_NAME".temp/AppRun
     if [[ -z $MAKE_SCD ]]; then
         echo 'exec -a "'"$APP_NAME"'" dotnet "$HERE/usr/share/'"$APP_NAME"'/'"$DLL_NAME.dll"'" "$@"'
     else
-        echo 'exec -a '"$HERE"'/usr/share/'"$APP_NAME"'/'"$DLL_NAME"' "$@"'
+        echo 'exec -a "'"$APP_NAME"'" "$HERE/usr/share/'"$APP_NAME"'/'"$DLL_NAME"'" "$@"'
     fi
 } >> /tmp/"$APP_NAME".temp/AppRun
 
