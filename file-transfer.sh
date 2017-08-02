@@ -36,9 +36,9 @@ touch /tmp/"$APP_NAME".temp/AppRun
     fi
 
     if [[ -z $MAKE_SCD ]]; then
-        echo 'dotnet "$HERE/usr/share/'"$APP_NAME"'/'"$DLL_NAME.dll"'" "$@"'
+        echo 'exec -a "'"$APP_NAME"'" dotnet "$HERE/usr/share/'"$APP_NAME"'/'"$DLL_NAME.dll"'" "$@"'
     else
-        echo '$HERE/usr/share/'"$APP_NAME"'/'"$DLL_NAME"' "$@"'
+        echo 'exec -a '"$HERE"'/usr/share/'"$APP_NAME"'/'"$DLL_NAME"' "$@"'
     fi
 } >> /tmp/"$APP_NAME".temp/AppRun
 
@@ -57,7 +57,8 @@ touch /tmp/"$APP_NAME".temp/"$APP_NAME".desktop
 touch /tmp/"$APP_NAME".temp/"$APP_NAME"-icon.png
 
 # Set executable
-chmod +x /tmp/"$APP_NAME".temp/AppRun
+chmod a+x /tmp/"$APP_NAME".temp/AppRun
+chmod u+x /tmp/"$APP_NAME".temp/usr/share/"$APP_NAME"/"$DLL_NAME".dll
 
 # Check for netpkg.lib and import libraries
 if [[ -d $PROJECT/netpkg.lib ]]; then
