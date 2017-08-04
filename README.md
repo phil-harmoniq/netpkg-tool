@@ -51,22 +51,21 @@ ASP.NET is picky about where its content root directory is located. By default, 
 ```C#
 public class Program
 {
-    static string root;
-
     public static void Main(string[] args)
     {
-        if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("NET_PKG")))
-            root = Directory.GetCurrentDirectory();
-        else
-            root = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        var assembly = Assembly.GetExecutingAssembly().Location;
+        var pkgEnv = Environment.GetEnvironmentVariable("NET_PKG");
 
-        BuildWebHost(args).Run();
+        if (string.IsNullOrEmpty(pkgEnv))
+            BuildWebHost(args, Path.GetDirectoryName(assembly)).Run();
+        else
+            BuildWebHost(args, Directory.GetCurrentDirectory()).Run();
     }
 
-    public static IWebHost BuildWebHost(string[] args) =>
+    public static IWebHost BuildWebHost(string[] args, string root) =>
         WebHost.CreateDefaultBuilder(args)
-            .UseStartup<Startup>()
             .UseContentRoot(root)
+            .UseStartup<Startup>()
             .Build();
 }
 ```
