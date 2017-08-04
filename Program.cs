@@ -14,7 +14,7 @@ class Program
     static string  toolName = tool.GetName().Name;
     static string toolVersion = FileVersionInfo.GetVersionInfo(tool.Location).ProductVersion;
     static string home = Environment.GetEnvironmentVariable("HOME");
-    static string configDir = $"{home}/.local/share/netpkg-tool";
+    static string configDir = $"{home}/.netpkg";
     static int width = 64;
     static Bash bash = new Bash();
     static string csproj;
