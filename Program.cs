@@ -14,7 +14,7 @@ class Program
     static string  toolName = tool.GetName().Name;
     static string toolVersion = FileVersionInfo.GetVersionInfo(tool.Location).ProductVersion;
     static string home = Environment.GetEnvironmentVariable("HOME");
-    static string configDir = $"{home}/.netpkg";
+    static string configDir = $"{home}/.netpkg-tool";
     static int width = 64;
     static Bash bash = new Bash();
     static string csproj;
@@ -238,14 +238,12 @@ class Program
 
     static string GetRelativePath(string path)
     {
-        bash.Command($"cd {path} && dirs -0", redirect: true);
-        return bash.Output.Split("\n", StringSplitOptions.RemoveEmptyEntries)[0];
+        return bash.Command($"cd {path} && dirs -0", redirect: true).Lines[0];
     }
 
     static string GetAbsolutePath(string path)
     {
-        bash.Command($"readlink -f {path}", redirect: true);
-        return bash.Output.Split("\n", StringSplitOptions.RemoveEmptyEntries)[0];
+        return bash.Command($"readlink -f {path}", redirect: true).Lines[0];
     }
 
     static void HelpMenu()
