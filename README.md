@@ -57,9 +57,9 @@ public class Program
         var pkgEnv = Environment.GetEnvironmentVariable("NET_PKG");
 
         if (string.IsNullOrEmpty(pkgEnv))
-            BuildWebHost(args, Path.GetDirectoryName(assembly)).Run();
-        else
             BuildWebHost(args, Directory.GetCurrentDirectory()).Run();
+        else
+            BuildWebHost(args, Path.GetDirectoryName(assembly)).Run();
     }
 
     public static IWebHost BuildWebHost(string[] args, string root) =>
