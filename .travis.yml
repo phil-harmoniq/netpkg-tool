@@ -24,4 +24,4 @@ deploy:
   file: "$HOME/netpkg-tool"
   on:
     branch: develop
-      tags: true
+    tags: true
