@@ -250,7 +250,7 @@ class Program
     {
         Printer.WriteLine(
             $"\n            {Frmt.Bold}{Clr.Cyan}Usage:{Reset.Code}\n"
-            + $"    {Frmt.Bold}netpkg-tool{Frmt.UnBold} "
+            + $"    {Frmt.Bold}OOOPSSS{Frmt.UnBold} "
             + $"[{Frmt.Underline}Project{Reset.Code}] "
             + $"[{Frmt.Underline}Destination{Reset.Code}] "
             + $"[{Frmt.Underline}Flags{Reset.Code}]\n\n"
