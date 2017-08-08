@@ -1,21 +1,19 @@
-# netpkg-tool [![License][License]](LICENSE.md) [![Build Status](https://travis-ci.org/phil-harmoniq/netpkg-tool.svg?branch=develop)](https://travis-ci.org/phil-harmoniq/netpkg-tool)
+# netpkg-tool [![Build Status](https://travis-ci.org/phil-harmoniq/netpkg-tool.svg?branch=master)](https://travis-ci.org/phil-harmoniq/netpkg-tool) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/phil-harmoniq/netpkg-tool/blob/master/README.md)
 
-[License]: https://img.shields.io/badge/License-MIT-blue.svg
-
-<img src="https://imgur.com/VZtQh3q.gif" width="734" height="438">
+<img src="https://imgur.com/VZtQh3q.gif" width="84%">
 
 A pre-packaged version of the most current netpkg-tool is available from the [releases tab](https://github.com/phil-harmoniq/netpkg-tool/releases):
 
 ```bash
-# Get the latest release using the 0.x git tag
-wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/0.x/netpkg-tool
-chmod a+x netpkg-tool
+# Get the the most current release using the 'latest' git tag
+wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/latest/netpkg-tool
+chmod a+x ./netpkg-tool
 
-# Place it somewhere on your $PATH (Optional)
+# Place netpkg-tool somewhere on your $PATH (Optional)
 mv ./netpkg-tool ~/.local/bin
 ```
 
-To build netpkg-tool from source, just run `build.sh` and specify a destination folder:
+To build netpkg-tool from source, run `build.sh` and specify a destination folder:
 
 ```bash
 git clone https://github.com/phil-harmoniq/netpkg-tool
@@ -42,7 +40,7 @@ netpkg-tool aspnet-src . -n aspnet-pkg
 
 ## Optional Flags
 
-<img src="http://imgur.com/GfhJuCf.png" width="734" height="438">
+<img src="http://imgur.com/GfhJuCf.png" width="84%">
 
 ## ASP.NET
 
