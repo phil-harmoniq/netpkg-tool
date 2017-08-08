@@ -7,6 +7,7 @@ install:
   - "./build.sh $HOME"
 
 before_script:
+  - "sudo modprobe fuse"
   - "$HOME/netpkg-tool --help"
 
 script:
