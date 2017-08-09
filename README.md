@@ -1,21 +1,19 @@
-# netpkg-tool [![License][License]](LICENSE.md) [![Build Status](https://travis-ci.org/phil-harmoniq/netpkg-tool.svg?branch=develop)](https://travis-ci.org/phil-harmoniq/netpkg-tool)
+# netpkg-tool [![Build Status](https://travis-ci.org/phil-harmoniq/netpkg-tool.svg?branch=master)](https://travis-ci.org/phil-harmoniq/netpkg-tool) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/phil-harmoniq/netpkg-tool/blob/master/README.md)
 
-[License]: https://img.shields.io/badge/License-MIT-blue.svg
-
-<img src="https://imgur.com/VZtQh3q.gif" width="734" height="438">
+<img src="http://imgur.com/1wmkrX0.gif" width="84%">
 
 A pre-packaged version of the most current netpkg-tool is available from the [releases tab](https://github.com/phil-harmoniq/netpkg-tool/releases):
 
 ```bash
-# Get the latest release using the 0.x git tag
-wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/0.x/netpkg-tool
-chmod a+x netpkg-tool
+# Github releases are tagged with their version (ex: 0.3.3)
+wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/0.3.3/netpkg-tool
+chmod a+x ./netpkg-tool
 
-# Place it somewhere on your $PATH (Optional)
+# Place netpkg-tool somewhere on your $PATH (Optional)
 mv ./netpkg-tool ~/.local/bin
 ```
 
-To build netpkg-tool from source, just run `build.sh` and specify a destination folder:
+To build netpkg-tool from source, run `build.sh` and specify a destination folder:
 
 ```bash
 git clone https://github.com/phil-harmoniq/netpkg-tool
@@ -42,7 +40,7 @@ netpkg-tool aspnet-src . -n aspnet-pkg
 
 ## Optional Flags
 
-<img src="http://imgur.com/GfhJuCf.png" width="734" height="438">
+<img src="http://imgur.com/NAUfM0N.png" width="84%">
 
 ## ASP.NET
 
@@ -51,22 +49,21 @@ ASP.NET is picky about where its content root directory is located. By default, 
 ```C#
 public class Program
 {
-    static string root;
-
     public static void Main(string[] args)
     {
-        if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("NET_PKG")))
-            root = Directory.GetCurrentDirectory();
-        else
-            root = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        var assembly = Assembly.GetExecutingAssembly().Location;
+        var pkgEnv = Environment.GetEnvironmentVariable("NET_PKG");
 
-        BuildWebHost(args).Run();
+        if (string.IsNullOrEmpty(pkgEnv))
+            BuildWebHost(args, Directory.GetCurrentDirectory()).Run();
+        else
+            BuildWebHost(args, Path.GetDirectoryName(assembly)).Run();
     }
 
-    public static IWebHost BuildWebHost(string[] args) =>
+    public static IWebHost BuildWebHost(string[] args, string root) =>
         WebHost.CreateDefaultBuilder(args)
-            .UseStartup<Startup>()
             .UseContentRoot(root)
+            .UseStartup<Startup>()
             .Build();
 }
 ```
@@ -80,6 +77,12 @@ Using netpkg-tool will restore and compile your project based on settings in you
 3. Create AppDir and transfer files
 4. Run appimagetool on created AppDir
 5. Delete temporary files
+
+## Dependencies
+
+- [.NET Core 2.0 SDK](https://www.microsoft.com/net/core/preview): Per-distro [RID](https://docs.microsoft.com/en-us/dotnet/core/rid-catalog) tags were replaced with the universal `linux-x64` [RID](https://github.com/dotnet/cli/issues/2727), simplifying the Linux build process. Earlier versions *should* work with netpkg-tool but only using [Framework Dependent Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#framework-dependent-deployments-fdd).
+- [appimagetool](https://github.com/AppImage/AppImageKit): (Included) Bundles linux applications into AppImages.
+- [Shell.NET](https://github.com/phil-harmoniq/Shell.NET): (Included) .NET Standard library for interacting with Bash.
 
 ## Mono
 
