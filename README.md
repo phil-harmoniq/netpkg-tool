@@ -1,12 +1,12 @@
 # netpkg-tool [![Build Status](https://travis-ci.org/phil-harmoniq/netpkg-tool.svg?branch=master)](https://travis-ci.org/phil-harmoniq/netpkg-tool) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/phil-harmoniq/netpkg-tool/blob/master/README.md)
 
-<img src="https://imgur.com/VZtQh3q.gif" width="84%">
+<img src="http://imgur.com/1wmkrX0.gif" width="84%">
 
 A pre-packaged version of the most current netpkg-tool is available from the [releases tab](https://github.com/phil-harmoniq/netpkg-tool/releases):
 
 ```bash
-# Get the the most current release using the 'latest' git tag
-wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/latest/netpkg-tool
+# Github releases are tagged with their version (ex: 0.3.3)
+wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/0.3.3/netpkg-tool
 chmod a+x ./netpkg-tool
 
 # Place netpkg-tool somewhere on your $PATH (Optional)
@@ -40,7 +40,7 @@ netpkg-tool aspnet-src . -n aspnet-pkg
 
 ## Optional Flags
 
-<img src="http://imgur.com/GfhJuCf.png" width="84%">
+<img src="http://imgur.com/NAUfM0N.png" width="84%">
 
 ## ASP.NET
 
@@ -77,6 +77,12 @@ Using netpkg-tool will restore and compile your project based on settings in you
 3. Create AppDir and transfer files
 4. Run appimagetool on created AppDir
 5. Delete temporary files
+
+## Dependencies
+
+- [.NET Core 2.0 SDK](https://www.microsoft.com/net/core/preview): Per-distro [RID](https://docs.microsoft.com/en-us/dotnet/core/rid-catalog) tags were replaced with the universal `linux-x64` [RID](https://github.com/dotnet/cli/issues/2727), simplifying the Linux build process. Earlier versions *should* work with netpkg-tool but only using [Framework Dependent Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#framework-dependent-deployments-fdd).
+- [appimagetool](https://github.com/AppImage/AppImageKit): (Included) Bundles linux applications into AppImages.
+- [Shell.NET](https://github.com/phil-harmoniq/Shell.NET): (Included) .NET Standard library for interacting with Bash.
 
 ## Mono
 
