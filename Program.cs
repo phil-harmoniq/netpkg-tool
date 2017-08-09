@@ -38,7 +38,7 @@ class Program
         ParseArgs(args);
         CheckPaths(args);
         FindCsproj(args[0]);
-        SayTask($"{projectDir}/{csproj}", $"{destination}/{AppName}");
+        SayTask(projectDir, $"{destination}/{AppName}");
         if (!SkipRestore) RestoreProject();
         ComileProject();
         TransferFiles();
@@ -286,7 +286,7 @@ class Program
     static void SayTask(string project, string destination)
     {
         Clr.SetCyan();
-        Console.WriteLine($"{project} -> {destination}");
+        Console.WriteLine($"{project} => {destination}");
         Clr.SetDefault();
     }
 
