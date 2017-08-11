@@ -1,0 +1,224 @@
+body {
+    font-family: var(--main-font);
+    color: var(--platinum);
+}
+
+.main-background {
+    background-color: var(--platinum);
+}
+
+.main-title {
+    padding-top: 50px;
+}
+
+.img-border {
+    -webkit-filter: drop-shadow(1px 1px 0 black)
+                    drop-shadow(-1px -1px 0 black);
+    filter: drop-shadow(1px 1px 0 black) 
+            drop-shadow(-1px -1px 0 black);
+ }
+
+.vscode-background {
+    background-image: url("../../images/vscode.jpg");
+    
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    height: 345px; 
+    line-height: 340px;
+
+    -webkit-background-size: 100%; 
+    -moz-background-size: 100%; 
+    -o-background-size: 100%; 
+    background-size: 100%; 
+    -webkit-background-size: cover; 
+    -moz-background-size: cover; 
+    -o-background-size: cover; 
+    background-size: cover; 
+}
+.vscode-background h1 {
+    text-align: center;
+    vertical-align: middle;
+    display: inline-block;
+    font-size: 5vw;
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+    color: var(--platinum);
+}
+
+.download {
+    color: var(--onyx);
+    margin-right: 50px;
+    margin-left: 50px;
+    margin-bottom: 50px;
+    margin-top: 50px;
+}
+
+.download-row {
+    padding-left: 50px;
+    padding-right: 50px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.code-panel {
+    padding: 15px;
+    font-family: "Ubuntu Mono";
+    font-size: 16px;
+    color: var(--platinum);
+    background-color: var(--onyx);
+}
+
+[prompt]::after {
+    content: attr(prompt);
+}
+
+.inline {
+    display: inline;
+}
+
+.clear-panel {
+    background-color: var(--platinum);
+    color: var(--onyx);
+    border: transparent;
+    box-shadow: none;
+}
+
+.inverted-panel {
+    margin: 0px;
+    padding: 0px;
+    background-color: var(--onyx);
+    color: var(--platinum);
+    border: transparent;
+    box-shadow: none;
+}
+
+.docs-panel {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+#codebox {
+    padding: 15px;
+    font-family: "Ubuntu Mono";
+    font-size: 13px;
+    color: var(--platinum);
+    background-color: var(--onyx);
+    -webkit-box-shadow: 3px 3px 12px 1px rgba(0,0,0,0.75);
+    -moz-box-shadow: 3px 3px 12px 1px rgba(0,0,0,0.75);
+    box-shadow: 3px 3px 12px 1px rgba(0,0,0,0.75);
+    margin-bottom: 10px;
+}
+
+.shadow {
+    -webkit-box-shadow: 2px 2px 8px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 2px 2px 8px 0px rgba(0,0,0,0.75);
+    box-shadow: 2px 2px 8px 0px rgba(0,0,0,0.75);
+}
+
+.blur-me {
+    -webkit-filter: blur(15px);
+    filter: blur(15px);
+    transform: scale(1.03)
+}
+
+.main-img {
+    width: 65%;
+}
+
+.main-jumbo {
+    padding-top: 50px;
+    background-color: var(--onyx);
+    padding: 0px;
+    height: 700px;
+    overflow: hidden;
+    position: relative;
+    margin: 0px;
+}
+
+.main-jumbo p {
+    margin: 50px;
+}
+
+.jumbo-parent {
+    position: relative;
+}
+
+.jumbo-background {
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+}
+
+.source {
+    background-color: var(--onyx);
+    color: var(--platinum);
+    margin-top: 50px;
+    padding: 50px;
+}
+
+.logo-img {
+    width: 300px;
+}
+
+.center.img {
+    display: block;
+    margin: 0 auto;
+}
+
+.jumbo-container {
+    -webkit-filter: blur(0px);
+    filter: blur(0px);
+}
+
+.center-img {
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+}
+
+.footer {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.content1 {
+    background: transparent;
+    height: 300px;
+    margin: 5px;
+    border: 0px;
+    border-radius: 0px;
+}
+
+.container-wide {
+    margin: 0 auto;
+    padding-top: 0;
+    width: 100%;
+}
+
+.overflow {
+    overflow: hidden;
+}
+
+:root {
+    --azure-white: rgba(218, 223, 247, 1);
+    --lapis-lazuli: rgb(77, 95, 111);
+    --slate-green: rgba(48, 82, 82, 1);
+    --silver-chalice: rgba(172, 176, 189, 1);
+    --oxford-blue: rgba(13, 33, 73, 1);
+
+    --platinum: rgba(232, 233, 235, 1);
+    --onyx: rgba(49, 54, 56, 1);
+    --black: rgba(0, 0, 0, 1);
+
+    --light-gray: rgba(237, 239, 247, 1);
+    --mid-gray: rgba(172, 176, 189, 1);
+    --dark-green: rgba(87, 124, 10, 1);
+    --dark-red: rgba(86, 33, 24, 1);
+    --dark-blue: rgba(13, 33, 73, 1);
+
+    --main-font: "Ubuntu";
+}
