@@ -157,7 +157,7 @@ body {
     background-color: var(--onyx);
     color: var(--platinum);
     margin-top: 50px;
-    padding: 50px;
+    padding-top: 50px;
 }
 
 .logo-img {
