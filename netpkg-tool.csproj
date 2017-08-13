@@ -7,7 +7,7 @@
     <Authors>Phil Hawkins</Authors>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <VersionPrefix>0.3.3</VersionPrefix>
+    <VersionPrefix>0.3.4</VersionPrefix>
     <VersionSuffix>alpha</VersionSuffix>
     <Description>Bundle .NET Core applications into convenient Linux binaries using appimagetool</Description>
     <Copyright>MIT</Copyright>
