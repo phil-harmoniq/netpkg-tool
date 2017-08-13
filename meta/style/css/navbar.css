@@ -1,0 +1,86 @@
+:root {
+    --background: rgba(232, 233, 235, 1);
+    --border: rgba(49, 54, 56, 1);
+    --title-color: rgba(49, 54, 56, 1);
+    --text-color: rgba(172, 176, 189, 1);
+    --link-hover: rgba(172, 176, 189, 1);
+    --active-text: rgba(232, 233, 235, 1);
+    --active-background: rgba(49, 54, 56, 1);
+}
+
+.navbar {
+    -webkit-box-shadow: 0px 0px 5px 1px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 5px 1px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 5px 1px rgba(0,0,0,0.75);
+}
+
+/* navbar */
+.navbar-default {
+    background-color: var(--background);
+    border-color: var(--border);
+    border: 0;
+}
+/* Title */
+.navbar-default .navbar-brand {
+    color: var(--title-color);
+}
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus {
+    color: var(--text-color);
+}
+/* Link */
+.navbar-default .navbar-nav > li > a {
+    color: var(--title-color);
+}
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+    color: var(--link-hover);
+}
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+    color: var(--active-hover);
+    background-color: var(--active-background);
+}
+.navbar-default .navbar-nav > .open > a,
+.navbar-default .navbar-nav > .open > a:hover,
+.navbar-default .navbar-nav > .open > a:focus {
+    color: var(--active-hover);
+    background-color: #D5D5D5;
+}
+/* Caret */
+.navbar-default .navbar-nav > .dropdown > a .caret {
+    border-top-color: var(--title-color);
+    border-bottom-color: var(--title-color);
+}
+.navbar-default .navbar-nav > .dropdown > a:hover .caret,
+.navbar-default .navbar-nav > .dropdown > a:focus .caret {
+    border-top-color: var(--link-hover);
+    border-bottom-color: var(--link-hover);
+}
+.navbar-default .navbar-nav > .open > a .caret,
+.navbar-default .navbar-nav > .open > a:hover .caret,
+.navbar-default .navbar-nav > .open > a:focus .caret {
+    border-top-color: var(--active-hover);
+    border-bottom-color: var(--active-hover);
+}
+/* Mobile version */
+.navbar-default .navbar-toggle {
+    border-color: #DDD;
+}
+.navbar-default .navbar-toggle:hover,
+.navbar-default .navbar-toggle:focus {
+    background-color: #DDD;
+}
+.navbar-default .navbar-toggle .icon-bar {
+    background-color: #CCC;
+}
+@media (max-width: 767px) {
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+        color: var(--title-color);
+    }
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
+          color: var(--link-hover);
+    }
+}
