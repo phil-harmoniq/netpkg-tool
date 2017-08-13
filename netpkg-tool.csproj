@@ -9,7 +9,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <VersionPrefix>0.3.3</VersionPrefix>
     <VersionSuffix>alpha</VersionSuffix>
-    <Description>Quick and easy console colors for C#/Unix</Description>
+    <Description>Bundle .NET Core applications into convenient Linux binaries using appimagetool</Description>
     <Copyright>MIT</Copyright>
     <PackageProjectUrl>https://github.com/phil-harmoniq/netpkg-tool</PackageProjectUrl>
     <RepositoryUrl>git://github.com/phil-harmoniq/netpkg-tool.git</RepositoryUrl>
