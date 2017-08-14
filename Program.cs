@@ -156,9 +156,9 @@ class Program
         string cmd;
 
         if (SelfContainedDeployment)
-            cmd = $"cd {projectDir} && dotnet publish -c Release -r linux-x64";
+            cmd = $"cd {projectDir} && dotnet publish -c Release -r linux-x64 --no-restore";
         else 
-            cmd = $"cd {projectDir} && dotnet publish -c Release";
+            cmd = $"cd {projectDir} && dotnet publish -c Release --no-restore";
 
         if (Verbose)
         {
