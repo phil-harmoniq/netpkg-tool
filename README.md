@@ -5,8 +5,8 @@
 A pre-packaged version of the most current netpkg-tool is available from the [releases tab](https://github.com/phil-harmoniq/netpkg-tool/releases):
 
 ```bash
-# Github releases are tagged with their version (ex: 0.3.3)
-wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/0.3.3/netpkg-tool
+# Github releases are tagged with their version (ex: 0.3.5)
+wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/0.3.5/netpkg-tool
 chmod a+x ./netpkg-tool
 
 # Place netpkg-tool somewhere on your $PATH (Optional)

@@ -124,7 +124,6 @@ class Program
         if (!CustomAppName)
             AppName = DllName;
     }
-    
 
     static string GetCoreVersion()
     {
@@ -183,7 +182,6 @@ class Program
             cmd = $"{path} {projectDir} {DllName} {AppName} {dotNetVersion} {toolVersion} true";
         else
             cmd = $"{path} {projectDir} {DllName} {AppName} {dotNetVersion} {toolVersion}";
-        
         
         Console.Write("Transferring files...");
         bash.Command(cmd, redirect: true);
