@@ -124,7 +124,6 @@ class Program
         if (!CustomAppName)
             AppName = DllName;
     }
-    
 
     static string GetCoreVersion()
     {
@@ -156,9 +155,9 @@ class Program
         string cmd;
 
         if (SelfContainedDeployment)
-            cmd = $"cd {projectDir} && dotnet publish -c Release -r linux-x64";
+            cmd = $"cd {projectDir} && dotnet publish -c Release -r linux-x64 --no-restore";
         else 
-            cmd = $"cd {projectDir} && dotnet publish -c Release";
+            cmd = $"cd {projectDir} && dotnet publish -c Release --no-restore";
 
         if (Verbose)
         {
@@ -183,7 +182,6 @@ class Program
             cmd = $"{path} {projectDir} {DllName} {AppName} {dotNetVersion} {toolVersion} true";
         else
             cmd = $"{path} {projectDir} {DllName} {AppName} {dotNetVersion} {toolVersion}";
-        
         
         Console.Write("Transferring files...");
         bash.Command(cmd, redirect: true);
