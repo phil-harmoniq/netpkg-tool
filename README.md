@@ -2,6 +2,10 @@
 
 <img src="http://imgur.com/1wmkrX0.gif" width="84%">
 
+## Get The Tool
+
+### Released Binary
+
 A pre-packaged version of the most current netpkg-tool is available from the [releases tab](https://github.com/phil-harmoniq/netpkg-tool/releases):
 
 ```bash
@@ -12,6 +16,14 @@ chmod a+x ./netpkg-tool
 # Place netpkg-tool somewhere on your $PATH (Optional)
 mv ./netpkg-tool ~/.local/bin
 ```
+
+### Docker Image
+
+You can build a Docker image with netpkg-tool, so you can use it in a Docker container without having to install any dependencies like the .NET Core SDK.
+
+For more info about it, see the [README](https://github.com/phil-harmoniq/netpkg-tool/blob/master/docker/README.md).
+
+### Build From Source
 
 To build netpkg-tool from source, run `build.sh` and specify a destination folder:
 
