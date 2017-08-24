@@ -19,9 +19,18 @@ mv ./netpkg-tool ~/.local/bin
 
 ### Docker Image
 
-You can build a Docker image with *netpkg-tool*, so you can use it in a Docker container without having to install any dependencies like the .NET Core SDK.
+*netpkg-tool* is also available as a Docker image if you don't want to install any dependencies:
 
-For more info about it, see the [README](https://github.com/phil-harmoniq/netpkg-tool/blob/master/docker/README.md).
+```bash
+# Pull the latest netpkg-tool Docker image
+docker pull philharmoniq/netpkg-tool
+
+# Assuming the current working directory contains your .NET Core project.
+# Note: ${PWD}/out doesn't have to exist - Docker creates the directory if necessary
+docker run --rm -v ${PWD}:/root/src -v ${PWD}/out:/root/out local/netpkg-tool
+```
+
+For more information, see the [Docker README](https://github.com/phil-harmoniq/netpkg-tool/blob/master/docker/README.md).
 
 ### Build From Source
 
