@@ -2,16 +2,33 @@
 
 <img src="http://imgur.com/1wmkrX0.gif" width="84%">
 
-A pre-packaged version of the most current netpkg-tool is available from the [releases tab](https://github.com/phil-harmoniq/netpkg-tool/releases):
+## Download
+
+### Released Binary
+
+Pre-packaged versions of *netpkg-tool* are available from the [releases tab](https://github.com/phil-harmoniq/netpkg-tool/releases):
 
 ```bash
-# Github releases are tagged with their version (ex: 0.3.5)
-wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/0.3.5/netpkg-tool
+# Github releases are tagged with their version (ex: 0.3.6)
+wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/0.3.6/netpkg-tool
 chmod a+x ./netpkg-tool
 
 # Place netpkg-tool somewhere on your $PATH (Optional)
 mv ./netpkg-tool ~/.local/bin
 ```
+
+### Docker Image
+
+*netpkg-tool* is also available as a Docker image if you don't want to install any dependencies:
+
+```bash
+# Pull the latest netpkg-tool Docker image
+docker pull philharmoniq/netpkg-tool
+```
+
+For more information, see the [Docker README](https://github.com/phil-harmoniq/netpkg-tool/blob/master/docker/README.md).
+
+### Build From Source
 
 To build netpkg-tool from source, run `build.sh` and specify a destination folder:
 
@@ -44,7 +61,7 @@ netpkg-tool aspnet-src . -n aspnet-pkg
 
 ## ASP.NET
 
-ASP.NET is picky about where its content root directory is located. By default, it searches for `wwwroot` in `Directory.GetCurrentDirectory()`. Using netpkg-tool on an unmodified ASP.NET project will result in your web app being unable to locate any of its assets. A simple workaround would be to check for the existence of an environment variable set by netpkg-tool, like `$NET_PKG`, and setting the content directory to the Assembly location if it exists. This will allow the project's content to be found regardless of whether it's packaged up or being run with `dotnet run`. Example:
+ASP.NET is picky about where its content root directory is located. By default, it searches for `wwwroot` in `Directory.GetCurrentDirectory()`. Using *netpkg-tool* on an unmodified ASP.NET project will result in your web app being unable to locate any of its assets. A simple workaround would be to check for the existence of an environment variable set by *netpkg-tool*, like `$NET_PKG`, and setting the content directory to the Assembly location if it exists. This will allow the project's content to be found regardless of whether it's packaged up or being run with `dotnet run`. Example:
 
 ```C#
 public class Program
@@ -70,7 +87,7 @@ public class Program
 
 ## Details
 
-Using netpkg-tool will restore and compile your project based on settings in your `*.csproj` file. By default, netpkg-tool will use [Framework Dependent Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#framework-dependent-deployments-fdd) to compile your project. To use [Self-Contained Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#self-contained-deployments-scd), use the `--scd` flag. The full process for netpkg-tool:
+Using *netpkg-tool* will restore and compile your project based on settings in your `*.csproj` file. By default, *netpkg-tool* will use [Framework Dependent Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#framework-dependent-deployments-fdd) to compile your project. To use [Self-Contained Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#self-contained-deployments-scd), use the `--scd` flag. The full process for *netpkg-tool*:
 
 1. Restore project dependencies
 2. Compile .NET Core app
@@ -80,7 +97,7 @@ Using netpkg-tool will restore and compile your project based on settings in you
 
 ## Dependencies
 
-- [.NET Core 2.0 SDK](https://www.microsoft.com/net/core/preview): Per-distro [RID](https://docs.microsoft.com/en-us/dotnet/core/rid-catalog) tags were replaced with the universal `linux-x64` [RID](https://github.com/dotnet/cli/issues/2727), simplifying the Linux build process. Earlier versions *should* work with netpkg-tool but only using [Framework Dependent Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#framework-dependent-deployments-fdd).
+- [.NET Core 2.0 SDK](https://www.microsoft.com/net/core/preview): Per-distro [RID](https://docs.microsoft.com/en-us/dotnet/core/rid-catalog) tags were replaced with the universal `linux-x64` [RID](https://github.com/dotnet/cli/issues/2727), simplifying the Linux build process. Earlier versions *should* work with *netpkg-tool* but only using [Framework Dependent Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#framework-dependent-deployments-fdd).
 - [appimagetool](https://github.com/AppImage/AppImageKit): (Included) Bundles linux applications into AppImages.
 - [Shell.NET](https://github.com/phil-harmoniq/Shell.NET): (Included) .NET Standard library for interacting with Bash.
 
