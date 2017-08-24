@@ -2,15 +2,15 @@
 
 <img src="http://imgur.com/1wmkrX0.gif" width="84%">
 
-## Get The Tool
+## Download
 
 ### Released Binary
 
-A pre-packaged version of the most current *netpkg-tool* is available from the [releases tab](https://github.com/phil-harmoniq/netpkg-tool/releases):
+Pre-packaged versions of *netpkg-tool* are available from the [releases tab](https://github.com/phil-harmoniq/netpkg-tool/releases):
 
 ```bash
-# Github releases are tagged with their version (ex: 0.3.5)
-wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/0.3.5/netpkg-tool
+# Github releases are tagged with their version (ex: 0.3.6)
+wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/0.3.6/netpkg-tool
 chmod a+x ./netpkg-tool
 
 # Place netpkg-tool somewhere on your $PATH (Optional)
@@ -24,10 +24,6 @@ mv ./netpkg-tool ~/.local/bin
 ```bash
 # Pull the latest netpkg-tool Docker image
 docker pull philharmoniq/netpkg-tool
-
-# Assuming the current working directory contains your .NET Core project.
-# Note: ${PWD}/out doesn't have to exist - Docker creates the directory if necessary
-docker run --rm -v ${PWD}:/root/src -v ${PWD}/out:/root/out local/netpkg-tool
 ```
 
 For more information, see the [Docker README](https://github.com/phil-harmoniq/netpkg-tool/blob/master/docker/README.md).
@@ -101,7 +97,7 @@ Using *netpkg-tool* will restore and compile your project based on settings in y
 
 ## Dependencies
 
-- [.NET Core 2.0 SDK](https://www.microsoft.com/net/core/preview): Per-distro [RID](https://docs.microsoft.com/en-us/dotnet/core/rid-catalog) tags were replaced with the universal `linux-x64` [RID](https://github.com/dotnet/cli/issues/2727), simplifying the Linux build process. Earlier versions *should* work with netpkg-tool but only using [Framework Dependent Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#framework-dependent-deployments-fdd).
+- [.NET Core 2.0 SDK](https://www.microsoft.com/net/core/preview): Per-distro [RID](https://docs.microsoft.com/en-us/dotnet/core/rid-catalog) tags were replaced with the universal `linux-x64` [RID](https://github.com/dotnet/cli/issues/2727), simplifying the Linux build process. Earlier versions *should* work with *netpkg-tool* but only using [Framework Dependent Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#framework-dependent-deployments-fdd).
 - [appimagetool](https://github.com/AppImage/AppImageKit): (Included) Bundles linux applications into AppImages.
 - [Shell.NET](https://github.com/phil-harmoniq/Shell.NET): (Included) .NET Standard library for interacting with Bash.
 

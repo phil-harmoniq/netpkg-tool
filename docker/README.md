@@ -9,10 +9,10 @@ Pull
 Docker images are automatically built using the latest source files. Use the `latest` tag for the most recent master build or the `unstable` tag for the most recent development build:
 
 ```bash
-# Latest master release
+# Latest master image
 docker pull philharmoniq/netpkg-tool
 
-# Latest development release
+# Latest development image
 docker pull philhamroniq/netpkg-tool:unstable
 ```
 
