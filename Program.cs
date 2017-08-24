@@ -31,6 +31,7 @@ class Program
     static bool CustomAppName = false;
     static bool SelfContainedDeployment = false;
     static bool KeepTempFiles = false;
+    
 
     static void Main(string[] args)
     {
@@ -210,13 +211,8 @@ class Program
     static void DeleteTempFiles()
     {
         Console.Write("Deleting temporary files...");
-        bash.Command($"rm -rf /tmp/{DllName}.temp");
+        bash.Rm($"/tmp/{DllName}.temp", "-rf");
         CheckCommandOutput(24);
-    }
-
-    static void SayFinished(string message)
-    {
-        Printer.WriteLine($"{Clr.Green}{message}{Clr.Default}");
     }
 
     static void SayHello()
@@ -232,16 +228,6 @@ class Program
             rightBar = new String('-', newWidth / 2);
         
         Printer.WriteLine($"\n{leftBar}{Clr.Cyan}{Frmt.Bold}{title}{Reset.Code}{rightBar}");
-    }
-
-    static string GetRelativePath(string path)
-    {
-        return bash.Command($"cd {path} && dirs -0", redirect: true).Lines[0];
-    }
-
-    static string GetAbsolutePath(string path)
-    {
-        return bash.Command($"readlink -f {path}", redirect: true).Lines[0];
     }
 
     static void HelpMenu()
@@ -270,32 +256,10 @@ class Program
     static void ClearLogs()
     {
         Console.Write($"Clear log at {GetRelativePath(configDir)}/error.log");
-        bash.Command($"rm -f {configDir}/error.log");
+        bash.Rm($"{configDir}/error.log", "-f");
         CheckCommandOutput(errorCode: 5);
         SayBye();
         Environment.Exit(0);
-    }
-    
-    static void SayBye()
-    {
-        Console.WriteLine(new String('-', width) + "\n");
-    }
-
-    static void SayTask(string project, string destination)
-    {
-        Clr.SetCyan();
-        Console.WriteLine($"{project} => {destination}");
-        Clr.SetDefault();
-    }
-
-    static void SayPass()
-    {
-        Printer.WriteLine($" {Frmt.Bold}[ {Clr.Green}PASS{Clr.Default} ]{Reset.Code}");
-    }
-
-    static void SayFail()
-    {
-        Printer.WriteLine($" {Frmt.Bold}[ {Clr.Red}FAIL{Clr.Default} ]{Reset.Code}");
     }
 
     static void ExitWithError(string message, int code)
@@ -344,4 +308,25 @@ class Program
         }
         SayPass();
     }
+    
+    static string GetRelativePath(string path) =>
+        bash.Command($"cd {path} && dirs -0", redirect: true).Lines[0];
+
+    static string GetAbsolutePath(string path) =>
+        bash.Command($"readlink -f {path}", redirect: true).Lines[0];
+    
+    static void SayBye() =>
+        Console.WriteLine(new String('-', width) + "\n");
+
+    static void SayTask(string project, string destination) =>
+        Printer.WriteLine($"{Clr.Cyan}{project} => {destination}{Clr.Default}");
+
+    static void SayFinished(string message) =>
+        Printer.WriteLine($"{Clr.Green}{message}{Clr.Default}");
+
+    static void SayPass() =>
+        Printer.WriteLine($" {Frmt.Bold}[ {Clr.Green}PASS{Clr.Default} ]{Reset.Code}");
+
+    static void SayFail() =>
+        Printer.WriteLine($" {Frmt.Bold}[ {Clr.Red}FAIL{Clr.Default} ]{Reset.Code}");
 }
