@@ -6,7 +6,7 @@
 
 ### Released Binary
 
-A pre-packaged version of the most current netpkg-tool is available from the [releases tab](https://github.com/phil-harmoniq/netpkg-tool/releases):
+A pre-packaged version of the most current *netpkg-tool* is available from the [releases tab](https://github.com/phil-harmoniq/netpkg-tool/releases):
 
 ```bash
 # Github releases are tagged with their version (ex: 0.3.5)
@@ -19,7 +19,7 @@ mv ./netpkg-tool ~/.local/bin
 
 ### Docker Image
 
-You can build a Docker image with netpkg-tool, so you can use it in a Docker container without having to install any dependencies like the .NET Core SDK.
+You can build a Docker image with *netpkg-tool*, so you can use it in a Docker container without having to install any dependencies like the .NET Core SDK.
 
 For more info about it, see the [README](https://github.com/phil-harmoniq/netpkg-tool/blob/master/docker/README.md).
 
@@ -56,7 +56,7 @@ netpkg-tool aspnet-src . -n aspnet-pkg
 
 ## ASP.NET
 
-ASP.NET is picky about where its content root directory is located. By default, it searches for `wwwroot` in `Directory.GetCurrentDirectory()`. Using netpkg-tool on an unmodified ASP.NET project will result in your web app being unable to locate any of its assets. A simple workaround would be to check for the existence of an environment variable set by netpkg-tool, like `$NET_PKG`, and setting the content directory to the Assembly location if it exists. This will allow the project's content to be found regardless of whether it's packaged up or being run with `dotnet run`. Example:
+ASP.NET is picky about where its content root directory is located. By default, it searches for `wwwroot` in `Directory.GetCurrentDirectory()`. Using *netpkg-tool* on an unmodified ASP.NET project will result in your web app being unable to locate any of its assets. A simple workaround would be to check for the existence of an environment variable set by *netpkg-tool*, like `$NET_PKG`, and setting the content directory to the Assembly location if it exists. This will allow the project's content to be found regardless of whether it's packaged up or being run with `dotnet run`. Example:
 
 ```C#
 public class Program
@@ -82,7 +82,7 @@ public class Program
 
 ## Details
 
-Using netpkg-tool will restore and compile your project based on settings in your `*.csproj` file. By default, netpkg-tool will use [Framework Dependent Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#framework-dependent-deployments-fdd) to compile your project. To use [Self-Contained Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#self-contained-deployments-scd), use the `--scd` flag. The full process for netpkg-tool:
+Using *netpkg-tool* will restore and compile your project based on settings in your `*.csproj` file. By default, *netpkg-tool* will use [Framework Dependent Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#framework-dependent-deployments-fdd) to compile your project. To use [Self-Contained Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#self-contained-deployments-scd), use the `--scd` flag. The full process for *netpkg-tool*:
 
 1. Restore project dependencies
 2. Compile .NET Core app

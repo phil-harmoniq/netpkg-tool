@@ -1,23 +1,25 @@
 netpkg-tool Docker Image
 ========================
 
-This Docker image contains the [*netpkg-tool*](https://github.com/phil-harmoniq/netpkg-tool) binary and is based on the [microsoft/dotnet](https://hub.docker.com/r/microsoft/dotnet/) 2.0-sdk image, so that you can use *netpkg-tool* without having to install any dependencies like the .NET Core SDK.
+This Docker image contains the [*netpkg-tool*](https://github.com/phil-harmoniq/netpkg-tool) binary and is based on the [microsoft/dotnet](https://hub.docker.com/r/microsoft/dotnet/) 2.0-sdk image. Using this Docker image allows you to use *netpkg-tool* without installing the .NET Core SDK.
 
-Build
+Pull
 -----
 
-The Docker image will be available on Docker Hub in the future, but until then you have to build it yourself:
+Docker images are automatically built using the latest source files. Use the `latest` tag for the most recent master build or the `unstable` tag for the most recent development build:
 
 ```bash
-git clone https://github.com/phil-harmoniq/netpkg-tool
-cd netpkg-tool
-docker build -f docker/Dockerfile -t local/netpkg-tool .
+# Latest master release
+docker pull philharmoniq/netpkg-tool
+
+# Latest development release
+docker pull philhamroniq/netpkg-tool:unstable
 ```
 
 Usage
 -----
 
-*netpkg-tool* requires in- and output directories as parameters. These are set to `/root/src` and `/root/out` in the Docker image by default, so you simply have to supply volumes that map your local directories to the directories in the Docker container:
+*netpkg-tool* requires input and output directories as parameters. These are set to `/root/src` and `/root/out` in the Docker image by default, so you simply have to bind mount volumes that map your local directories to the directories in the Docker container:
 
 ```bash
 # Assuming the working directory contains your .NET Core project.
@@ -25,7 +27,7 @@ Usage
 docker run --rm -v ${PWD}:/root/src -v ${PWD}/out:/root/out local/netpkg-tool
 ```
 
-You can also supply parameters like `-n MyApp` to the container. **Full example**:
+You can also supply parameters like `-n MyApp` or `--scd` to the container. **Full example**:
 
 ```bash
 git clone https://github.com/phil-harmoniq/Hello
@@ -34,4 +36,4 @@ docker run --rm -v ${PWD}:/root/src -v ${PWD}/out:/root/out local/netpkg-tool -n
 ./out/MyApp
 ```
 
-For other parameters, see the project's main [README](https://github.com/phil-harmoniq/netpkg-tool/blob/master/README.md).
+For more parameters, see the project's main [README](https://github.com/phil-harmoniq/netpkg-tool/blob/master/README.md).
