@@ -106,21 +106,19 @@ class Program
     {
         
         bash.Command($"find {project} -maxdepth 1 -name '*.csproj'", redirect: true);
-        var location = bash.Output.Split("\n", StringSplitOptions.RemoveEmptyEntries);
+        var location = bash.Lines;
 
         if (location.Length < 1)
             ExitWithError($"No .csproj found in {GetRelativePath(project)}\n", 10);
         if (location.Length > 1)
             ExitWithError($"More than one .csproj found in {GetRelativePath(project)}\n", 11);
         
-        var absolutePath = location[0];
-        var folderSplit = absolutePath.Split('/');
-        var folder = string.Join('/', folderSplit.Take(folderSplit.Length - 1));
+        var folderSplit = location[0].Split('/');
         csproj = folderSplit[folderSplit.Length - 1];
-        projectDir = GetRelativePath(folder);
+        projectDir = GetRelativePath(project);
         dotNetVersion = GetCoreVersion();
-        var split = csproj.Split('.');
-        DllName = string.Join('.', split.Take(split.Length - 1));
+        var nameSplit = csproj.Split('.');
+        DllName = string.Join('.', nameSplit.Take(nameSplit.Length - 1));
 
         if (!CustomAppName)
             AppName = DllName;
