@@ -104,9 +104,7 @@ class Program
 
     static void FindCsproj(string project)
     {
-        
-        bash.Command($"find {project} -maxdepth 1 -name '*.csproj'", redirect: true);
-        var location = bash.Lines;
+        var location = bash.Command($"find {project} -maxdepth 1 -name '*.csproj'", redirect: true).Lines;
 
         if (location.Length < 1)
             ExitWithError($"No .csproj found in {GetRelativePath(project)}\n", 10);
