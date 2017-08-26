@@ -120,6 +120,13 @@ class Program
 
         if (!CustomAppName)
             AppName = DllName;
+        
+        if (SingleRuntimeIdentifier() && !SelfContainedDeployment)
+        {
+            SelfContainedDeployment = true;
+            Printer.WriteLine(
+                $"{Clr.Yellow}Caution: runtime identifier detected. Making self-contained app.{Clr.Default}");
+        }
     }
 
     static string GetCoreVersion()
@@ -131,16 +138,25 @@ class Program
         return xml.DocumentElement.SelectSingleNode(node).InnerText;
     }
 
+    static bool SingleRuntimeIdentifier()
+    {
+        var path = GetAbsolutePath($"{projectDir}/{csproj}");
+        var node = "/Project/PropertyGroup/RuntimeIdentifier";
+        var xml = new XmlDocument();
+        xml.LoadXml(File.ReadAllText(path));
+        return xml.DocumentElement.SelectSingleNode(node) != null;
+    }
+
     static void RestoreProject()
     {
         if (Verbose)
         {
-            Console.WriteLine("Restoring .NET project dependencies...");
+            Console.WriteLine("Restoring .NET Core project dependencies...");
             bash.Command($"cd {projectDir} && dotnet restore", redirect: false);
         }
         else
         {
-            Console.Write("Restoring .NET project dependencies...");
+            Console.Write("Restoring .NET Core project dependencies...");
             bash.Command($"cd {projectDir} && dotnet restore", redirect: true);
         }
         
@@ -158,12 +174,12 @@ class Program
 
         if (Verbose)
         {
-            Console.WriteLine("Compiling .NET project...");
+            Console.WriteLine("Compiling .NET Core project...");
             bash.Command(cmd, redirect: false);
         }
         else
         {
-            Console.Write("Compiling .NET project...");
+            Console.Write("Compiling .NET Core project...");
             bash.Command(cmd, redirect: true);
         }
         
@@ -180,7 +196,7 @@ class Program
         else
             cmd = $"{path} {projectDir} {DllName} {AppName} {dotNetVersion} {toolVersion}";
         
-        Console.Write("Transferring files...");
+        Console.Write($"Creating app directory at /tmp/{AppName}.temp...");
         bash.Command(cmd, redirect: true);
         CheckCommandOutput(errorCode: 22);
     }
@@ -192,12 +208,12 @@ class Program
 
         if (Verbose)
         {
-            Console.WriteLine("Compressing with appimagetool...");
+            Console.WriteLine($"Compressing app directory into an AppImage...");
             bash.Command(cmd, redirect: false);
         }
         else
         {
-            Console.Write("Compressing with appimagetool...");
+            Console.Write($"Compressing app directory into an AppImage...");
             bash.Command(cmd, redirect: true);
         }
         
@@ -266,7 +282,7 @@ class Program
         }
         else
         {
-            Printer.Write($"{Clr.Red}{message}{Clr.Default}");
+            Printer.WriteLine($"{Clr.Red}{message}{Clr.Default}");
             WriteToErrorLog(message, code);
         }
         SayBye();
