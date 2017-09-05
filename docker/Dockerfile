@@ -15,7 +15,7 @@ RUN apt-get update \
 
 WORKDIR /dotnetapp
 # Make use of Docker layering: cached layer
-COPY ./netpkg-tool.csproj .
+COPY netpkg-tool.csproj .
 RUN dotnet restore netpkg-tool.csproj
 # Make use of Docker layering: new layer
 COPY . .
