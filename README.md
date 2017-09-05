@@ -9,8 +9,8 @@
 Pre-packaged versions of *netpkg-tool* are available from the [releases tab](https://github.com/phil-harmoniq/netpkg-tool/releases):
 
 ```bash
-# Github releases are tagged with their version (ex: 0.3.8)
-wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/0.3.8/netpkg-tool
+# Github releases are tagged with their version (ex: 0.3.7)
+wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/0.3.7/netpkg-tool
 chmod a+x ./netpkg-tool
 
 # Place netpkg-tool somewhere on your $PATH (Optional)
