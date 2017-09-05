@@ -13,6 +13,8 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libglib2.0-0
 
+RUN ls -lhaF
+
 WORKDIR /dotnetapp
 # Make use of Docker layering: cached layer
 COPY netpkg-tool.csproj .
