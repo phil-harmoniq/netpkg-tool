@@ -58,7 +58,6 @@ touch /tmp/"$APP_NAME".temp/"$APP_NAME"-icon.png
 
 # Set executable
 chmod a+x /tmp/"$APP_NAME".temp/AppRun
-chmod u+x /tmp/"$APP_NAME".temp/usr/share/"$APP_NAME"/"$DLL_NAME".dll
 
 # Check for netpkg.lib and import libraries
 if [[ -d $PROJECT/netpkg.lib ]]; then
