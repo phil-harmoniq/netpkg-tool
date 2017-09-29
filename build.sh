@@ -3,7 +3,6 @@
 set -e
 
 export HERE=$(dirname "$(readlink -f "${0}")")
-cd "$HERE"
 
 if [[ -z "$1" ]] || [[ ! -d "$1" ]]; then
     echo "You must specify a build destination folder"
@@ -17,5 +16,5 @@ else
         mv "$HERE/squashfs-root" "$HERE/appimagetool"
         rm "$HERE/appimagetool.AppImage"
     fi
-    dotnet run --project "$HERE" "$HERE" "$1"
+    dotnet run --project "$HERE" "$HERE" "$1" 
 fi
