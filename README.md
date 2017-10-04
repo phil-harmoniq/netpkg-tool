@@ -92,13 +92,13 @@ Using *netpkg-tool* will restore and compile your project based on settings in y
 1. Restore project dependencies
 1. Compile .NET Core app
 1. Create AppDir and transfer files
-1. Run appimagetool on created AppDir
+1. Run *appimagetool* on created AppDir
 1. Delete temporary files
 
 ## Dependencies
 
 - [.NET Core 2.0 SDK](https://www.microsoft.com/net/core/preview): Per-distro [RID](https://docs.microsoft.com/en-us/dotnet/core/rid-catalog) tags were replaced with the universal `linux-x64` [RID](https://github.com/dotnet/cli/issues/2727), simplifying the Linux build process. Earlier versions *should* work with *netpkg-tool* but only using [Framework Dependent Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#framework-dependent-deployments-fdd).
-- [appimagetool](https://github.com/AppImage/AppImageKit): (Included) Bundles linux applications into AppImages.
+- [appimagetool](https://github.com/AppImage/AppImageKit): (Included) Bundles Linux applications into AppImages, currently utilizes version 9 of *appimagetool*.
 - [Shell.NET](https://github.com/phil-harmoniq/Shell.NET): (Included) .NET Standard library for interacting with Bash.
 
 ## Contributing
