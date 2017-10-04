@@ -201,7 +201,7 @@ class Program
     static void RunAppImageTool()
     {
         var appimgtool = $"{Here}/appimagetool/AppRun";
-        var cmd = $"{appimgtool} -n /tmp/{AppName}.temp {Destination}/{AppName}";
+        var cmd = $"ARCH=x86_64 {appimgtool} -n /tmp/{AppName}.temp {Destination}/{AppName}";
 
         if (Verbose)
         {
