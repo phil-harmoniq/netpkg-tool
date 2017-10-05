@@ -8,11 +8,11 @@ using ConsoleColors;
 
 class Program
 {
-    static Assembly tool = Assembly.GetExecutingAssembly();
-    static string ToolName = tool.GetName().Name;
-    static string ToolVersion = FileVersionInfo.GetVersionInfo(tool.Location).ProductVersion;
+    static Assembly Dll = Assembly.GetExecutingAssembly();
+    static string ToolName = Dll.GetName().Name;
+    static string ToolVersion = FileVersionInfo.GetVersionInfo(Dll.Location).ProductVersion;
     static string Home = Environment.GetEnvironmentVariable("HOME");
-    static string configDir = $"{Home}/.netpkg-tool";
+    static string ConfigDir = $"{Home}/.netpkg-tool";
     static int Width = 64;
     static Shell.NET.Bash Bash = new Shell.NET.Bash();
     static string Csproj;
@@ -179,7 +179,7 @@ class Program
             Console.Write("Compiling .NET Core project...");
             Bash.Command(cmd, redirect: true);
         }
-        
+
         CheckCommandOutput(errorCode: 21);
     }
 
@@ -264,8 +264,8 @@ class Program
 
     static void ClearLogs()
     {
-        Console.Write($"Clear log at {GetRelativePath(configDir)}/error.log");
-        Bash.Rm($"{configDir}/error.log", "-f");
+        Console.Write($"Clear log at {GetRelativePath(ConfigDir)}/error.log");
+        Bash.Rm($"{ConfigDir}/error.log", "-f");
         CheckCommandOutput(errorCode: 5);
         SayBye();
         Environment.Exit(0);
@@ -288,10 +288,10 @@ class Program
 
     static void WriteToErrorLog(string message, int code)
     {
-        if (!Directory.Exists(configDir))
-            Directory.CreateDirectory(configDir);
+        if (!Directory.Exists(ConfigDir))
+            Directory.CreateDirectory(ConfigDir);
         
-        using (var tw = new StreamWriter($"{configDir}/error.log", true))
+        using (var tw = new StreamWriter($"{ConfigDir}/error.log", true))
         {
             var now = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             var dir = Directory.GetCurrentDirectory();

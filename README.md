@@ -9,8 +9,8 @@
 Pre-packaged versions of *netpkg-tool* are available from the [releases tab](https://github.com/phil-harmoniq/netpkg-tool/releases):
 
 ```bash
-# Github releases are tagged with their version (ex: 0.3.8)
-wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/0.3.8/netpkg-tool
+# Github releases are tagged with their version (ex: 0.3.9)
+wget https://github.com/phil-harmoniq/netpkg-tool/releases/download/0.3.9/netpkg-tool
 chmod a+x ./netpkg-tool
 
 # Place netpkg-tool somewhere on your $PATH (Optional)
@@ -90,16 +90,20 @@ public class Program
 Using *netpkg-tool* will restore and compile your project based on settings in your `*.csproj` file. By default, *netpkg-tool* will use [Framework Dependent Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#framework-dependent-deployments-fdd) to compile your project. To use [Self-Contained Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#self-contained-deployments-scd), use the `--scd` flag. The full process for *netpkg-tool*:
 
 1. Restore project dependencies
-2. Compile .NET Core app
-3. Create AppDir and transfer files
-4. Run appimagetool on created AppDir
-5. Delete temporary files
+1. Compile .NET Core app
+1. Create AppDir and transfer files
+1. Run *appimagetool* on created AppDir
+1. Delete temporary files
 
 ## Dependencies
 
 - [.NET Core 2.0 SDK](https://www.microsoft.com/net/core/preview): Per-distro [RID](https://docs.microsoft.com/en-us/dotnet/core/rid-catalog) tags were replaced with the universal `linux-x64` [RID](https://github.com/dotnet/cli/issues/2727), simplifying the Linux build process. Earlier versions *should* work with *netpkg-tool* but only using [Framework Dependent Deployment](https://docs.microsoft.com/en-us/dotnet/core/deploying/#framework-dependent-deployments-fdd).
-- [appimagetool](https://github.com/AppImage/AppImageKit): (Included) Bundles linux applications into AppImages.
+- [appimagetool](https://github.com/AppImage/AppImageKit): (Included) Bundles Linux applications into AppImages, currently utilizes version 9 of *appimagetool*.
 - [Shell.NET](https://github.com/phil-harmoniq/Shell.NET): (Included) .NET Standard library for interacting with Bash.
+
+## Contributing
+
+If you have a feature request or issue, feel free to submit an [issue](https://github.com/phil-harmoniq/netpkg-tool/issues). A pull request would be even better! Pull requests should target the `develop` branch.
 
 ## Mono
 

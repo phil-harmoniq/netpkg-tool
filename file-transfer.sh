@@ -1,5 +1,8 @@
 #! /usr/bin/env bash
 
+# Hard exit if any part of the script fails
+set -e
+
 # Store variables from C#
 PROJECT="$1"
 DLL_NAME="$2"
@@ -7,9 +10,6 @@ APP_NAME="$3"
 CORE_VERS="$4"
 NET_PKG="$5"
 MAKE_SCD="$6"
-
-# Hard exit if any part of the script fails
-set -e
 
 # Remove old temp folder & make new one
 rm -rf /tmp/"$APP_NAME".temp
@@ -58,7 +58,6 @@ touch /tmp/"$APP_NAME".temp/"$APP_NAME"-icon.png
 
 # Set executable
 chmod a+x /tmp/"$APP_NAME".temp/AppRun
-chmod u+x /tmp/"$APP_NAME".temp/usr/share/"$APP_NAME"/"$DLL_NAME".dll
 
 # Check for netpkg.lib and import libraries
 if [[ -d $PROJECT/netpkg.lib ]]; then
