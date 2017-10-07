@@ -253,7 +253,8 @@ class Program
             + @"        --name or -n: Set ouput file to a custom name\n"
             + @"         --scd or -s: Self-Contained Deployment (SCD)\n"
             + @"        --keep or -k: Keep /tmp/{AppName}.temp directory\n"
-            + @"        --help or -h: Help menu (this page)\n\n"
+            + @"        --help or -h: Help menu (this page)\n"
+            + @"         --clear-log: Delete error log at ~/.netpkg-tool\n\n"
             + @"    More information & source code available on github:\n"
             + @"    https://github.com/phil-harmoniq/netpkg-tool\n"
             + @"    Copyright (c) 2017 - MIT License\n"
@@ -264,9 +265,19 @@ class Program
 
     static void ClearLogs()
     {
-        Console.Write($"Clear log at {GetRelativePath(ConfigDir)}/error.log");
-        Bash.Rm($"{ConfigDir}/error.log", "-f");
-        CheckCommandOutput(errorCode: 5);
+        Console.Write($"Clear error log at {GetRelativePath(ConfigDir)}/error.log...");
+
+        if (File.Exists($"{ConfigDir}/error.log"))
+        {
+            Bash.Rm($"{ConfigDir}/error.log");
+            CheckCommandOutput(errorCode: 5);
+        }
+        else
+        {
+            SayCaution();
+            Printer.WriteLine($"{Clr.Yellow}Error log file already removed.{Clr.Default}");
+        }
+
         SayBye();
         Environment.Exit(0);
     }
@@ -335,6 +346,9 @@ class Program
 
     static void SayPass() =>
         Printer.WriteLine($" {Frmt.Bold}[ {Clr.Green}PASS{Clr.Default} ]{Reset.Code}");
+
+    static void SayCaution() =>
+        Printer.WriteLine($" {Frmt.Bold}[ {Clr.Yellow}PASS{Clr.Default} ]{Reset.Code}");
 
     static void SayFail() =>
         Printer.WriteLine($" {Frmt.Bold}[ {Clr.Red}FAIL{Clr.Default} ]{Reset.Code}");
