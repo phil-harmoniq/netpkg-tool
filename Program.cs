@@ -29,6 +29,7 @@ class Program
     static bool CustomAppName = false;
     static bool SelfContainedDeployment = false;
     static bool KeepTempFiles = false;
+    static string Extension = ".AppImage";
 
     static void Main(string[] args)
     {
@@ -96,6 +97,10 @@ class Program
             {
                 HelpMenu();
             }
+            else if (args[i] == "--noext")
+            {
+                Extension = "";
+            }
         }
     }
 
@@ -116,7 +121,7 @@ class Program
         DllName = string.Join('.', nameSplit.Take(nameSplit.Length - 1));
 
         if (!CustomAppName)
-            AppName = DllName;
+            AppName = $"{DllName}{Extension}";
         
         if (SingleRuntimeIdentifier() && !SelfContainedDeployment)
         {
