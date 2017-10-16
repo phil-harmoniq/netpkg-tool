@@ -127,7 +127,7 @@ class Program
         {
             SelfContainedDeployment = true;
             Printer.WriteLine(
-                $"{Clr.Yellow}Caution: runtime identifier detected. Making self-contained app.{Clr.Default}");
+                $"{Clr.Yellow}Caution: Single runtime identifier detected. Using --scd{Clr.Default}");
         }
     }
 
@@ -307,16 +307,16 @@ class Program
         if (!Directory.Exists(ConfigDir))
             Directory.CreateDirectory(ConfigDir);
         
-        using (var tw = new StreamWriter($"{ConfigDir}/error.log", true))
+        using (var log = new StreamWriter($"{ConfigDir}/error.log", true))
         {
             var now = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             var dir = Directory.GetCurrentDirectory();
 
-            tw.WriteLine($"{new string('-', Width)}");
-            tw.WriteLine($"{GetRelativePath(dir)}$ netpkg-tool {string.Join(' ', Args)}");
-            tw.WriteLine($"Errored with code {code} - ({now}):\n");
-            tw.WriteLine(message.TrimEnd('\n'));
-            tw.WriteLine($"{new string('-', Width)}");
+            log.WriteLine($"{new string('-', Width)}");
+            log.WriteLine($"{GetRelativePath(dir)}$ netpkg-tool {string.Join(' ', Args)}");
+            log.WriteLine($"Errored with code {code} - ({now}):\n");
+            log.WriteLine(message.TrimEnd('\n'));
+            log.WriteLine($"{new string('-', Width)}");
         }
     }
 
