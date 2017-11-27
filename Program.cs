@@ -50,11 +50,19 @@ class Program
     static void CheckPaths(string[] args)
     {
         if (args.Length < 2 || !Directory.Exists(args[0]) && !Directory.Exists(args[1]))
+        {
             ExitWithError("You must specify a valid .NET project AND Destination folder.", 6);
+        }
         if (Directory.Exists(args[0]) && !Directory.Exists(args[1]))
-            ExitWithError($"{args[1]} is not a valid folder", 7);
+        {
+            if (Bash.Command($"mkdir -p {args[1]}").ExitCode != 0)
+                ExitWithError($"{args[1]} is not a valid folder", 7);
+        }
         if (!Directory.Exists(args[0]) && Directory.Exists(args[1]))
-            ExitWithError($"{args[0]} is not a valid folder", 8);
+        {
+            if (Bash.Command($"mkdir -p {args[0]}").ExitCode != 0)
+                ExitWithError($"{args[0]} is not a valid folder", 8);
+        }
         
         ProjectDir = GetRelativePath(args[0]);
         Destination = GetRelativePath(args[1]);
