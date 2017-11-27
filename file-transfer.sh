@@ -25,7 +25,7 @@ fi
 # Create an AppRun launcher
 touch /tmp/"$APP_NAME".temp/AppRun
 {
-    echo '#! /usr/bin/env bash'
+    echo '#!/usr/bin/env bash'
     echo
     echo 'export HERE=$(dirname "$(readlink -f "${0}")")'
     echo 'export NET_PKG='\""$NET_PKG"\"

@@ -19,5 +19,5 @@ else
         mv "$PWD/squashfs-root" "$HERE/appimagetool"
         rm "$HERE/appimagetool.AppImage"
     fi
-    dotnet run --project "$HERE" "$HERE" "$1" 
+    dotnet run --project "$HERE" "$HERE" "$1" --noext --keep
 fi

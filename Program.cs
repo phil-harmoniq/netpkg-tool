@@ -29,6 +29,7 @@ class Program
     static bool CustomAppName = false;
     static bool SelfContainedDeployment = false;
     static bool KeepTempFiles = false;
+    static string Extension = ".AppImage";
 
     static void Main(string[] args)
     {
@@ -49,11 +50,19 @@ class Program
     static void CheckPaths(string[] args)
     {
         if (args.Length < 2 || !Directory.Exists(args[0]) && !Directory.Exists(args[1]))
+        {
             ExitWithError("You must specify a valid .NET project AND Destination folder.", 6);
+        }
         if (Directory.Exists(args[0]) && !Directory.Exists(args[1]))
-            ExitWithError($"{args[1]} is not a valid folder", 7);
+        {
+            if (Bash.Command($"mkdir -p {args[1]}").ExitCode != 0)
+                ExitWithError($"{args[1]} is not a valid folder", 7);
+        }
         if (!Directory.Exists(args[0]) && Directory.Exists(args[1]))
-            ExitWithError($"{args[0]} is not a valid folder", 8);
+        {
+            if (Bash.Command($"mkdir -p {args[0]}").ExitCode != 0)
+                ExitWithError($"{args[0]} is not a valid folder", 8);
+        }
         
         ProjectDir = GetRelativePath(args[0]);
         Destination = GetRelativePath(args[1]);
@@ -96,6 +105,10 @@ class Program
             {
                 HelpMenu();
             }
+            else if (args[i] == "--noext")
+            {
+                Extension = "";
+            }
         }
     }
 
@@ -116,13 +129,13 @@ class Program
         DllName = string.Join('.', nameSplit.Take(nameSplit.Length - 1));
 
         if (!CustomAppName)
-            AppName = DllName;
+            AppName = $"{DllName}{Extension}";
         
         if (SingleRuntimeIdentifier() && !SelfContainedDeployment)
         {
             SelfContainedDeployment = true;
             Printer.WriteLine(
-                $"{Clr.Yellow}Caution: runtime identifier detected. Making self-contained app.{Clr.Default}");
+                $"{Clr.Yellow}Caution: Single runtime identifier detected. Using --scd{Clr.Default}");
         }
     }
 
@@ -253,7 +266,8 @@ class Program
             + @"        --name or -n: Set ouput file to a custom name\n"
             + @"         --scd or -s: Self-Contained Deployment (SCD)\n"
             + @"        --keep or -k: Keep /tmp/{AppName}.temp directory\n"
-            + @"        --help or -h: Help menu (this page)\n\n"
+            + @"        --help or -h: Help menu (this page)\n"
+            + @"         --clear-log: Delete error log at ~/.netpkg-tool\n\n"
             + @"    More information & source code available on github:\n"
             + @"    https://github.com/phil-harmoniq/netpkg-tool\n"
             + @"    Copyright (c) 2017 - MIT License\n"
@@ -264,9 +278,19 @@ class Program
 
     static void ClearLogs()
     {
-        Console.Write($"Clear log at {GetRelativePath(ConfigDir)}/error.log");
-        Bash.Rm($"{ConfigDir}/error.log", "-f");
-        CheckCommandOutput(errorCode: 5);
+        Console.Write($"Clear error log at {GetRelativePath(ConfigDir)}/error.log...");
+
+        if (File.Exists($"{ConfigDir}/error.log"))
+        {
+            Bash.Rm($"{ConfigDir}/error.log");
+            CheckCommandOutput(errorCode: 5);
+        }
+        else
+        {
+            SayCaution();
+            Printer.WriteLine($"{Clr.Yellow}Error log file already removed.{Clr.Default}");
+        }
+
         SayBye();
         Environment.Exit(0);
     }
@@ -291,16 +315,16 @@ class Program
         if (!Directory.Exists(ConfigDir))
             Directory.CreateDirectory(ConfigDir);
         
-        using (var tw = new StreamWriter($"{ConfigDir}/error.log", true))
+        using (var log = new StreamWriter($"{ConfigDir}/error.log", true))
         {
             var now = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             var dir = Directory.GetCurrentDirectory();
 
-            tw.WriteLine($"{new string('-', Width)}");
-            tw.WriteLine($"{GetRelativePath(dir)}$ netpkg-tool {string.Join(' ', Args)}");
-            tw.WriteLine($"Errored with code {code} - ({now}):\n");
-            tw.WriteLine(message.TrimEnd('\n'));
-            tw.WriteLine($"{new string('-', Width)}");
+            log.WriteLine($"{new string('-', Width)}");
+            log.WriteLine($"{GetRelativePath(dir)}$ netpkg-tool {string.Join(' ', Args)}");
+            log.WriteLine($"Errored with code {code} - ({now}):\n");
+            log.WriteLine(message.TrimEnd('\n'));
+            log.WriteLine($"{new string('-', Width)}");
         }
     }
 
@@ -335,6 +359,9 @@ class Program
 
     static void SayPass() =>
         Printer.WriteLine($" {Frmt.Bold}[ {Clr.Green}PASS{Clr.Default} ]{Reset.Code}");
+
+    static void SayCaution() =>
+        Printer.WriteLine($" {Frmt.Bold}[ {Clr.Yellow}PASS{Clr.Default} ]{Reset.Code}");
 
     static void SayFail() =>
         Printer.WriteLine($" {Frmt.Bold}[ {Clr.Red}FAIL{Clr.Default} ]{Reset.Code}");
