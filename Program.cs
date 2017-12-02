@@ -160,10 +160,12 @@ class Program
 
     static void RestoreProject()
     {
-        Spinner.Start("Restoring .NET Core project dependencies...", Spinner=>
+        Spinner.Start("Restoring .NET Core project dependencies...", spinner =>
         {
             if (Verbose) Bash.Command($"cd {ProjectDir} && dotnet restore", redirect: false);
             else Bash.Command($"cd {ProjectDir} && dotnet restore", redirect: true);
+
+            if (Bash.ExitCode != 0) spinner.Fail();
         });
         
         CheckCommandOutput(errorCode: 20);
@@ -171,7 +173,7 @@ class Program
 
     static void CompileProject()
     {
-        Spinner.Start("Compiling .NET Core project...", Spinner=>
+        Spinner.Start($"Compiling .NET Core project...", spinner =>
         {
             string cmd;
 
@@ -182,6 +184,8 @@ class Program
 
             if (Verbose) Bash.Command(cmd, redirect: false);
             else Bash.Command(cmd, redirect: true);
+
+            if (Bash.ExitCode != 0) spinner.Fail();
         });
 
         CheckCommandOutput(errorCode: 21);
@@ -189,7 +193,7 @@ class Program
 
     static void TransferFiles()
     {
-        Spinner.Start($"Creating app directory at /tmp/{AppName}.temp...", Spinner=>
+        Spinner.Start($"Creating app directory at /tmp/{AppName}.temp...", spinner =>
         {
             var path = $"{Here}/file-transfer.sh";
             string cmd;
@@ -200,6 +204,8 @@ class Program
                 cmd = $"{path} {ProjectDir} {DllName} {AppName} {DotNetVersion} {ToolVersion}";
 
             Bash.Command(cmd, redirect: true);
+
+            if (Bash.ExitCode != 0) spinner.Fail();
         });
 
         CheckCommandOutput(errorCode: 22);
@@ -207,13 +213,15 @@ class Program
 
     static void RunAppImageTool()
     {
-        Spinner.Start($"Compressing app directory into an AppImage...", Spinner=>
+        Spinner.Start($"Compressing app directory into an AppImage...", spinner =>
         {
             var appimgtool = $"{Here}/appimagetool/AppRun";
             var cmd = $"{appimgtool} -n /tmp/{AppName}.temp {Destination}/{AppName}";
 
             if (Verbose) Bash.Command(cmd, redirect: false);
             else Bash.Command(cmd, redirect: true);
+
+            if (Bash.ExitCode != 0) spinner.Fail();
         });
         
         CheckCommandOutput(errorCode: 23);
@@ -221,10 +229,12 @@ class Program
     
     static void DeleteTempFiles()
     {
-        Spinner.Start("Deleting temporary files...", Spinner=>
+        Spinner.Start("Deleting temporary files...", spinner =>
         {
             Bash.Rm($"/tmp/{DllName}.temp", "-rf");
             CheckCommandOutput(24);
+
+            if (Bash.ExitCode != 0) spinner.Fail();
         });
 
         CheckCommandOutput(errorCode: 24);
