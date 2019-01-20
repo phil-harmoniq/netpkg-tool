@@ -5,6 +5,7 @@ using System.Xml;
 using System.Reflection;
 using System.Diagnostics;
 using ConsoleColors;
+using Kurukuru;
 
 class Program
 {
@@ -27,7 +28,7 @@ class Program
     static bool Verbose = false;
     static bool SkipRestore = false;
     static bool CustomAppName = false;
-    static bool SelfContainedDeployment = false;
+    static bool SelfContained = false;
     static bool KeepTempFiles = false;
     static string Extension = ".AppImage";
 
@@ -39,7 +40,7 @@ class Program
         FindCsproj(args[0]);
         SayTask(ProjectDir, $"{Destination}/{AppName}");
         if (!SkipRestore) RestoreProject();
-        ComileProject();
+        CompileProject();
         TransferFiles();
         RunAppImageTool();
         if (!KeepTempFiles) DeleteTempFiles();
@@ -95,7 +96,7 @@ class Program
             }
             else if (args[i] == "-s" || args[i] == "--scd")
             {
-                SelfContainedDeployment = true;
+                SelfContained = true;
             }
             else if (args[i] == "-k" || args[i] == "--keep")
             {
@@ -131,9 +132,9 @@ class Program
         if (!CustomAppName)
             AppName = $"{DllName}{Extension}";
         
-        if (SingleRuntimeIdentifier() && !SelfContainedDeployment)
+        if (SingleRuntimeIdentifier() && !SelfContained)
         {
-            SelfContainedDeployment = true;
+            SelfContained = true;
             Printer.WriteLine(
                 $"{Clr.Yellow}Caution: Single runtime identifier detected. Using --scd{Clr.Default}");
         }
@@ -159,82 +160,84 @@ class Program
 
     static void RestoreProject()
     {
-        if (Verbose)
+        Spinner.Start("Restoring .NET Core project dependencies...", spinner =>
         {
-            Console.WriteLine("Restoring .NET Core project dependencies...");
-            Bash.Command($"cd {ProjectDir} && dotnet restore", redirect: false);
-        }
-        else
-        {
-            Console.Write("Restoring .NET Core project dependencies...");
-            Bash.Command($"cd {ProjectDir} && dotnet restore", redirect: true);
-        }
+            if (Verbose) Bash.Command($"cd {ProjectDir} && dotnet restore", redirect: false);
+            else Bash.Command($"cd {ProjectDir} && dotnet restore", redirect: true);
+
+            if (Bash.ExitCode != 0) spinner.Fail();
+        });
         
         CheckCommandOutput(errorCode: 20);
     }
 
-    static void ComileProject()
+    static void CompileProject()
     {
-        string cmd;
-
-        if (SelfContainedDeployment)
-            cmd = $"cd {ProjectDir} && dotnet publish -c Release -r linux-x64 --no-restore";
-        else 
-            cmd = $"cd {ProjectDir} && dotnet publish -c Release --no-restore";
-
-        if (Verbose)
+        Spinner.Start($"Compiling .NET Core project...", spinner =>
         {
-            Console.WriteLine("Compiling .NET Core project...");
-            Bash.Command(cmd, redirect: false);
-        }
-        else
-        {
-            Console.Write("Compiling .NET Core project...");
-            Bash.Command(cmd, redirect: true);
-        }
+            string cmd;
+
+            if (SelfContained)
+                cmd = $"cd {ProjectDir} && dotnet publish -c Release -r linux-x64 --no-restore";
+            else 
+                cmd = $"cd {ProjectDir} && dotnet publish -c Release --no-restore";
+
+            if (Verbose) Bash.Command(cmd, redirect: false);
+            else Bash.Command(cmd, redirect: true);
+
+            if (Bash.ExitCode != 0) spinner.Fail();
+        });
 
         CheckCommandOutput(errorCode: 21);
     }
 
     static void TransferFiles()
     {
-        var path = $"{Here}/file-transfer.sh";
-        string cmd;
+        Spinner.Start($"Creating app directory at /tmp/{AppName}.temp...", spinner =>
+        {
+            var path = $"{Here}/file-transfer.sh";
+            string cmd;
 
-        if (SelfContainedDeployment)
-            cmd = $"{path} {ProjectDir} {DllName} {AppName} {DotNetVersion} {ToolVersion} true";
-        else
-            cmd = $"{path} {ProjectDir} {DllName} {AppName} {DotNetVersion} {ToolVersion}";
-        
-        Console.Write($"Creating app directory at /tmp/{AppName}.temp...");
-        Bash.Command(cmd, redirect: true);
+            if (SelfContained)
+                cmd = $"{path} {ProjectDir} {DllName} {AppName} {DotNetVersion} {ToolVersion} true";
+            else
+                cmd = $"{path} {ProjectDir} {DllName} {AppName} {DotNetVersion} {ToolVersion}";
+
+            Bash.Command(cmd, redirect: true);
+
+            if (Bash.ExitCode != 0) spinner.Fail();
+        });
+
         CheckCommandOutput(errorCode: 22);
     }
 
     static void RunAppImageTool()
     {
-        var appimgtool = $"{Here}/appimagetool/AppRun";
-        var cmd = $"{appimgtool} -n /tmp/{AppName}.temp {Destination}/{AppName}";
+        Spinner.Start($"Compressing app directory into an AppImage...", spinner =>
+        {
+            var appimgtool = $"{Here}/appimagetool/AppRun";
+            var cmd = $"{appimgtool} -n /tmp/{AppName}.temp {Destination}/{AppName}";
 
-        if (Verbose)
-        {
-            Console.WriteLine($"Compressing app directory into an AppImage...");
-            Bash.Command(cmd, redirect: false);
-        }
-        else
-        {
-            Console.Write($"Compressing app directory into an AppImage...");
-            Bash.Command(cmd, redirect: true);
-        }
+            if (Verbose) Bash.Command(cmd, redirect: false);
+            else Bash.Command(cmd, redirect: true);
+
+            if (Bash.ExitCode != 0) spinner.Fail();
+        });
         
         CheckCommandOutput(errorCode: 23);
     }
     
     static void DeleteTempFiles()
     {
-        Console.Write("Deleting temporary files...");
-        Bash.Rm($"/tmp/{DllName}.temp", "-rf");
-        CheckCommandOutput(24);
+        Spinner.Start("Deleting temporary files...", spinner =>
+        {
+            Bash.Rm($"/tmp/{DllName}.temp", "-rf");
+            CheckCommandOutput(24);
+
+            if (Bash.ExitCode != 0) spinner.Fail();
+        });
+
+        CheckCommandOutput(errorCode: 24);
     }
 
     static void SayHello()
@@ -333,13 +336,11 @@ class Program
     {
         if (Bash.ExitCode != 0)
         {
-            SayFail();
             if (string.IsNullOrEmpty(Bash.ErrorMsg))
                 ExitWithError(Bash.Output, errorCode);
             else
                 ExitWithError(Bash.ErrorMsg, errorCode);
         }
-        SayPass();
     }
     
     static string GetRelativePath(string path) =>
